@@ -6,7 +6,13 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   plugins: [
     react(),
-    dts({ insertTypesEntry: true }),
+    dts({ 
+      insertTypesEntry: true,
+      include: ['src/**/*'],
+      exclude: ['src/**/*.stories.tsx', 'src/**/*.test.tsx', 'src/main.tsx', 'src/App.tsx'],
+      tsconfigPath: './tsconfig.build.json',
+      rollupTypes: true
+    }),
   ],
   resolve: {
     alias: {
