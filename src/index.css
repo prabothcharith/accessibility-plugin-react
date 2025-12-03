@@ -57,14 +57,10 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
+  
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
@@ -73,6 +69,40 @@
 .acc-grayscale { filter: grayscale(1); }
 .acc-low-sat { filter: saturate(0.5); }
 .acc-high-sat { filter: saturate(2); }
+
+/* Color mode backgrounds */
+.acc-y-on-b {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+}
+
+.acc-y-on-b * {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border-color: #ffff00 !important;
+}
+
+.acc-w-on-b {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.acc-w-on-b * {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+.acc-b-on-y {
+  background-color: #ffff00 !important;
+  color: #0000ff !important;
+}
+
+.acc-b-on-y * {
+  background-color: #ffff00 !important;
+  color: #0000ff !important;
+  border-color: #0000ff !important;
+}
 
 .acc-hide-images img, 
 .acc-hide-images video, 

@@ -56,7 +56,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const root = document.documentElement;
 
-    // Contrast
+    // Contrast - map mode names to CSS classes
     root.classList.remove(
       "acc-invert",
       "acc-grayscale",
@@ -66,8 +66,21 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
       "acc-w-on-b",
       "acc-b-on-y"
     );
-    if (state.contrast !== "normal")
-      root.classList.add(`acc-${state.contrast}`);
+    
+    if (state.contrast !== "normal") {
+      // Map contrast mode to CSS class
+      const classMap: Record<string, string> = {
+        'invert': 'acc-invert',
+        'grayscale': 'acc-grayscale',
+        'low-saturation': 'acc-low-sat',
+        'high-saturation': 'acc-high-sat',
+        'yellow-on-black': 'acc-y-on-b',
+        'white-on-black': 'acc-w-on-b',
+        'blue-on-yellow': 'acc-b-on-y'
+      };
+      const className = classMap[state.contrast];
+      if (className) root.classList.add(className);
+    }
 
     // Font Size
     if (state.fontSize !== 1) {
@@ -140,6 +153,7 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAccessibility = () => {
   const context = useContext(AccessibilityContext);
   if (!context)

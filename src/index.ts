@@ -1,3 +1,5 @@
+import './index.css';
+
 export * from './components/AccessibilityPlugin';
 export * from './components/AccessibilityContext';
 export * from './components/tools/ContrastTool';

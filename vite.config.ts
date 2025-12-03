@@ -17,16 +17,26 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'AccessibilityPlugin',
-      fileName: (format) => `index.${format}.js`
+      fileName: (format) => `index.${format}.js`,
+      formats: ['es', 'umd']
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'framer-motion', 'lucide-react'],
       output: {
         globals: {
           react: 'React',
-          'react-dom': 'ReactDOM'
+          'react-dom': 'ReactDOM',
+          'framer-motion': 'FramerMotion',
+          'lucide-react': 'LucideReact'
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'style.css';
+          }
+          return assetInfo.name || '';
         }
       }
-    }
+    },
+    cssCodeSplit: false
   }
 })
