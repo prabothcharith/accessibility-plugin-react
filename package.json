@@ -1,7 +1,9 @@
 {
-  "name": "new-accessibility-plugin",
-  "private": true,
-  "version": "0.0.0",
+  "name": "accessibility-plugin-react",
+  "version": "1.0.0",
+  "description": "A customizable, accessible, and easy-to-integrate React accessibility widget.",
+  "author": "Praboth Charith",
+  "license": "ISC",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
@@ -29,15 +31,17 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@tailwindcss/postcss": "^4.1.17",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
     "lucide-react": "^0.555.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0"
   },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
