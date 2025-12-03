@@ -4,6 +4,29 @@
   "description": "A customizable, accessible, and easy-to-integrate React accessibility widget.",
   "author": "Praboth Charith",
   "license": "ISC",
+  "keywords": [
+    "react",
+    "accessibility",
+    "a11y",
+    "wcag",
+    "ui",
+    "components",
+    "shadcn",
+    "tailwind",
+    "framer-motion",
+    "contrast",
+    "font-size",
+    "reading-guide",
+    "accessible"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PrabothCharith/accessibility-react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PrabothCharith/accessibility-react/issues"
+  },
+  "homepage": "https://github.com/PrabothCharith/accessibility-react#readme",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",

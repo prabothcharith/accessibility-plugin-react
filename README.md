@@ -162,6 +162,30 @@ module.exports = {
 };
 ```
 
+The plugin's CSS file includes CSS variables for theming. You can customize these in your own CSS:
+
+```css
+/* In your globals.css or app.css */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --border: 214.3 31.8% 91.4%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  /* ... other dark mode variables */
+}
+```
+
 ## API Reference
 
 ### Components
