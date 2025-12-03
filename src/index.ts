@@ -1,26 +1,10 @@
-// Main component
-export { AccessibilityMenu } from './components/AccessibilityMenu';
-
-// Feature components
-export { Cursor } from './components/Cursor';
-export { Fonts } from './components/Fonts';
-export { Text } from './components/Text';
-export { Colors } from './components/Colors';
-export { Contrast } from './components/Contrast';
-export { Images } from './components/Images';
-export { Videos } from './components/Videos';
-export { LinkHighlight } from './components/LinkHighlight';
-export { ReadingTools } from './components/ReadingTools';
-
-// Context and hooks
-export { AccessibilityProvider, useAccessibility } from './context/AccessibilityContext';
-export { useAccessibilityStyles } from './hooks/useAccessibilityStyles';
-export { useReadingTools } from './hooks/useReadingTools';
-
-// Types
-export type { 
-  AccessibilityState, 
-  AccessibilityAction, 
-  AccessibilityContextType,
-  AccessibilityMenuProps
-} from './types';
+export * from './components/AccessibilityPlugin';
+export * from './components/AccessibilityContext';
+export * from './components/tools/ContrastTool';
+export * from './components/tools/FontSizeTool';
+export * from './components/tools/LineHeightTool';
+export * from './components/tools/LetterSpacingTool';
+export * from './components/tools/TextAlignTool';
+export * from './components/tools/CursorTool';
+export * from './components/tools/VisualTogglesTool';
+export * from './components/types';

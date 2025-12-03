@@ -1,111 +1,69 @@
-# Accessibility Plugin for React
+# Accessibility Plugin
 
-A modern, modular React accessibility plugin that helps improve the accessibility of your web applications. Built with React, TypeScript, and Framer Motion.
+A customizable, accessible, and easy-to-integrate React accessibility widget.
 
 ## Features
 
-- 🎨 **Visual Adjustments**: Invert colors, grayscale, saturation controls, contrast adjustments
-- 📝 **Text Controls**: Font size, line height, letter spacing, text alignment
-- 🔗 **Link Highlighting**: Highlight all links for better visibility
-- 🖱️ **Cursor Options**: Big circle cursor, reading mask, reading guide
-- 🖼️ **Content Controls**: Hide images and videos
-- 💾 **Persistent Settings**: Saves user preferences to localStorage
-- 🎯 **Draggable Menu**: Move the accessibility menu anywhere on the screen
-- 🧩 **Modular Components**: Only include the features you need
+- **Contrast & Color Modes**: Invert, Grayscale, Low/High Saturation, Yellow on Black, White on Black, Blue on Yellow.
+- **Text Adjustments**: Font Size, Line Height, Letter Spacing, Text Alignment.
+- **Cursor Enhancements**: Big Cursor, Reading Guide.
+- **Visual Toggles**: Hide Images, Highlight Links.
+- **Drag & Drop**: Draggable trigger button.
+- **Persistence**: Settings are saved in local storage (implementation pending/optional).
+- **Reset**: Easily reset all settings to default.
 
 ## Installation
 
 ```bash
-npm install accessibility-plugin-for-react
+npm install accessibility-plugin
+# or
+yarn add accessibility-plugin
 ```
+
+(Note: Replace `accessibility-plugin` with the actual package name if different when published).
 
 ## Usage
 
-### Basic Usage (All Features)
+Wrap your application (or the part you want to be accessible) with the `AccessibilityPlugin` component.
 
-```jsx
-import { AccessibilityMenu, Cursor, Fonts, Text, Colors, Contrast, Images, Videos, ReadingTools } from 'accessibility-plugin-for-react';
-
-function App() {
-  return (
-    <div>
-      <AccessibilityMenu>
-        <Cursor />
-        <Fonts />
-        <Text />
-        <Colors />
-        <Contrast />
-        <Images />
-        <Videos />
-        <ReadingTools />
-      </AccessibilityMenu>
-      
-      {/* Your app content */}
-    </div>
-  );
-}
-```
-
-### Minimal Usage (Selected Features)
-
-```jsx
-import { AccessibilityMenu, Fonts, Colors } from 'accessibility-plugin-for-react';
+```tsx
+import { AccessibilityPlugin } from 'accessibility-plugin';
+import 'accessibility-plugin/dist/style.css'; // Import styles
 
 function App() {
   return (
-    <div>
-      <AccessibilityMenu>
-        <Fonts />
-        <Colors />
-      </AccessibilityMenu>
-      
-      {/* Your app content */}
-    </div>
+    <AccessibilityPlugin>
+      <YourAppContent />
+    </AccessibilityPlugin>
   );
 }
+
+export default App;
 ```
 
-## Components
+### Custom Trigger
 
-### AccessibilityMenu
+You can provide a custom trigger button if you don't want to use the default one.
 
-The main container component that provides the accessibility menu interface.
+```tsx
+<AccessibilityPlugin
+  trigger={
+    <button className="px-4 py-2 bg-blue-600 text-white rounded">
+      Open Accessibility
+    </button>
+  }
+>
+  <YourAppContent />
+</AccessibilityPlugin>
+```
 
-**Props:**
-- `position?: 'left' | 'right' | 'top' | 'bottom'` - Initial position of the menu (default: 'right')
-- `children: ReactNode` - Feature components to include
+## Development
 
-### Feature Components
-
-- **`<Cursor />`** - Big circle cursor and reading tools
-- **`<Fonts />`** - Font size adjustments
-- **`<Text />`** - Line height, letter spacing, and text alignment
-- **`<Colors />`** - Color inversion, grayscale, and saturation controls
-- **`<Contrast />`** - Contrast adjustments (low, high, extra)
-- **`<Images />`** - Show/hide images
-- **`<Videos />`** - Show/hide videos
-- **`<ReadingTools />`** - Reading mask and reading guide
-- **`<LinkHighlight />`** - Highlight all links on the page
-
-## Customization
-
-You can customize the appearance by passing a custom theme or overriding CSS variables.
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+1. Clone the repository.
+2. Install dependencies: `npm install`.
+3. Run the development server: `npm run dev`.
+4. Build the package: `npm run build`.
 
 ## License
 
-ISC
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Author
-
-PrabothCharith
+MIT
