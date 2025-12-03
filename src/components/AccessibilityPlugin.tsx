@@ -6,15 +6,37 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Settings2, X, RotateCcw } from "lucide-react";
 
+// Default tools import
+import { ContrastTool } from "./tools/ContrastTool";
+import { FontSizeTool } from "./tools/FontSizeTool";
+import { LineHeightTool } from "./tools/LineHeightTool";
+import { LetterSpacingTool } from "./tools/LetterSpacingTool";
+import { TextAlignTool } from "./tools/TextAlignTool";
+import { CursorTool } from "./tools/CursorTool";
+import { VisualTogglesTool } from "./tools/VisualTogglesTool";
+
 // Internal Widget Component
 const AccessibilityWidget = ({
-  children,
+  tools,
   trigger,
 }: {
-  children: ReactNode;
+  tools?: ReactNode;
   trigger?: ReactNode;
 }) => {
   const { isWidgetOpen, toggleWidget, reset } = useAccessibility();
+
+  // Default tools if none provided
+  const defaultTools = (
+    <>
+      <ContrastTool />
+      <FontSizeTool />
+      <LineHeightTool />
+      <LetterSpacingTool />
+      <TextAlignTool />
+      <CursorTool />
+      <VisualTogglesTool />
+    </>
+  );
 
   return (
     <div className="fixed z-[9999] font-sans text-base">
@@ -66,7 +88,9 @@ const AccessibilityWidget = ({
               </div>
             </div>
 
-            <div className="p-4 grid grid-cols-2 gap-4">{children}</div>
+            <div className="p-4 grid grid-cols-2 gap-4">
+              {tools || defaultTools}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -75,17 +99,20 @@ const AccessibilityWidget = ({
 };
 
 interface AccessibilityPluginProps {
-  children?: ReactNode;
+  children: ReactNode;
+  tools?: ReactNode;
   trigger?: ReactNode;
 }
 
 export const AccessibilityPlugin = ({
   children,
+  tools,
   trigger,
 }: AccessibilityPluginProps) => {
   return (
     <AccessibilityProvider>
-      <AccessibilityWidget trigger={trigger}>{children}</AccessibilityWidget>
+      {children}
+      <AccessibilityWidget tools={tools} trigger={trigger} />
     </AccessibilityProvider>
   );
 };

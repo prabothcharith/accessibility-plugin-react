@@ -24,9 +24,9 @@ pnpm add accessibility-plugin-react framer-motion lucide-react
 
 ## Usage
 
-### Basic Usage
+### Basic Usage (with default tools)
 
-Wrap your application (or the part you want to be accessible) with the `AccessibilityPlugin` component and include the CSS file.
+Wrap your application with the `AccessibilityPlugin` component and include the CSS file. By default, all accessibility tools are included.
 
 ```tsx
 import { AccessibilityPlugin } from 'accessibility-plugin-react';
@@ -43,31 +43,31 @@ function App() {
 export default App;
 ```
 
-### With All Default Tools
+### Custom Tools Selection
+
+You can choose which tools to display by passing them as the `tools` prop:
 
 ```tsx
 import { 
   AccessibilityPlugin,
   ContrastTool,
   FontSizeTool,
-  LineHeightTool,
-  LetterSpacingTool,
-  TextAlignTool,
-  CursorTool,
-  VisualTogglesTool
+  LineHeightTool
 } from 'accessibility-plugin-react';
 import 'accessibility-plugin-react/style.css';
 
 function App() {
   return (
-    <AccessibilityPlugin>
-      <ContrastTool />
-      <FontSizeTool />
-      <LineHeightTool />
-      <LetterSpacingTool />
-      <TextAlignTool />
-      <CursorTool />
-      <VisualTogglesTool />
+    <AccessibilityPlugin
+      tools={
+        <>
+          <ContrastTool />
+          <FontSizeTool />
+          <LineHeightTool />
+        </>
+      }
+    >
+      <YourAppContent />
     </AccessibilityPlugin>
   );
 }
@@ -78,16 +78,12 @@ function App() {
 You can provide a custom trigger button if you don't want to use the default one.
 
 ```tsx
+import { Settings } from 'lucide-react';
+
 <AccessibilityPlugin
-  trigger={
-    <button className="px-4 py-2 bg-blue-600 text-white rounded">
-      Open Accessibility
-    </button>
-  }
+  trigger={<Settings className="w-6 h-6" />}
 >
-  <ContrastTool />
-  <FontSizeTool />
-  {/* ... other tools */}
+  <YourAppContent />
 </AccessibilityPlugin>
 ```
 
@@ -98,15 +94,13 @@ In Next.js 13+ (App Router), make sure to mark the component as a client compone
 ```tsx
 'use client';
 
-import { AccessibilityPlugin, ContrastTool, FontSizeTool } from 'accessibility-plugin-react';
+import { AccessibilityPlugin } from 'accessibility-plugin-react';
 import 'accessibility-plugin-react/style.css';
 
 export default function AccessibilityWrapper({ children }) {
   return (
     <AccessibilityPlugin>
-      <ContrastTool />
-      <FontSizeTool />
-      {/* Add other tools as needed */}
+      {children}
     </AccessibilityPlugin>
   );
 }
@@ -115,7 +109,7 @@ export default function AccessibilityWrapper({ children }) {
 Then use it in your layout:
 
 ```tsx
-import AccessibilityWrapper from './AccessibilityWrapper';
+import AccessibilityWrapper from './components/AccessibilityWrapper';
 
 export default function RootLayout({ children }) {
   return (
@@ -177,8 +171,9 @@ module.exports = {
 Main wrapper component that provides accessibility context.
 
 **Props:**
-- `children`: ReactNode - The content to wrap (can be your app content or tool components)
-- `trigger`: ReactNode (optional) - Custom trigger button component
+- `children`: ReactNode - Your application content
+- `tools`: ReactNode (optional) - Custom tool components to display in the panel. If not provided, all default tools are included.
+- `trigger`: ReactNode (optional) - Custom trigger button icon (the button itself is created by the plugin)
 
 #### Tool Components
 
