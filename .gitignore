@@ -1,1 +1,9 @@
 node_modules
+dist
+*.tsbuildinfo
+.turbo
+coverage
+.consumers
+playwright-report
+test-results
+*.tgz

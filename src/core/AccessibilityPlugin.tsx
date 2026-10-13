@@ -1,0 +1,170 @@
+"use client";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { AccessibilityContext } from "./AccessibilityContext";
+import { validKey } from "./storage";
+import { createPreferenceStore } from "./preferenceStore";
+import { builtins, validValue } from "./featureSchema";
+import { CustomEffect, useBuiltinEffects } from "./effects";
+import type { AccessibilityPluginProps, FeatureRegistration } from "./types";
+
+// Host-wide preferences have one owner. Fail explicitly rather than silently racing.
+const owners = new WeakMap<Document, object>();
+export function AccessibilityPlugin({
+  children,
+  position = "right",
+  persistenceKey,
+  persist = true,
+}: AccessibilityPluginProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [store] = useState(() =>
+    createPreferenceStore(persistenceKey, persist),
+  );
+  const features = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getServerSnapshot,
+  );
+  const setFeatures = store.update;
+  const registrations = useRef(new Map<string, FeatureRegistration>());
+  const [definitions, setDefinitions] = useState<
+    Record<string, FeatureRegistration>
+  >({});
+  const panelId = `arap-${useId()}`;
+  const owner = useRef({});
+  const [initialKey] = useState(persistenceKey);
+  const [initialPersist] = useState(persist);
+  if (initialKey !== persistenceKey || initialPersist !== persist)
+    throw new Error(
+      "Remount AccessibilityPlugin with a React key to change persistence configuration.",
+    );
+  const resetFns = useRef(new Map<string, () => void>());
+  useEffect(() => {
+    if (owners.has(document))
+      throw new Error(
+        "Only one AccessibilityPlugin may own a document. Mount it above your routes.",
+      );
+    const token = owner.current;
+    owners.set(document, token);
+    const flush = () => store.flush();
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      store.flush();
+      if (owners.get(document) === token) owners.delete(document);
+    };
+  }, [store]);
+  const registerFeature = useCallback(
+    (key: string, definition: FeatureRegistration) => {
+      if (!validKey(key)) throw new Error("Invalid feature key.");
+      if (registrations.current.has(key)) return;
+      // Registration must be visible to a consumer's subsequent mount effect.
+      registrations.current.set(key, definition);
+      setDefinitions((previous) => ({ ...previous, [key]: definition }));
+    },
+    [],
+  );
+  const getFeatureState = useCallback(
+    <T,>(key: string, fallback: T): T => {
+      const definition = Object.prototype.hasOwnProperty.call(definitions, key)
+        ? definitions[key]
+        : undefined;
+      const value = features[key];
+      return Object.prototype.hasOwnProperty.call(features, key) &&
+        validValue(key, value, fallback, definition?.validate)
+        ? (value as T)
+        : fallback;
+    },
+    [features, definitions],
+  );
+  const setFeatureState = useCallback(
+    <T,>(key: string, value: T) => {
+      const definition = registrations.current.get(key);
+      if (
+        !validKey(key) ||
+        !definition ||
+        !validValue(key, value, definition.defaultValue, definition.validate)
+      )
+        throw new Error(`Invalid value or unregistered feature: ${key}`);
+      setFeatures((previous) => ({ ...previous, [key]: value }));
+    },
+    [setFeatures],
+  );
+  const resetAll = useCallback(() => {
+    resetFns.current.forEach((fn) => fn());
+    setFeatures(() => ({}));
+  }, [setFeatures]);
+  const registerReset = useCallback((key: string, fn: () => void) => {
+    resetFns.current.set(key, fn);
+  }, []);
+  const unregisterReset = useCallback((key: string) => {
+    resetFns.current.delete(key);
+  }, []);
+  const toggleOpen = useCallback(() => setIsOpen((previous) => !previous), []);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const active = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(definitions)
+          .filter(([key]) => key in builtins)
+          .map(([key]) => [
+            key,
+            getFeatureState(key, builtins[key].defaultValue),
+          ]),
+      ),
+    [definitions, getFeatureState],
+  );
+  useBuiltinEffects(active);
+  const value = useMemo(
+    () => ({
+      state: { isOpen, features },
+      isOpen,
+      panelId,
+      position,
+      toggleOpen,
+      closeMenu,
+      getFeatureState,
+      setFeatureState,
+      registerFeature,
+      resetAll,
+      registerReset,
+      unregisterReset,
+    }),
+    [
+      isOpen,
+      features,
+      panelId,
+      position,
+      toggleOpen,
+      closeMenu,
+      getFeatureState,
+      setFeatureState,
+      registerFeature,
+      resetAll,
+      registerReset,
+      unregisterReset,
+    ],
+  );
+  return (
+    <AccessibilityContext.Provider value={value}>
+      {children}
+      {Object.entries(definitions)
+        .filter(([, definition]) => definition.apply)
+        .map(([key, definition]) => (
+          <CustomEffect
+            key={key}
+            definition={definition}
+            value={getFeatureState(key, definition.defaultValue)}
+          />
+        ))}
+    </AccessibilityContext.Provider>
+  );
+}
+export default AccessibilityPlugin;

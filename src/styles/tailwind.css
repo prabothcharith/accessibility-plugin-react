@@ -1,0 +1,211 @@
+/* Historical filename retained; standalone scoped CSS, no Tailwind runtime or reset. */
+.arap-root {
+  color-scheme: light;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+  color: #1f2937;
+  text-align: left;
+  letter-spacing: normal;
+}
+.arap-root *,
+.arap-root *::before,
+.arap-root *::after {
+  box-sizing: border-box;
+}
+.arap-root button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.arap-root button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.arap-root button:focus-visible,
+.arap-panel:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 3px;
+}
+.arap-root .arap-btn {
+  position: fixed;
+  z-index: 2147483001;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  width: 56px;
+  height: 56px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 4px 16px #0003;
+}
+.arap-root .arap-btn[data-position="left"] {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+}
+.arap-root .arap-btn[data-position="top"] {
+  bottom: auto;
+  top: max(16px, env(safe-area-inset-top));
+}
+.arap-root .arap-panel {
+  position: fixed;
+  z-index: 2147483000;
+  bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
+  right: max(16px, env(safe-area-inset-right));
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px #0003;
+}
+.arap-root .arap-panel[hidden] {
+  display: none !important;
+}
+.arap-root .arap-panel[data-position="left"] {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+}
+.arap-root .arap-panel[data-position="top"] {
+  bottom: auto;
+  top: max(88px, calc(env(safe-area-inset-top) + 72px));
+}
+.arap-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.arap-heading h2 {
+  margin: 0;
+  font:
+    700 18px/1.4 system-ui,
+    sans-serif;
+  color: #111827;
+}
+.arap-heading button {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 24px;
+}
+.arap-feature {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+.arap-feature:last-child {
+  border: 0;
+}
+.arap-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.arap-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.arap-root .arap-btn-sm {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  font-size: 20px;
+}
+.arap-value {
+  min-width: 56px;
+  text-align: center;
+  font-weight: 600;
+}
+.arap-segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.arap-root .arap-segment {
+  flex: 1 0 auto;
+  padding: 8px;
+  min-height: 44px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: #fff;
+  color: #334155;
+}
+.arap-root .arap-segment-active {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+.arap-root .arap-toggle {
+  position: relative;
+  width: 56px;
+  height: 32px;
+  padding: 0;
+  border-radius: 18px;
+  border: 2px solid #64748b;
+  background: #e2e8f0;
+}
+.arap-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #334155;
+  pointer-events: none;
+  transition: transform 0.15s;
+}
+.arap-root .arap-toggle-active {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.arap-toggle-active .arap-toggle-knob {
+  transform: translateX(24px);
+  background: #fff;
+}
+.arap-root .arap-reset-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+  color: #b91c1c;
+  font-weight: 600;
+}
+.arap-root button:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arap-root *,
+  .arap-root *::before,
+  .arap-root *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .arap-root button[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+  }
+  .arap-toggle-knob {
+    background: ButtonText;
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "name": "react-accessibility-plugin",
+  "version": "0.1.0",
+  "description": "A compound-component React accessibility widget with opt-in prebuilt features and full custom feature support.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./dist/style.css": "./dist/style.css",
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "docs"
+  ],
+  "scripts": {
+    "build": "tsup && npm run build:css",
+    "build:css": "node scripts/build-css.mjs",
+    "dev": "tsup --watch",
+    "lint": "eslint src tests scripts --max-warnings 0",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build",
+    "validate": "npm run typecheck && npm run lint && npm test && npm run build",
+    "pack:check": "node scripts/check-package.mjs",
+    "test:browser": "playwright test",
+    "test:consumers": "npm run build && npm run pack:check && node scripts/prepare-consumers.mjs",
+    "example": "vite examples",
+    "format": "prettier --write src tests scripts examples docs README.md AGENTS.md CHANGELOG.md *.ts *.json *.mjs .github",
+    "format:check": "prettier --check src tests scripts examples docs README.md AGENTS.md CHANGELOG.md *.ts *.json *.mjs .github"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.9.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.11"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "react",
+    "widget",
+    "plugin",
+    "font-size",
+    "contrast",
+    "grayscale",
+    "invert-colors"
+  ],
+  "author": "Praboth Charith",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prabothcharith/accessibility-react.git"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  }
+}
