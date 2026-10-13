@@ -40,7 +40,7 @@ P1: complete human accessibility acceptance; resolve package identity and GPL/IS
 
 Current limits include one provider/document, host filter containing-block behavior, no Shadow DOM/iframe interior/pseudo-element effects, no auto-pause for hidden video and CSP considerations. These are documented implementation boundaries, not hidden workarounds.
 
-Draft PR #2 targets new-development; commits are pushed and source/test/workflow commit 4fd3768 passed hosted Node22/24 and the full browser matrix. The stabilization acceptance criteria are met by code and executable local/hosted evidence; stable release acceptance remains open. No publication or release-tag/default-branch changes have occurred.
+Draft PR #2 targets new-development; commits are pushed. [Final source/test commit a020352](https://github.com/prabothcharith/accessibility-react/actions/runs/38328538388) passed hosted Node22/24 with 61 unit tests, all packed consumer checks and the full browser matrix (37 passed, five intentional skips), including proportional text layout and nullable custom-state restoration. Later handover edits only record these results. The stabilization acceptance criteria are met by code and executable local/hosted evidence; stable release acceptance remains open. No publication or release-tag/default-branch changes have occurred.
 
 ## Exact file inventory
 

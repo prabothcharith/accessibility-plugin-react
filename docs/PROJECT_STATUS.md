@@ -56,7 +56,7 @@ CI uses Ubuntu 24.04 and verified Node24-based action releases to avoid the depr
 
 ## Final regression follow-up
 
-The local suite now passes 61 tests. Font enlargement scales fixed line heights too, preventing overlapping lines, and a validated nullable custom preference restores before a mount effect can initialize a fallback. Packed consumer builds/type checks passed; the text-layout browser regression passed locally in Chromium and desktop/mobile WebKit (18 passed, three intentional skips). Full hosted validation of this follow-up is pending.
+The local suite now passes 61 tests. Font enlargement scales fixed line heights too, preventing overlapping lines, and a validated nullable custom preference restores before a mount effect can initialize a fallback. Packed consumer builds/type checks passed; the text-layout browser regression passed locally in Chromium and desktop/mobile WebKit (18 passed, three intentional skips). [Final source validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38328538388) on commit `a020352` **passed all jobs**: 61 unit tests on Node 22 and 24, type/lint/format/build/archive/audit checks, all three packed consumers and the full browser matrix (**37 passed, five intentional Next-only skips**). This includes Linux Firefox coverage and both final regressions. Subsequent handover edits only record these results.
 
 ## Known limits and release gates
 
