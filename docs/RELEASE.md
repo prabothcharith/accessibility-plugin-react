@@ -59,3 +59,13 @@ npm publish /tmp/accessibility-plugin-react-2.0.0-beta.1.tgz --tag beta --access
 The package's approved publishConfig also uses beta. This keeps `latest` on 1.0.0; beta consumers explicitly install `accessibility-plugin-react@beta`. Do not promote to latest or create a release tag unless authorized. If the owner chooses stable, update the version, publishConfig and notes and complete stable release gates first.
 
 After upload, verify registry name/version/license, beta and latest tags, archive integrity, and clean registry installations in the React/Next consumers. Record the published version and source commit only after those checks succeed.
+
+## Publication attempt and current blocker
+
+On 2026-10-13 the owner-approved source `cf4348b` passed [all hosted jobs](https://github.com/prabothcharith/accessibility-react/actions/runs/38356642128): 66 unit tests on Node22/24, packed React18/React19/Next consumers, and 55 browser passes with five intentional Next-only skips including Linux Firefox. Local final ISC source checks and packed consumers also passed.
+
+The exact archive was inspected before upload. Its SHA512 integrity is `sha512-zqDaTtbv+3cGpgZlqp1TPmuUs4/R/sczLGUOiuTh34HooAcwqJan7wXvS0CSQTvfa12wYgXybLO7/8ClNl5R+Q==`.
+
+After npm browser authentication, publication was rejected with E403: the maintainer account is temporarily suspended after a recent security-sensitive action. Registry verification found only 1.0.0, with latest=1.0.0 and no beta tag/version. **2.0.0-beta.1 is not published.** Registry consumer verification cannot run until publication succeeds. No Git release tag or main merge was made.
+
+Retry the verified archive only after npm clears the account hold. Do not replace the beta version or promote latest as a workaround. The hold duration is unknown; no automatic retry is scheduled. License/identity issues #4 and #5 are resolved; publication and stable human acceptance remain open.

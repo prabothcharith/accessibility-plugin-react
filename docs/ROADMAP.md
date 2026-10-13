@@ -23,3 +23,5 @@ Release gates are not satisfied by checking in tests or CI configuration. Execut
 Release tasks are tracked in [Project #18](https://github.com/users/prabothcharith/projects/18) under [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). Documentation status correction (#9) is in PR #17; owner decisions (#4/#5), human acceptance (#6–#8), final candidate validation (#10) and approved publication (#11) remain open gates.
 
 The owner confirmed `accessibility-plugin-react` as the registry identity on 2026-10-13. The npm preparation branch prepares `2.0.0-beta.1`; the owner approved 2.0.0-beta.1 under beta and ISC, and npm maintainer authentication is verified. Stable human acceptance remains pending. See RELEASE.md.
+
+Final ISC beta source cf4348b passed the full hosted matrix. npm rejected the upload due to a temporary account suspension; 2.0.0-beta.1 is not published. Owner decision issues #4/#5 are closed; publication #11 and human stable-release acceptance remain open. See RELEASE.md.
