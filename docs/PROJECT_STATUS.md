@@ -1,0 +1,55 @@
+# Project status — 2026-10-13
+
+**Local stabilization implemented and automatically verified; stable release not yet approved.** No npm publication, release tag or default-branch merge. Working branch: `codex/stabilize-accessibility`, based on `new-development` at `6dfbd44`.
+
+## Status categories
+
+| Category                   | Current evidence                                                                                                                                                                                                                                                                                     |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Implemented and verified   | Provider-owned built-in/custom effects; reset cancellation; validated restoration; all fifteen controllers; combined filters; host style cleanup; dynamic child content; non-modal focus; portal layout; scoped CSS; React18/19 packed consumers; Next App/Pages and direct Server Component imports |
+| Implemented but unverified | GitHub Actions workflow on hosted Node22/24/Linux; broader React19 patch versions and browsers outside the executed matrix                                                                                                                                                                           |
+| Partially implemented      | Broad accessibility acceptance: automated keyboard/axe/reflow checks passed, real screen-reader/physical-device/actual zoom review remains. Host-wide integration: known filter/CSP/Shadow DOM/attribute-change limits remain.                                                                       |
+| In progress                | Review branch and hosted CI preparation; the engineering handover is written. No background automation is implied.                                                                                                                                                                                   |
+| Planned                    | Large-DOM profiling, attribute/font-load refresh, explicit effect scopes and richer localization                                                                                                                                                                                                     |
+| Blocked                    | Local Firefox browser launch; owner decision on conflicting historical license metadata and intended registry identity before release                                                                                                                                                                |
+| Deferred                   | Draggable trigger, built-in persisted position picker, multi-provider arbitration and live cross-tab sync                                                                                                                                                                                            |
+| Completed                  | Investigation/baseline, local P0 stabilization, feature regression suite, packed consumer/build verification, documentation and local example verification meet their stated local acceptance criteria                                                                                               |
+
+## Executed checks
+
+Environment: macOS, Node 22.14.0, npm 11.21.0. Baseline: typecheck/build pass, lint seven errors, 24 nominal tests with three ineffective async assertions, 15 audit findings. See BASELINE.md.
+
+| Check                                       | Actual result                                                                                                                    |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| npm ci (original lock)                      | Passed before implementation                                                                                                     |
+| npm run typecheck                           | Passed for source, unit/browser tests and TypeScript configs                                                                     |
+| npm run lint                                | Passed with zero warnings, ESLint 10 and hooks rules                                                                             |
+| npm test                                    | 59 tests passed in 3 files                                                                                                       |
+| npm run build                               | ESM + CJS + both declaration formats + standalone CSS produced                                                                   |
+| npm audit                                   | Zero vulnerabilities after tooling/dependency updates (snapshot, not a perpetual guarantee)                                      |
+| npm pack / pack:check                       | Archive generated and inspected; required JS/types/CSS/license present; client boundary and CSS reset guard passed               |
+| Clean packed consumer installs              | React 18.3.1 and React 19.2.0; ESM, CJS, NodeNext ESM/CommonJS and JSX declarations, SSR and production Vite 7.3.7 builds passed |
+| Next.js 16.2.10 + React19.2.0               | Production webpack build, App Router, Pages Router and direct Server Component package imports passed                            |
+| Browser suite excluding unavailable Firefox | 31 passed, 4 intentional skips (Next-only test on non-Next projects)                                                             |
+| Axe                                         | Zero violations for tested widget scopes in light/dark hosts using WCAG2 A/AA, 2.1AA and 2.2AA tags in passing browser projects  |
+| Built examples                              | Basic and custom demos opened/interacted/reset through actual package imports; zero page errors                                  |
+| Visual review                               | Desktop and 320px custom example screenshots inspected; no panel overflow/clipped controls observed. Actual images in assets/.   |
+| git diff --check                            | Passed                                                                                                                           |
+
+Browser projects: Chromium 156 (React18, React19 with Tailwind3, Next production); WebKit 27.2 desktop and iPhone13 emulation. Playwright 1.64.0. These are tested engine builds, not claims about every installed Safari/Chrome version.
+
+The initial full browser run had 10 failures: seven Firefox launch failures before page execution, two overly exact WebKit fractional-CSS assertions, and one test clearing storage before a pending pagehide flush. Numeric assertions now use explicit tolerance and each Next route starts with clean storage. The corrected non-Firefox suite passed. Firefox157 build1555 fails “Could not find profile folder” with temporary or persistent profiles, including TMPDIR=/tmp; no Firefox functionality result is claimed. The workflow retains Firefox tests rather than silently excluding them.
+
+Expected error-path unit tests deliberately trigger missing-provider and duplicate-provider errors; jsdom logs these while their throw assertions pass. The continuation added regressions for mount-effect state initialization and focus return when the panel itself is removed. No unexpected runtime errors were observed in the browser/examples matrix.
+
+## Known limits and release gates
+
+1. **Human accessibility testing pending:** VoiceOver/NVDA, physical touch devices, forced-colors visual review, browser zoom 200/400%. Automated axe and emulation do not establish WCAG conformance.
+2. **Firefox execution blocked locally; hosted CI unverified.** Re-run the complete workflow on a working Linux runner and record the run URL/result.
+3. **License conflict:** selected branch/spec declare GPL-3.0; original LICENSE is GPLv3; original package.json and older React metadata declare ISC. The existing selected-branch declaration is retained, LICENSE included, no rights reinterpreted. Owner must resolve intended licensing before release.
+4. **Package identity:** current branch uses react-accessibility-plugin@0.1.0; older branch used accessibility-plugin-react@1.0.0. No registry ownership/publication status is inferred. Owner must confirm name/version/migration/release permissions.
+5. One provider per document, no live cross-tab sync, immutable definitions/storage configuration. Routes should share the provider.
+6. Effects target current-document HTML only; no Shadow DOM, iframe interiors, pseudo-elements or SVG/canvas text. Color filters alter host containing blocks. Late fonts/attribute-only style changes need a preference refresh. Very large/changing DOMs need application-specific profiling.
+7. Media hiding retains layout and does not stop playback. CSP may restrict inline styles/data cursors. No universal host compatibility claim.
+
+**Release readiness:** not yet stable-release-ready. Local implementation and integration evidence are substantially stronger than baseline; the gates above remain explicit. See ROADMAP.md for priorities and DEVELOPMENT.md for the manual procedure.

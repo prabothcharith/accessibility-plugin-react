@@ -1,171 +1,95 @@
-# react-accessibility-plugin
+# React Accessibility Plugin
 
-A compound-component React accessibility widget with opt-in prebuilt features and full custom feature support.
+Composable React controls for website display preferences: text sizing, color adjustments, reading aids, media visibility and consumer-defined features. Choose the controls in JSX; preferences continue working when the panel closes.
 
-## Features
+**Development build, not a published stable release.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
 
-- **15 prebuilt controllers**: Font Size, Line Height, Letter Spacing, Contrast, Saturation, Invert Colors, Grayscale, Link Highlight, Text Alignment, Hide Images, Hide Videos, Big Cursor, Reading Mask, Reading Guide, Reset
-- **Custom features**: Build your own accessibility features using the `useAccessibility` hook — no forking required
-- **Persistence**: Automatically saves and restores user preferences via localStorage
-- **SSR safe**: Works with Next.js App Router and other SSR environments
-- **Accessible**: Keyboard navigation, focus trap, ARIA roles, proper contrast
+## Quick start
 
-## Installation
+The selected branch uses the package name `react-accessibility-plugin`. The npm registry version may differ from this checkout. To evaluate these changes, install the local tarball:
 
-```bash
-npm install react-accessibility-plugin
+```sh
+npm ci
+npm run build
+npm pack
+# In your React application, use the actual archive path:
+npm install /absolute/path/to/react-accessibility-plugin-0.1.0.tgz
 ```
 
-## Quick Start
+Once an owner-approved release is available, registry installation is `npm install react-accessibility-plugin`. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
 
-```jsx
+```tsx
 import {
   AccessibilityPlugin,
   AccessibilityButton,
   AccessibilityList,
   FontSizeController,
   ContrastController,
+  GrayscaleController,
+  ResetController,
 } from "react-accessibility-plugin";
-import "react-accessibility-plugin/dist/style.css";
+import "react-accessibility-plugin/style.css";
 
-function App() {
+export default function App() {
   return (
-    <AccessibilityPlugin>
-      <AccessibilityButton
-        icon={<span>⚙️</span>}
-        title="Accessibility"
-        description="Adjust display settings"
-      />
-      <AccessibilityList>
-        <FontSizeController />
-        <ContrastController />
-      </AccessibilityList>
-    </AccessibilityPlugin>
+    <>
+      <main>
+        <h1>My website</h1>
+        <p>Your application goes here.</p>
+      </main>
+      <AccessibilityPlugin position="right">
+        <AccessibilityButton description="Adjust display preferences" />
+        <AccessibilityList>
+          <FontSizeController />
+          <ContrastController />
+          <GrayscaleController />
+          <ResetController />
+        </AccessibilityList>
+      </AccessibilityPlugin>
+    </>
   );
 }
 ```
 
-## API Reference
+Mount one provider above route changes. The panel is a non-modal region: Enter/Space activates native controls, opening focuses the panel, Tab follows ordinary document order, and Escape or Close returns focus to the opener. The host page remains interactive.
 
-### `<AccessibilityPlugin>`
+## Custom features
 
-Root provider. Render once near your app root.
+Keep custom side effects in the provider's lifecycle, not in click handlers:
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `position` | `"left" \| "right" \| "top" \| "bottom"` | `"right"` | Panel position |
-| `persistenceKey` | `string` | `"react-accessibility-plugin:state"` | localStorage key |
-| `children` | `ReactNode` | — | Must include `<AccessibilityButton>` and `<AccessibilityList>` |
-
-### `<AccessibilityButton>`
-
-Floating toggle button.
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `icon` | `ReactNode` | — | Button icon content |
-| `title` | `string` | `"Accessibility"` | Accessible label |
-| `description` | `string` | — | Accessible description |
-| `className` | `string` | `""` | CSS class override |
-
-### `<AccessibilityList>`
-
-Panel container for feature controllers.
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | — | Feature controller components |
-| `className` | `string` | `""` | CSS class override |
-
-### Prebuilt Features
-
-| Component | Description |
-|-----------|-------------|
-| `FontSizeController` | Adjusts `font-size` on `<html>` (50%–200%) |
-| `LineHeightController` | Adjusts `line-height` on `<html>` (50%–200%) |
-| `LetterSpacingController` | Adjusts `letter-spacing` on `<html>` (0–10px) |
-| `ContrastController` | Applies CSS `contrast()` filter (Off/Low/High/Extra) |
-| `SaturationController` | Applies CSS `saturate()` filter (Off/Low/High) |
-| `InvertColorsController` | Toggles CSS `invert(1)` filter |
-| `GrayscaleController` | Toggles CSS `grayscale(1)` filter |
-| `LinkHighlightController` | Highlights all links with yellow background |
-| `TextAlignController` | Changes `text-align` on `<html>` (left/center/right/justify) |
-| `HideImagesController` | Hides all images via CSS |
-| `HideVideosController` | Hides all videos and embeds via CSS |
-| `BigCursorController` | Applies a large circular cursor |
-| `ReadingMaskController` | Shows a horizontal dark mask that follows the cursor |
-| `ReadingGuideController` | Shows a horizontal blue line that follows the cursor |
-| `ResetController` | Resets all features to defaults |
-
-### `useAccessibility<T>(key, defaultValue)` hook
-
-The public contract for building custom features.
-
-```ts
-function useAccessibility<T>(featureKey: string, defaultValue: T): {
-  value: T;
-  setValue: (next: T) => void;
-  reset: () => void;
-};
-```
-
-- Reads persisted value from localStorage on mount
-- Writes to localStorage on every change
-- Participates in `resetAll()` when ResetController is triggered
-
-## Building Custom Features
-
-```jsx
+```tsx
 import { useAccessibility } from "react-accessibility-plugin";
 
-function DyslexiaFontFeature() {
-  const { value, setValue } = useAccessibility("dyslexiaFont", false);
-
-  const toggle = () => {
-    const next = !value;
-    setValue(next);
-    document.body.classList.toggle("dyslexia-font", next);
-  };
-
+export function OutlineFeature() {
+  const { value, setValue } = useAccessibility("my-site:outline", false, {
+    apply(enabled) {
+      if (!enabled) return;
+      const previous = document.body.style.outline;
+      document.body.style.outline = "3px solid blue";
+      return () => {
+        document.body.style.outline = previous;
+      };
+    },
+  });
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Dyslexia-Friendly Font</label>
-      <button
-        className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
-        onClick={toggle}
-        aria-pressed={value}
-        type="button"
-      >
-        <span className="arap-toggle-knob" />
-      </button>
-    </div>
+    <button type="button" aria-pressed={value} onClick={() => setValue(!value)}>
+      Page outline
+    </button>
   );
 }
 ```
 
-Then use it exactly like a prebuilt feature:
+Place `<OutlineFeature />` inside `<AccessibilityList>`. Its state restores from localStorage, global reset returns it to `false`, and cleanup runs before reapplication and on provider removal. Definitions are immutable for a provider lifetime. [Full custom feature contract](docs/CUSTOM_FEATURES.md).
 
-```jsx
-<AccessibilityList>
-  <FontSizeController />
-  <DyslexiaFontFeature />
-</AccessibilityList>
-```
+## Documentation
 
-## Styling
+- [Installation and Next.js](docs/INSTALLATION.md)
+- [Feature behavior and original parity](docs/FEATURES.md)
+- [Public API and customization](docs/API.md)
+- [Architecture and decisions](docs/ARCHITECTURE.md)
+- [Development, testing and release procedure](docs/DEVELOPMENT.md)
+- [Troubleshooting and limitations](docs/TROUBLESHOOTING.md)
+- [Migration](docs/MIGRATION.md), [changelog](CHANGELOG.md)
+- [Status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [baseline](docs/BASELINE.md)
 
-Import the compiled CSS once in your entry point:
-
-```js
-import "react-accessibility-plugin/dist/style.css";
-```
-
-All classes are prefixed with `arap-` to avoid collisions. Override styles via `className` props on `<AccessibilityButton>` and `<AccessibilityList>`.
-
-## SSR / Next.js
-
-All components include the `"use client"` directive and guard `document`/`window`/`localStorage` access. Safe to use with Next.js App Router.
-
-## License
-
-GPL-3.0
+The original [vanilla JavaScript project](https://github.com/prabothcharith/accessibility-plugin) remains a separate repository. This branch retains its existing GPL-3.0 declaration and includes [LICENSE](LICENSE). Historical ISC metadata conflicts are recorded in the status document; the owner must resolve release licensing and package identity before publication.

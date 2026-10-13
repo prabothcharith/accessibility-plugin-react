@@ -19,14 +19,18 @@ import {
   ReadingMaskController,
   ReadingGuideController,
   ResetController,
-} from "../../src/index";
-import "../../src/styles/tailwind.css";
+} from "react-accessibility-plugin";
+import "react-accessibility-plugin/style.css";
 
 function App() {
   return (
     <AccessibilityPlugin position="right">
       <AccessibilityButton
-        icon={<span role="img" aria-label="Accessibility">⚙️</span>}
+        icon={
+          <span role="img" aria-label="Accessibility">
+            ⚙️
+          </span>
+        }
         title="Accessibility"
         description="Adjust display settings"
       />
@@ -55,14 +59,14 @@ function App() {
         settings to see them applied in real-time.
       </p>
       <p>
-        This example demonstrates all 15 prebuilt feature controllers
-        working together in a single panel.
+        This example demonstrates all 15 prebuilt feature controllers working
+        together in a single panel.
       </p>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-        aliquip ex ea commodo consequat.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
       </p>
     </AccessibilityPlugin>
   );
@@ -71,5 +75,5 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
