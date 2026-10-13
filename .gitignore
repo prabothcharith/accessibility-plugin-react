@@ -3,3 +3,7 @@ dist
 *.tsbuildinfo
 .turbo
 coverage
+.consumers
+playwright-report
+test-results
+*.tgz

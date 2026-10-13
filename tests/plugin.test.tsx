@@ -1,117 +1,324 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import React from "react";
-import { AccessibilityPlugin } from "../src/core/AccessibilityPlugin";
-import { AccessibilityButton } from "../src/core/AccessibilityButton";
-import { AccessibilityList } from "../src/core/AccessibilityList";
-import { useAccessibility } from "../src/core/useAccessibility";
-
-function TestChild() {
-  const { value, setValue } = useAccessibility("testFeature", false);
+import { beforeEach, afterEach, it, expect, vi } from "vitest";
+import { StrictMode, useContext, useState, useEffect } from "react";
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  act,
+  waitFor,
+} from "@testing-library/react";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
+import {
+  AccessibilityPlugin,
+  AccessibilityButton,
+  AccessibilityList,
+  AccessibilityContext,
+  FontSizeController,
+  GrayscaleController,
+  ResetController,
+  useAccessibility,
+} from "../src";
+import { loadState, saveState } from "../src/core/storage";
+import { Widget } from "./helpers";
+beforeEach(() => localStorage.clear());
+afterEach(() => {
+  cleanup();
+  document.body.innerHTML = "";
+  vi.useRealTimers();
+});
+function Custom() {
+  const { value, setValue } = useAccessibility("custom", false, {
+    apply: (value) => {
+      document.body.dataset.custom = String(value);
+      return () => {
+        delete document.body.dataset.custom;
+      };
+    },
+  });
   return (
-    <div>
-      <span data-testid="value">{String(value)}</span>
-      <button onClick={() => setValue(!value)}>Toggle</button>
-    </div>
+    <button onClick={() => setValue(!value)}>Custom {String(value)}</button>
   );
 }
-
-function renderPlugin(ui: React.ReactElement) {
-  return render(
+it("opens a non-modal region, focuses it, closes with Escape and returns focus", () => {
+  render(
+    <Widget>
+      <Custom />
+    </Widget>,
+  );
+  const trigger = screen.getByLabelText("Accessibility");
+  trigger.focus();
+  fireEvent.click(trigger);
+  expect(screen.getByRole("region")).toHaveFocus();
+  expect(screen.getByRole("region")).not.toHaveAttribute("aria-modal");
+  expect(trigger).toHaveAttribute(
+    "aria-controls",
+    screen.getByRole("region").id,
+  );
+  fireEvent.keyDown(screen.getByRole("region"), { key: "Escape" });
+  expect(screen.queryByRole("region")).toBeNull();
+  expect(trigger).toHaveFocus();
+  expect(screen.getByText("Custom false")).not.toBeVisible();
+});
+it("restores preferences while initially closed and ignores invalid builtins", async () => {
+  saveState({ grayscale: true, fontSize: "huge" });
+  const host = document.createElement("main");
+  document.body.appendChild(host);
+  render(
+    <Widget>
+      <FontSizeController />
+      <GrayscaleController />
+    </Widget>,
+  );
+  await waitFor(() => expect(host.style.filter).toBe("grayscale(1)"));
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  expect(screen.getByText("100%")).toBeVisible();
+});
+it("custom effects outlive controls, restore, reset, and clean up", () => {
+  saveState({ custom: true });
+  function App() {
+    const [visible, setVisible] = useState(true);
+    return (
+      <>
+        <button onClick={() => setVisible(false)}>Remove control</button>
+        <Widget>{visible && <Custom />}</Widget>
+      </>
+    );
+  }
+  const view = render(<App />);
+  expect(document.body.dataset.custom).toBe("true");
+  fireEvent.click(screen.getByText("Remove control"));
+  expect(document.body.dataset.custom).toBe("true");
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  fireEvent.click(screen.getByText("Reset All"));
+  expect(document.body.dataset.custom).toBe("false");
+  view.unmount();
+  expect(document.body.dataset.custom).toBeUndefined();
+});
+it("reset cannot be undone by pending persistence, including unmount", () => {
+  vi.useFakeTimers();
+  const view = render(
+    <Widget>
+      <Custom />
+    </Widget>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  fireEvent.click(screen.getByText("Custom false"));
+  act(() => vi.advanceTimersByTime(100));
+  fireEvent.click(screen.getByText("Reset All"));
+  view.unmount();
+  act(() => vi.runAllTimers());
+  expect(loadState()).toBeNull();
+});
+it("flushes pending settings on unmount and pagehide", () => {
+  vi.useFakeTimers();
+  const view = render(
+    <Widget>
+      <Custom />
+    </Widget>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  fireEvent.click(screen.getByText("Custom false"));
+  fireEvent(window, new Event("pagehide"));
+  expect(loadState()).toEqual({ custom: true });
+  fireEvent.click(screen.getByText("Custom true"));
+  view.unmount();
+  expect(loadState()).toEqual({ custom: false });
+});
+it("persist=false never reads or writes settings", () => {
+  const read = vi.spyOn(Storage.prototype, "getItem"),
+    write = vi.spyOn(Storage.prototype, "setItem");
+  const view = render(
+    <AccessibilityPlugin persist={false}>
+      <Custom />
+    </AccessibilityPlugin>,
+  );
+  fireEvent.click(screen.getByText("Custom false"));
+  view.unmount();
+  expect(read).not.toHaveBeenCalled();
+  expect(write).not.toHaveBeenCalled();
+  read.mockRestore();
+  write.mockRestore();
+});
+it("survives Strict Mode without duplicate reading or custom effects", () => {
+  const view = render(
+    <StrictMode>
+      <Widget>
+        <Custom />
+      </Widget>
+    </StrictMode>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  fireEvent.click(screen.getByText("Custom false"));
+  expect(document.body.dataset.custom).toBe("true");
+  expect(document.querySelectorAll(".arap-btn")).toHaveLength(1);
+  view.unmount();
+  expect(document.body.dataset.custom).toBeUndefined();
+});
+it("rejects concurrent document owners explicitly and allows subsequent mount", () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  const a = render(
+    <Widget>
+      <Custom />
+    </Widget>,
+  );
+  expect(() =>
+    render(
+      <Widget>
+        <Custom />
+      </Widget>,
+    ),
+  ).toThrow("Only one AccessibilityPlugin");
+  a.unmount();
+  expect(() =>
+    render(
+      <Widget>
+        <Custom />
+      </Widget>,
+    ),
+  ).not.toThrow();
+  error.mockRestore();
+});
+it("validates custom structured state and programmatic writes", () => {
+  saveState({ structured: { wrong: true } });
+  function Structured() {
+    const { value, setValue } = useAccessibility(
+      "structured",
+      { size: 2 },
+      {
+        validate: (v): v is { size: number } =>
+          !!v &&
+          typeof v === "object" &&
+          "size" in v &&
+          typeof v.size === "number",
+      },
+    );
+    return (
+      <button onClick={() => setValue({ size: 3 })}>Size {value.size}</button>
+    );
+  }
+  render(
+    <Widget>
+      <Structured />
+    </Widget>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  expect(screen.getByText("Size 2")).toBeVisible();
+  fireEvent.click(screen.getByText("Size 2"));
+  expect(screen.getByText("Size 3")).toBeVisible();
+});
+it("keeps legacy reset callbacks and context API", () => {
+  function Legacy() {
+    const ctx = useContext(AccessibilityContext)!;
+    return (
+      <button
+        onClick={() => {
+          ctx.registerReset("legacy", () => {
+            document.body.dataset.reset = "yes";
+          });
+          ctx.resetAll();
+        }}
+      >
+        Legacy reset
+      </button>
+    );
+  }
+  render(
     <AccessibilityPlugin>
-      {ui}
+      <Legacy />
+    </AccessibilityPlugin>,
+  );
+  fireEvent.click(screen.getByText("Legacy reset"));
+  expect(document.body.dataset.reset).toBe("yes");
+  delete document.body.dataset.reset;
+});
+it("errors outside a provider", () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  expect(() => render(<Custom />)).toThrow("must be used within");
+  error.mockRestore();
+});
+it("server renders and hydrates without mismatches", async () => {
+  const ui = (
+    <AccessibilityPlugin>
+      <main>Server content</main>
+      <AccessibilityButton />
+      <AccessibilityList>
+        <Custom />
+        <ResetController />
+      </AccessibilityList>
     </AccessibilityPlugin>
   );
-}
-
-describe("AccessibilityPlugin", () => {
-  beforeEach(() => {
-    localStorage.clear();
+  const container = document.createElement("div");
+  container.innerHTML = renderToString(ui);
+  document.body.appendChild(container);
+  expect(container.textContent).toBe("Server content");
+  const errors: unknown[] = [];
+  let root: ReturnType<typeof hydrateRoot>;
+  await act(async () => {
+    root = hydrateRoot(container, ui, {
+      onRecoverableError: (error) => errors.push(error),
+    });
   });
-
-  it("renders children", () => {
-    renderPlugin(
-      <AccessibilityButton icon={<span>Icon</span>} />
-    );
-    expect(screen.getByLabelText("Accessibility")).toBeInTheDocument();
-  });
-
-  it("toggles panel open/close", () => {
-    renderPlugin(
-      <>
-        <AccessibilityButton icon={<span>Icon</span>} />
-        <AccessibilityList>
-          <div>Panel content</div>
-        </AccessibilityList>
-      </>
-    );
-
-    const button = screen.getByLabelText("Accessibility");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-
-    fireEvent.click(button);
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Panel content")).toBeInTheDocument();
-
-    fireEvent.click(button);
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  });
-
-  it("provides context to useAccessibility hook", () => {
-    renderPlugin(<TestChild />);
-    expect(screen.getByTestId("value")).toHaveTextContent("false");
-
-    fireEvent.click(screen.getByText("Toggle"));
-    expect(screen.getByTestId("value")).toHaveTextContent("true");
-  });
+  expect(screen.getByLabelText("Accessibility")).toBeInTheDocument();
+  expect(errors).toEqual([]);
+  await act(async () => root.unmount());
 });
-
-describe("AccessibilityList", () => {
-  it("renders children when open", () => {
-    renderPlugin(
-      <>
-        <AccessibilityButton icon={<span>Icon</span>} />
-        <AccessibilityList>
-          <span>List item</span>
-        </AccessibilityList>
-      </>
+it.each(["toString", "hasOwnProperty"])(
+  "supports non-reserved inherited object key %s",
+  (key) => {
+    function Feature() {
+      const { value, setValue } = useAccessibility(key, false);
+      return (
+        <button onClick={() => setValue(!value)}>Value {String(value)}</button>
+      );
+    }
+    render(
+      <Widget>
+        <Feature />
+      </Widget>,
     );
-
     fireEvent.click(screen.getByLabelText("Accessibility"));
-    expect(screen.getByText("List item")).toBeInTheDocument();
-  });
-
-  it("does not render when closed", () => {
-    renderPlugin(
-      <>
-        <AccessibilityButton icon={<span>Icon</span>} />
-        <AccessibilityList>
-          <span>List item</span>
-        </AccessibilityList>
-      </>
-    );
-
-    expect(screen.queryByText("List item")).not.toBeInTheDocument();
-  });
+    fireEvent.click(screen.getByText("Value false"));
+    expect(screen.getByText("Value true")).toBeVisible();
+  },
+);
+it("allows a custom control to synchronize state in its mount effect", () => {
+  function Feature() {
+    const { value, setValue } = useAccessibility("effect-initialized", false);
+    useEffect(() => {
+      setValue(true);
+    }, [setValue]);
+    return <button>Initialized {String(value)}</button>;
+  }
+  render(
+    <Widget>
+      <Feature />
+    </Widget>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  expect(screen.getByText("Initialized true")).toBeVisible();
 });
-
-describe("useAccessibility", () => {
-  it("throws when used outside provider", () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    expect(() => {
-      render(<TestChild />);
-    }).toThrow("useAccessibility must be used within an <AccessibilityPlugin> provider.");
-    consoleSpy.mockRestore();
-  });
-
-  it("returns default value", () => {
-    renderPlugin(<TestChild />);
-    expect(screen.getByTestId("value")).toHaveTextContent("false");
-  });
-
-  it("updates value", () => {
-    renderPlugin(<TestChild />);
-    fireEvent.click(screen.getByText("Toggle"));
-    expect(screen.getByTestId("value")).toHaveTextContent("true");
-  });
+it("returns focus and retains the selected effect when the list is removed", () => {
+  function App() {
+    const [show, setShow] = useState(true);
+    return (
+      <AccessibilityPlugin>
+        <AccessibilityButton />
+        {show && (
+          <AccessibilityList>
+            <Custom />
+            <button onClick={() => setShow(false)}>Remove list</button>
+          </AccessibilityList>
+        )}
+      </AccessibilityPlugin>
+    );
+  }
+  render(<App />);
+  const trigger = screen.getByLabelText("Accessibility");
+  fireEvent.click(trigger);
+  fireEvent.click(screen.getByText("Custom false"));
+  fireEvent.click(screen.getByText("Remove list"));
+  expect(trigger).toHaveFocus();
+  expect(document.body.dataset.custom).toBe("true");
 });

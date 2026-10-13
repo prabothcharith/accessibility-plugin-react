@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { applyFilter, clearFilter } from "../utils/dom";
 
 const FEATURE_KEY = "invertColors";
 const DEFAULT_VALUE = false;
@@ -10,29 +8,16 @@ const DEFAULT_VALUE = false;
 export function InvertColorsController() {
   const { value, setValue } = useAccessibility<boolean>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    if (value) {
-      applyFilter("invert(1)");
-    } else {
-      clearFilter();
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      clearFilter();
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Invert Colors</label>
+    <div className="arap-feature" role="group" aria-label="Invert Colors">
+      <span className="arap-label">Invert Colors</span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
+        aria-label="Invert Colors"
         aria-pressed={value}
         type="button"
       >

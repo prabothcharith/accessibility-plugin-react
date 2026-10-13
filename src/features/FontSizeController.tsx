@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { getRootElement, setStyle, removeStyle } from "../utils/dom";
 
 const FEATURE_KEY = "fontSize";
 const DEFAULT_VALUE = 100;
@@ -11,29 +9,14 @@ const MAX = 200;
 const STEP = 10;
 
 export function FontSizeController() {
-  const { value, setValue, reset } = useAccessibility<number>(
+  const { value, setValue } = useAccessibility<number>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const root = getRootElement();
-    if (value !== DEFAULT_VALUE) {
-      setStyle(root, "font-size", `${value}%`);
-    } else {
-      removeStyle(root, "font-size");
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      removeStyle(getRootElement(), "font-size");
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Font Size</label>
+    <div className="arap-feature" role="group" aria-label="Font Size">
+      <span className="arap-label">Font Size</span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"
@@ -44,7 +27,9 @@ export function FontSizeController() {
         >
           −
         </button>
-        <span className="arap-value">{value}%</span>
+        <output className="arap-value" aria-live="polite">
+          {value}%
+        </output>
         <button
           className="arap-btn-sm"
           onClick={() => setValue(Math.min(MAX, value + STEP))}

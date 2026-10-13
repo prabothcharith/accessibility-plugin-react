@@ -1,46 +1,50 @@
 "use client";
-
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
+import type { FeatureOptions, FeatureRegistration } from "./types";
+import { validValue } from "./featureSchema";
+import { validKey } from "./storage";
 
 export function useAccessibility<T>(
   featureKey: string,
-  defaultValue: T
+  defaultValue: T,
+  options?: FeatureOptions<T>,
 ): {
   value: T;
   setValue: (next: T) => void;
   reset: () => void;
 } {
   const ctx = useContext(AccessibilityContext);
-  if (!ctx) {
+  if (!ctx)
     throw new Error(
-      "useAccessibility must be used within an <AccessibilityPlugin> provider."
+      "useAccessibility must be used within an <AccessibilityPlugin> provider.",
     );
-  }
-
-  const { getFeatureState, setFeatureState, registerReset, unregisterReset } =
-    ctx;
-
-  const value = getFeatureState<T>(featureKey, defaultValue);
-
-  const setValue = useCallback(
-    (next: T) => {
-      setFeatureState<T>(featureKey, next);
-    },
-    [featureKey, setFeatureState]
-  );
-
-  const reset = useCallback(() => {
-    setFeatureState<T>(featureKey, defaultValue);
-  }, [featureKey, defaultValue, setFeatureState]);
-
-  // Register reset function on mount, unregister on unmount
+  if (!validKey(featureKey))
+    throw new Error(
+      "Feature keys must be nonempty and cannot be prototype keys.",
+    );
+  // Definitions belong to a feature key and are immutable for the provider lifetime.
+  const [definition] = useState({ defaultValue, ...options });
+  const { registerFeature, getFeatureState, setFeatureState } = ctx;
   useEffect(() => {
-    registerReset(featureKey, reset);
-    return () => {
-      unregisterReset(featureKey);
-    };
-  }, [featureKey, reset, registerReset, unregisterReset]);
-
+    registerFeature(featureKey, definition as FeatureRegistration);
+  }, [featureKey, registerFeature, definition]);
+  const setValue = useCallback(
+    (next: T) => setFeatureState(featureKey, next),
+    [featureKey, setFeatureState],
+  );
+  const reset = useCallback(
+    () => setFeatureState(featureKey, definition.defaultValue),
+    [featureKey, setFeatureState, definition],
+  );
+  const stored = getFeatureState(featureKey, defaultValue);
+  const value = validValue(
+    featureKey,
+    stored,
+    defaultValue,
+    definition.validate,
+  )
+    ? stored
+    : defaultValue;
   return { value, setValue, reset };
 }

@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { getRootElement, setStyle, removeStyle } from "../utils/dom";
 
 const FEATURE_KEY = "letterSpacing";
 const DEFAULT_VALUE = 0;
@@ -13,27 +11,12 @@ const STEP = 1;
 export function LetterSpacingController() {
   const { value, setValue } = useAccessibility<number>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const root = getRootElement();
-    if (value !== DEFAULT_VALUE) {
-      setStyle(root, "letter-spacing", `${value}px`);
-    } else {
-      removeStyle(root, "letter-spacing");
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      removeStyle(getRootElement(), "letter-spacing");
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Letter Spacing</label>
+    <div className="arap-feature" role="group" aria-label="Letter Spacing">
+      <span className="arap-label">Letter Spacing</span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"
@@ -44,7 +27,9 @@ export function LetterSpacingController() {
         >
           −
         </button>
-        <span className="arap-value">{value}px</span>
+        <output className="arap-value" aria-live="polite">
+          {value}px
+        </output>
         <button
           className="arap-btn-sm"
           onClick={() => setValue(Math.min(MAX, value + STEP))}

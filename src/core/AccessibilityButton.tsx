@@ -1,92 +1,64 @@
 "use client";
-
-import { useCallback, useContext, useRef, useEffect, type KeyboardEvent } from "react";
+import { useContext } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
+import { WidgetPortal } from "./WidgetPortal";
 import type { AccessibilityButtonProps } from "./types";
-
 export function AccessibilityButton({
   icon,
   title = "Accessibility",
   description,
   className = "",
+  style,
 }: AccessibilityButtonProps) {
   const ctx = useContext(AccessibilityContext);
-  if (!ctx) {
+  if (!ctx)
     throw new Error(
-      "AccessibilityButton must be used within an <AccessibilityPlugin> provider."
+      "AccessibilityButton must be used within an <AccessibilityPlugin> provider.",
     );
-  }
-
-  const { toggleOpen, isOpen } = ctx;
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLButtonElement>) => {
-      if (e.key === "Escape" && isOpen) {
-        toggleOpen();
-      }
-    },
-    [isOpen, toggleOpen]
-  );
-
-  const buttonStyle: React.CSSProperties = {
-    position: "absolute",
-    bottom: "16px",
-    right: "16px",
-    width: "56px",
-    height: "56px",
-    borderRadius: "50%",
-    background: "#2563eb",
-    color: "#ffffff",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 4px 12px rgba(37,99,235,0.4)",
-    transition: "transform 0.2s, box-shadow 0.2s",
-    fontSize: "24px",
-    padding: 0,
-    outline: "none",
-  };
-
-  const focusStyle: React.CSSProperties = {
-    boxShadow: "0 0 0 3px rgba(37,99,235,0.5), 0 4px 12px rgba(37,99,235,0.4)",
-  };
-
   return (
-    <button
-      ref={buttonRef}
-      className={`arap-btn ${className}`}
-      style={buttonStyle}
-      onClick={toggleOpen}
-      onKeyDown={handleKeyDown}
-      aria-label={title}
-      aria-describedby={description ? "arap-btn-desc" : undefined}
-      aria-expanded={isOpen}
-      aria-controls="arap-panel"
-      type="button"
-      onFocus={(e) => {
-        Object.assign(e.currentTarget.style, focusStyle);
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.boxShadow = buttonStyle.boxShadow as string;
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "scale(1.1)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "scale(1)";
-      }}
-    >
-      {description && (
-        <span id="arap-btn-desc" style={{ display: "none" }}>
-          {description}
+    <WidgetPortal>
+      <button
+        type="button"
+        className={`arap-btn ${className}`}
+        style={style}
+        data-position={ctx.position}
+        onClick={(event) => {
+          // Safari pointer activation does not reliably focus native buttons.
+          event.currentTarget.focus();
+          ctx.toggleOpen();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") ctx.closeMenu();
+        }}
+        aria-label={title}
+        aria-describedby={
+          description ? `${ctx.panelId}-description` : undefined
+        }
+        aria-expanded={ctx.isOpen}
+        aria-controls={ctx.panelId}
+      >
+        <span aria-hidden="true">
+          {icon ?? (
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="12" cy="4" r="2" />
+              <path d="M4 9l8 2 8-2M12 11v5m0 0-5 6m5-6 5 6" />
+            </svg>
+          )}
         </span>
-      )}
-      {icon}
-    </button>
+        {description && (
+          <span id={`${ctx.panelId}-description`} hidden>
+            {description}
+          </span>
+        )}
+      </button>
+    </WidgetPortal>
   );
 }
-
 export default AccessibilityButton;

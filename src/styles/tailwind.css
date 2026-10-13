@@ -1,216 +1,211 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer components {
-  .arap-root {
-    all: initial;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    color: #1f2937;
-    line-height: 1.5;
-  }
-
+/* Historical filename retained; standalone scoped CSS, no Tailwind runtime or reset. */
+.arap-root {
+  color-scheme: light;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+  color: #1f2937;
+  text-align: left;
+  letter-spacing: normal;
+}
+.arap-root *,
+.arap-root *::before,
+.arap-root *::after {
+  box-sizing: border-box;
+}
+.arap-root button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.arap-root button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.arap-root button:focus-visible,
+.arap-panel:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 3px;
+}
+.arap-root .arap-btn {
+  position: fixed;
+  z-index: 2147483001;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  width: 56px;
+  height: 56px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 4px 16px #0003;
+}
+.arap-root .arap-btn[data-position="left"] {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+}
+.arap-root .arap-btn[data-position="top"] {
+  bottom: auto;
+  top: max(16px, env(safe-area-inset-top));
+}
+.arap-root .arap-panel {
+  position: fixed;
+  z-index: 2147483000;
+  bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
+  right: max(16px, env(safe-area-inset-right));
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 40px #0003;
+}
+.arap-root .arap-panel[hidden] {
+  display: none !important;
+}
+.arap-root .arap-panel[data-position="left"] {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+}
+.arap-root .arap-panel[data-position="top"] {
+  bottom: auto;
+  top: max(88px, calc(env(safe-area-inset-top) + 72px));
+}
+.arap-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.arap-heading h2 {
+  margin: 0;
+  font:
+    700 18px/1.4 system-ui,
+    sans-serif;
+  color: #111827;
+}
+.arap-heading button {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 24px;
+}
+.arap-feature {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+.arap-feature:last-child {
+  border: 0;
+}
+.arap-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.arap-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.arap-root .arap-btn-sm {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid #94a3b8;
+  background: #fff;
+  font-size: 20px;
+}
+.arap-value {
+  min-width: 56px;
+  text-align: center;
+  font-weight: 600;
+}
+.arap-segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.arap-root .arap-segment {
+  flex: 1 0 auto;
+  padding: 8px;
+  min-height: 44px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: #fff;
+  color: #334155;
+}
+.arap-root .arap-segment-active {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+.arap-root .arap-toggle {
+  position: relative;
+  width: 56px;
+  height: 32px;
+  padding: 0;
+  border-radius: 18px;
+  border: 2px solid #64748b;
+  background: #e2e8f0;
+}
+.arap-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #334155;
+  pointer-events: none;
+  transition: transform 0.15s;
+}
+.arap-root .arap-toggle-active {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.arap-toggle-active .arap-toggle-knob {
+  transform: translateX(24px);
+  background: #fff;
+}
+.arap-root .arap-reset-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+  color: #b91c1c;
+  font-weight: 600;
+}
+.arap-root button:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+@media (prefers-reduced-motion: reduce) {
   .arap-root *,
   .arap-root *::before,
   .arap-root *::after {
-    box-sizing: border-box;
+    transition: none !important;
+    animation: none !important;
   }
-
-  .arap-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 6px;
+}
+@media (forced-colors: active) {
+  .arap-root button[aria-pressed="true"] {
+    outline: 3px solid Highlight;
   }
-
-  .arap-feature {
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e7eb;
-  }
-
-  .arap-feature:last-child {
-    border-bottom: none;
-  }
-
-  .arap-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .arap-btn-sm {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #374151;
-    font-size: 18px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s, border-color 0.15s;
-    padding: 0;
-    line-height: 1;
-  }
-
-  .arap-btn-sm:hover:not(:disabled) {
-    background: #f3f4f6;
-    border-color: #9ca3af;
-  }
-
-  .arap-btn-sm:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-
-  .arap-btn-sm:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
-
-  .arap-value {
-    min-width: 48px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
-  }
-
-  .arap-segmented {
-    display: flex;
-    gap: 4px;
-    background: #f3f4f6;
-    border-radius: 8px;
-    padding: 3px;
-  }
-
-  .arap-segment {
-    flex: 1;
-    padding: 6px 8px;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: #6b7280;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .arap-segment:hover {
-    color: #374151;
-  }
-
-  .arap-segment-active {
-    background: #ffffff;
-    color: #111827;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-
-  .arap-segment:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 1px;
-  }
-
-  .arap-toggle {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    border-radius: 12px;
-    border: none;
-    background: #d1d5db;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.2s;
-  }
-
-  .arap-toggle-active {
-    background: #2563eb;
-  }
-
   .arap-toggle-knob {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    transition: transform 0.2s;
-    pointer-events: none;
-  }
-
-  .arap-toggle-active .arap-toggle-knob {
-    transform: translateX(20px);
-  }
-
-  .arap-toggle:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-  }
-
-  .arap-reset-btn {
-    width: 100%;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #dc2626;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .arap-reset-btn:hover {
-    background: #fef2f2;
-    border-color: #fca5a5;
-  }
-
-  .arap-reset-btn:focus-visible {
-    outline: 2px solid #dc2626;
-    outline-offset: 2px;
-  }
-
-  /* Link highlight styles */
-  .arap-link-highlight a {
-    background-color: #fef08a !important;
-    color: #111827 !important;
-    text-decoration: underline !important;
-    padding: 1px 3px;
-    border-radius: 2px;
-    transition: background-color 0.15s;
-  }
-
-  .arap-link-highlight a:hover {
-    background-color: #fde047 !important;
-  }
-
-  /* Hide images */
-  .arap-hide-images img,
-  .arap-hide-images picture,
-  .arap-hide-images [style*="background-image"] {
-    visibility: hidden !important;
-  }
-
-  /* Hide videos */
-  .arap-hide-videos video,
-  .arap-hide-videos iframe[src*="youtube"],
-  .arap-hide-videos iframe[src*="vimeo"],
-  .arap-hide-videos embed,
-  .arap-hide-videos object {
-    visibility: hidden !important;
-  }
-
-  /* Big cursor */
-  .arap-big-cursor,
-  .arap-big-cursor * {
-    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='black' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='black'/%3E%3C/svg%3E") 16 16, auto !important;
+    background: ButtonText;
   }
 }

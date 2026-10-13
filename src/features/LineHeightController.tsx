@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { getRootElement, setStyle, removeStyle } from "../utils/dom";
 
 const FEATURE_KEY = "lineHeight";
 const DEFAULT_VALUE = 100;
@@ -13,27 +11,12 @@ const STEP = 10;
 export function LineHeightController() {
   const { value, setValue } = useAccessibility<number>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const root = getRootElement();
-    if (value !== DEFAULT_VALUE) {
-      setStyle(root, "line-height", `${value}%`);
-    } else {
-      removeStyle(root, "line-height");
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      removeStyle(getRootElement(), "line-height");
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Line Height</label>
+    <div className="arap-feature" role="group" aria-label="Line Height">
+      <span className="arap-label">Line Height</span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"
@@ -44,7 +27,9 @@ export function LineHeightController() {
         >
           −
         </button>
-        <span className="arap-value">{value}%</span>
+        <output className="arap-value" aria-live="polite">
+          {value}%
+        </output>
         <button
           className="arap-btn-sm"
           onClick={() => setValue(Math.min(MAX, value + STEP))}

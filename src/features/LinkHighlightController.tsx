@@ -1,45 +1,41 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { getBodyElement, addClass, removeClass } from "../utils/dom";
 
 const FEATURE_KEY = "linkHighlight";
 const DEFAULT_VALUE = false;
-const CSS_CLASS = "arap-link-highlight";
 
 export function LinkHighlightController() {
-  const { value, setValue } = useAccessibility<boolean>(
+  const { value, setValue } = useAccessibility<boolean | string>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const body = getBodyElement();
-    if (value) {
-      addClass(body, CSS_CLASS);
-    } else {
-      removeClass(body, CSS_CLASS);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      removeClass(getBodyElement(), CSS_CLASS);
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Link Highlight</label>
+    <div className="arap-feature" role="group" aria-label="Link Highlight">
+      <span className="arap-label">Link Highlight</span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
-        aria-pressed={value}
+        aria-label="Link Highlight"
+        aria-pressed={!!value}
         type="button"
       >
         <span className="arap-toggle-knob" />
       </button>
+      <div className="arap-segmented">
+        {["yellow-on-black", "blue-on-yellow", "black-on-white"].map((mode) => (
+          <button
+            type="button"
+            key={mode}
+            className={`arap-segment ${value === mode ? "arap-segment-active" : ""}`}
+            aria-pressed={value === mode}
+            onClick={() => setValue(mode)}
+          >
+            {mode.split("-").join(" ")}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
