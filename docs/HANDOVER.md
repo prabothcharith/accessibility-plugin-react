@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-Stabilized the existing compound-component library rather than rebuilding from the empty default branch. All fifteen built-ins and the generic custom-feature hook remain. Effects now belong to the provider and survive closing/unmounting controls; reset/cleanup/persistence are coordinated. Built distribution has been exercised in independent React and Next applications. This is a reviewed local candidate, not a published or certified stable release.
+Stabilized the existing compound-component library rather than rebuilding from the empty default branch. All fifteen built-ins and the generic custom-feature hook remain. Effects now belong to the provider and survive closing/unmounting controls; reset/cleanup/persistence are coordinated. Built distribution has been exercised in independent React and Next applications. This is a review candidate with local and hosted validation, not a published or certified stable release.
 
 ## Repository and baseline
 
@@ -26,7 +26,7 @@ Retained tsup, ESM/CJS, React peers and named compound exports. Preserved use-cl
 
 See PROJECT_STATUS.md for the exact current matrix. Source/test/config typecheck, zero-warning lint, 59 unit regressions, build, package inspection and audit passed. Independent packed React18.3.1 and React19.2.0/Tailwind consumers passed ESM/CJS/declarations/SSR/build. Next16.2.10 App/Pages/direct server imports passed production build and runtime checks. Corrected non-Firefox browser suite: 31 passed, four intentional Next-only skips. Axe found zero violations in tested widget scopes; real keyboard interaction and geometry were exercised. Both built examples ran with zero page errors and desktop/mobile screenshots were visually inspected.
 
-Firefox's profile-folder launch failure is an environment blocker, not a passing check. Human screen-reader, physical-device, actual zoom and forced-colors acceptance remains pending. Hosted Node22/24 checks and packed consumer builds passed. The first full browser run had 36 passes, five intentional skips and one Firefox rounding assertion failure; the assertion is corrected and the full rerun is pending. No WCAG compliance or universal host compatibility is claimed.
+Firefox's profile-folder launch failure is an environment blocker, not a passing check. Human screen-reader, physical-device, actual zoom and forced-colors acceptance remains pending. Hosted Node22/24 checks and packed consumer builds passed. The first full browser run had 36 passes, five intentional skips and one Firefox rounding assertion failure; the assertion was corrected and [the full rerun](https://github.com/prabothcharith/accessibility-react/actions/runs/38327577761) passed: 37 browser tests and five intentional skips, including complete Linux Firefox coverage. No WCAG compliance or universal host compatibility is claimed.
 
 ## Change inventory
 
@@ -36,11 +36,11 @@ Created AGENTS.md, LICENSE, CHANGELOG.md and maintained docs: ARCHITECTURE, FEAT
 
 ## Remaining work and authorization
 
-P1: run full hosted CI/Firefox on compatible infrastructure; complete human accessibility acceptance; resolve package identity and GPL/ISC history with owner. Only then choose a release version and obtain authorization for merge/tag/npm publication. P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then optional drag/localization/cross-tab work.
+P1: complete human accessibility acceptance; resolve package identity and GPL/ISC history with owner. Only then choose a release version and obtain authorization for merge/tag/npm publication. P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then optional drag/localization/cross-tab work.
 
 Current limits include one provider/document, host filter containing-block behavior, no Shadow DOM/iframe interior/pseudo-element effects, no auto-pause for hidden video and CSP considerations. These are documented implementation boundaries, not hidden workarounds.
 
-The local stabilization acceptance criteria are met by code and executable evidence; stable release acceptance remains open. No publication or release-tag/default-branch changes have occurred.
+Draft PR #2 targets new-development; commits are pushed and source/test/workflow commit 4fd3768 passed hosted Node22/24 and the full browser matrix. The stabilization acceptance criteria are met by code and executable local/hosted evidence; stable release acceptance remains open. No publication or release-tag/default-branch changes have occurred.
 
 ## Exact file inventory
 
