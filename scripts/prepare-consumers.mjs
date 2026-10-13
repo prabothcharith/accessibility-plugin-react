@@ -31,7 +31,7 @@ for (const [name, react, next] of [
         dependencies: {
           react,
           "react-dom": react,
-          "react-accessibility-plugin": "file:../package.tgz",
+          "accessibility-plugin-react": "file:../package.tgz",
           ...(next ? { next: "16.2.10" } : { vite: "7.3.7" }),
         },
         devDependencies: {
@@ -55,12 +55,12 @@ for (const [name, react, next] of [
   await copyFile("tests/browser/host.css", `${directory}/host.css`);
   await writeFile(
     `${directory}/consumer.mts`,
-    `import { AccessibilityPlugin, useAccessibility, type FeatureOptions } from 'react-accessibility-plugin';\nconst options: FeatureOptions<boolean> = { apply: value => { console.log(value); } };\nexport { AccessibilityPlugin, useAccessibility, options };\n`,
+    `import { AccessibilityPlugin, useAccessibility, type FeatureOptions } from 'accessibility-plugin-react';\nconst options: FeatureOptions<boolean> = { apply: value => { console.log(value); } };\nexport { AccessibilityPlugin, useAccessibility, options };\n`,
   );
   await copyFile(`${directory}/consumer.mts`, `${directory}/consumer.cts`);
   await writeFile(
     `${directory}/consumer.tsx`,
-    `import { AccessibilityPlugin, AccessibilityButton, AccessibilityList, FontSizeController } from 'react-accessibility-plugin';
+    `import { AccessibilityPlugin, AccessibilityButton, AccessibilityList, FontSizeController } from 'accessibility-plugin-react';
 export const widget = <AccessibilityPlugin persist={false} position="left"><AccessibilityButton/><AccessibilityList title="Preferences"><FontSizeController/></AccessibilityList></AccessibilityPlugin>;
 // @ts-expect-error unsupported placement must be rejected by declarations
 export const invalid = <AccessibilityPlugin position="middle">content</AccessibilityPlugin>;
@@ -89,7 +89,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     [
       "--input-type=module",
       "-e",
-      `import * as p from 'react-accessibility-plugin'; import React from 'react'; import {renderToString} from 'react-dom/server'; if (!p.FontSizeController || !p.useAccessibility) throw Error('ESM exports'); renderToString(React.createElement(p.AccessibilityPlugin, {}, React.createElement(p.AccessibilityButton))); console.log('ESM + SSR passed');`,
+      `import * as p from 'accessibility-plugin-react'; import React from 'react'; import {renderToString} from 'react-dom/server'; if (!p.FontSizeController || !p.useAccessibility) throw Error('ESM exports'); renderToString(React.createElement(p.AccessibilityPlugin, {}, React.createElement(p.AccessibilityButton))); console.log('ESM + SSR passed');`,
     ],
     { cwd: directory, stdio: "inherit" },
   );
@@ -97,7 +97,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     "node",
     [
       "-e",
-      `const p = require('react-accessibility-plugin'); if (!p.AccessibilityPlugin) throw Error('CJS exports'); console.log('CJS passed');`,
+      `const p = require('accessibility-plugin-react'); if (!p.AccessibilityPlugin) throw Error('CJS exports'); console.log('CJS passed');`,
     ],
     { cwd: directory, stdio: "inherit" },
   );
@@ -110,7 +110,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     await mkdir(`${directory}/pages`, { recursive: true });
     await writeFile(
       `${directory}/app/layout.jsx`,
-      `import 'react-accessibility-plugin/style.css'; import '../host.css'; export const metadata={title:'Accessibility consumer'}; export default function Layout({children}) {return <html lang="en"><body>{children}</body></html>}`,
+      `import 'accessibility-plugin-react/style.css'; import '../host.css'; export const metadata={title:'Accessibility consumer'}; export default function Layout({children}) {return <html lang="en"><body>{children}</body></html>}`,
     );
     await writeFile(
       `${directory}/app/page.jsx`,
@@ -118,7 +118,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     );
     await writeFile(
       `${directory}/pages/_app.jsx`,
-      `import 'react-accessibility-plugin/style.css'; import '../host.css'; export default function App({Component,pageProps}) {return <Component {...pageProps}/>}`,
+      `import 'accessibility-plugin-react/style.css'; import '../host.css'; export default function App({Component,pageProps}) {return <Component {...pageProps}/>}`,
     );
     await writeFile(
       `${directory}/pages/legacy.jsx`,
@@ -128,7 +128,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     await mkdir(`${directory}/app/boundary`, { recursive: true });
     await writeFile(
       `${directory}/app/boundary/page.jsx`,
-      `import { AccessibilityPlugin, AccessibilityButton, AccessibilityList, GrayscaleController } from 'react-accessibility-plugin'; export default function Page(){return <><main><h1>Server boundary</h1></main><AccessibilityPlugin><AccessibilityButton/><AccessibilityList><GrayscaleController/></AccessibilityList></AccessibilityPlugin></>}`,
+      `import { AccessibilityPlugin, AccessibilityButton, AccessibilityList, GrayscaleController } from 'accessibility-plugin-react'; export default function Page(){return <><main><h1>Server boundary</h1></main><AccessibilityPlugin><AccessibilityButton/><AccessibilityList><GrayscaleController/></AccessibilityList></AccessibilityPlugin></>}`,
     );
   } else {
     await writeFile(
@@ -152,7 +152,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     }
     await writeFile(
       `${directory}/main.jsx`,
-      `import React from 'react'; import {createRoot} from 'react-dom/client'; ${name === "react19" ? "import './tailwind-built.css';" : ""} import 'react-accessibility-plugin/style.css'; import './host.css'; import Fixture from './Fixture'; createRoot(document.getElementById('root')).render(<React.StrictMode><Fixture/></React.StrictMode>);`,
+      `import React from 'react'; import {createRoot} from 'react-dom/client'; ${name === "react19" ? "import './tailwind-built.css';" : ""} import 'accessibility-plugin-react/style.css'; import './host.css'; import Fixture from './Fixture'; createRoot(document.getElementById('root')).render(<React.StrictMode><Fixture/></React.StrictMode>);`,
     );
   }
   // Repacking the same unreleased version can retain archive timestamps.

@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased — stabilization based on 0.1.0
+## Unreleased — 2.0.0-beta.1 candidate
 
+- Continue the owner-selected npm package `accessibility-plugin-react` with a breaking major API upgrade, corrected installation/import guidance and packed consumers. Preserve the internal persistence key through the rename. Candidate beta tag is provisional; nothing has been published.
 - Movable trigger with persisted placement, drag activation/cancellation handling, Alt+arrow/click alternatives, corner picker and position reset.
 - Fixed header/action bar with pinned ResetController, keyboard jump to actions and optional footer slot; compact short-screen layout. Display reset preserves placement. Trigger/panel descriptions use distinct IDs.
 

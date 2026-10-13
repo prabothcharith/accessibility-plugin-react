@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import * as A from "react-accessibility-plugin";
+import * as A from "accessibility-plugin-react";
 function Custom() {
   const { value, setValue } = A.useAccessibility("hostOutline", false, {
     apply: (value) => {

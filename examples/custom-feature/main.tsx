@@ -7,8 +7,8 @@ import {
   FontSizeController,
   ResetController,
   useAccessibility,
-} from "react-accessibility-plugin";
-import "react-accessibility-plugin/style.css";
+} from "accessibility-plugin-react";
+import "accessibility-plugin-react/style.css";
 
 function OutlineFeature() {
   const { value, setValue } = useAccessibility("example:outline", false, {

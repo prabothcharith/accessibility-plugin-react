@@ -19,8 +19,8 @@ import {
   ReadingMaskController,
   ReadingGuideController,
   ResetController,
-} from "react-accessibility-plugin";
-import "react-accessibility-plugin/style.css";
+} from "accessibility-plugin-react";
+import "accessibility-plugin-react/style.css";
 
 function App() {
   return (

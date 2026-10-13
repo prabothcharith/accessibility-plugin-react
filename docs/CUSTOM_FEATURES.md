@@ -5,7 +5,7 @@ A consumer can implement a normal React component in its own application and pla
 ## A complete JavaScript example
 
 ```jsx
-import { useAccessibility } from "react-accessibility-plugin";
+import { useAccessibility } from "accessibility-plugin-react";
 
 export function OutlineFeature() {
   const { value, setValue } = useAccessibility("example:outline", false, {
@@ -43,7 +43,7 @@ Use a validator for nullable or union state when the default does not represent 
 import {
   useAccessibility,
   type FeatureOptions,
-} from "react-accessibility-plugin";
+} from "accessibility-plugin-react";
 type Preference = { enabled: boolean; color: string };
 const options: FeatureOptions<Preference> = {
   validate(value): value is Preference {
