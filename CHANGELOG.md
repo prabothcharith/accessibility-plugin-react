@@ -2,6 +2,7 @@
 
 ## Unreleased — stabilization based on 0.1.0
 
+- Font enlargement preserves fixed line-height proportions; nullable custom state restores before mount-effect initialization.
 - Provider-owned built-in/custom effects persist across panel closure and control removal; cleanup restores host styles.
 - Compose simultaneous color filters and restore reduced contrast, link palette variants and older React color palettes.
 - Per-provider versioned storage, validated restore, debounced writes, reset cancellation and teardown/pagehide flush.

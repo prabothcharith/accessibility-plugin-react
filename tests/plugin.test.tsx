@@ -322,3 +322,27 @@ it("returns focus and retains the selected effect when the list is removed", () 
   expect(trigger).toHaveFocus();
   expect(document.body.dataset.custom).toBe("true");
 });
+it("restores nullable custom state before a mount effect initializes defaults", () => {
+  saveState({ nullable: "saved choice" });
+  function Feature() {
+    const { value, setValue } = useAccessibility<string | null>(
+      "nullable",
+      null,
+      {
+        validate: (candidate): candidate is string | null =>
+          candidate === null || typeof candidate === "string",
+      },
+    );
+    useEffect(() => {
+      if (value === null) setValue("fallback choice");
+    }, [value, setValue]);
+    return <span>Choice: {value}</span>;
+  }
+  render(
+    <Widget>
+      <Feature />
+    </Widget>,
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  expect(screen.getByText("Choice: saved choice")).toBeVisible();
+});

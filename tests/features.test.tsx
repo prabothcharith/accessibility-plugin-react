@@ -232,3 +232,14 @@ it("restores omitted persisted features only once registered", () => {
   const { host } = renderFeatures(<API.FontSizeController />);
   expect(host.style.filter).toBe("");
 });
+it("font enlargement preserves fixed line-height proportions and reset restores them", () => {
+  const { host } = renderFeatures(<API.FontSizeController />);
+  const heading = host.querySelector("h1") as HTMLElement;
+  for (let step = 0; step < 10; step++)
+    fireEvent.click(screen.getByLabelText("Increase font size"));
+  expect(heading.style.fontSize).toBe("40px");
+  expect(heading.style.lineHeight).toBe("60px");
+  fireEvent.click(screen.getByText("Reset All"));
+  expect(heading.style.fontSize).toBe("20px");
+  expect(heading.style.lineHeight).toBe("30px");
+});

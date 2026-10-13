@@ -35,6 +35,8 @@ export function OutlineFeature() {
 
 Include `<OutlineFeature />` inside `<AccessibilityList>`. `apply` runs on restored state without clicking the control; reset reverts to false and runs cleanup. Closing or removing the control does not remove the chosen effect. Provider unmount does. The example changes a property the built-in engine does not own.
 
+Use a validator for nullable or union state when the default does not represent all allowed types; the hook validates restored values before mount effects can initialize defaults.
+
 ## Structured TypeScript state
 
 ```tsx

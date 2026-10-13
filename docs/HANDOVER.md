@@ -13,8 +13,8 @@ Baseline defects included controller-owned lifetime, overwriting filters, fixed 
 ## Architecture and implementation
 
 - Cached external preference store provides SSR-safe snapshots and isolated storage writer. Schema validation rejects malformed/obsolete storage, bounds invalid built-ins and protects reserved/prototype-like keys.
-- Provider owns registered effects and cleanup. Custom useAccessibility third argument adds apply/validate; original two-argument contract remains. Single-document ownership avoids conflicting global providers.
-- Built-in engine composes host/contrast/saturation/invert/grayscale and restores prior inline styles/priorities. It responds to inserted/removed content and resize, measures text before writing, and excludes widget portals.
+- Provider owns registered effects and cleanup. Validated nullable/union custom state restores before mount effects can initialize fallback values. Custom useAccessibility third argument adds apply/validate; original two-argument contract remains. Single-document ownership avoids conflicting global providers.
+- Built-in engine composes host/contrast/saturation/invert/grayscale and restores prior inline styles/priorities. It responds to inserted/removed content and resize, measures text before writing, scales fixed line heights with fonts to prevent overlap, and excludes widget portals.
 - Trigger/list are body portals, preventing host filters and invisible fixed wrapper hit areas. The list is non-modal with focus/return/Escape behavior and native controls. CSS is scoped, responsive, safe-area-aware and reduced-motion-friendly.
 - Restored original reduced contrast/link palettes and older React color palettes. Corrected transparent reading mask. Added explicit default alignment, names, numeric announcements and default trigger icon. Deferred dragging and documented original visual differences.
 
@@ -24,7 +24,7 @@ Retained tsup, ESM/CJS, React peers and named compound exports. Preserved use-cl
 
 ## Verification and accessibility
 
-See PROJECT_STATUS.md for the exact current matrix. Source/test/config typecheck, zero-warning lint, 59 unit regressions, build, package inspection and audit passed. Independent packed React18.3.1 and React19.2.0/Tailwind consumers passed ESM/CJS/declarations/SSR/build. Next16.2.10 App/Pages/direct server imports passed production build and runtime checks. Corrected non-Firefox browser suite: 31 passed, four intentional Next-only skips. Axe found zero violations in tested widget scopes; real keyboard interaction and geometry were exercised. Both built examples ran with zero page errors and desktop/mobile screenshots were visually inspected.
+See PROJECT_STATUS.md for the exact current matrix. Source/test/config typecheck, zero-warning lint, 61 unit regressions, build, package inspection and audit passed. Independent packed React18.3.1 and React19.2.0/Tailwind consumers passed ESM/CJS/declarations/SSR/build. Next16.2.10 App/Pages/direct server imports passed production build and runtime checks. Corrected non-Firefox browser suite: 31 passed, four intentional Next-only skips. Axe found zero violations in tested widget scopes; real keyboard interaction and geometry were exercised. Both built examples ran with zero page errors and desktop/mobile screenshots were visually inspected.
 
 Firefox's profile-folder launch failure is an environment blocker, not a passing check. Human screen-reader, physical-device, actual zoom and forced-colors acceptance remains pending. Hosted Node22/24 checks and packed consumer builds passed. The first full browser run had 36 passes, five intentional skips and one Firefox rounding assertion failure; the assertion was corrected and [the full rerun](https://github.com/prabothcharith/accessibility-react/actions/runs/38327577761) passed: 37 browser tests and five intentional skips, including complete Linux Firefox coverage. No WCAG compliance or universal host compatibility is claimed.
 

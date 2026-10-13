@@ -1,7 +1,7 @@
 export const DEFAULT_STORAGE_KEY = "react-accessibility-plugin:state";
 const forbidden = new Set(["__proto__", "constructor", "prototype"]);
 export function validKey(key: string): boolean {
-  return !!key && !forbidden.has(key);
+  return typeof key === "string" && key.length > 0 && !forbidden.has(key);
 }
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);

@@ -30,6 +30,9 @@ test("closed widget does not block the host; keyboard and focus work", async ({
 test("combined effects survive closure, navigation, reload and reset", async ({
   page,
 }) => {
+  await page.locator("#sample").evaluate((el) => {
+    (el as HTMLElement).style.lineHeight = "30px";
+  });
   await page.getByLabel("Accessibility", { exact: true }).click();
   await page.getByLabel("Increase font size").click();
   await page
@@ -38,6 +41,7 @@ test("combined effects survive closure, navigation, reload and reset", async ({
     .click();
   await page.getByRole("button", { name: "Grayscale", exact: true }).click();
   await page.getByLabel("Close accessibility settings").click();
+  await expect(page.locator("#sample")).toHaveCSS("line-height", "33px");
   // Engines quantize font sizes; still require the rendered value within 1/32 CSS px.
   await expect
     .poll(async () =>
@@ -73,6 +77,7 @@ test("combined effects survive closure, navigation, reload and reset", async ({
   ).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Reset All" }).click();
   await expect(page.locator("#sample")).toHaveCSS("font-size", "18px");
+
   await expect
     .poll(() =>
       page.evaluate(() =>

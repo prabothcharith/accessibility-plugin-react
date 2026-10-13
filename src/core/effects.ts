@@ -67,7 +67,7 @@ function applyPage(values: Record<string, unknown>): () => void {
       : [];
   for (const measured of measurements) {
     if (font !== 1) set(measured.el, "font-size", `${measured.font * font}px`);
-    if (line !== 1)
+    if (line !== 1 || font !== 1)
       set(measured.el, "line-height", `${measured.line * line * font}px`);
   }
   const filter = composeFilter(values);

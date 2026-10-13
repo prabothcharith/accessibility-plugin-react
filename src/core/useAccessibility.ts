@@ -25,7 +25,7 @@ export function useAccessibility<T>(
     );
   // Definitions belong to a feature key and are immutable for the provider lifetime.
   const [definition] = useState({ defaultValue, ...options });
-  const { registerFeature, getFeatureState, setFeatureState } = ctx;
+  const { registerFeature, setFeatureState } = ctx;
   useEffect(() => {
     registerFeature(featureKey, definition as FeatureRegistration);
   }, [featureKey, registerFeature, definition]);
@@ -37,14 +37,21 @@ export function useAccessibility<T>(
     () => setFeatureState(featureKey, definition.defaultValue),
     [featureKey, setFeatureState, definition],
   );
-  const stored = getFeatureState(featureKey, defaultValue);
+  // Validate restored data with this definition on the first render, before
+  // registration. A nullable/union default must not conceal a valid saved value.
+  const stored = Object.prototype.hasOwnProperty.call(
+    ctx.state.features,
+    featureKey,
+  )
+    ? ctx.state.features[featureKey]
+    : definition.defaultValue;
   const value = validValue(
     featureKey,
     stored,
-    defaultValue,
+    definition.defaultValue,
     definition.validate,
   )
-    ? stored
-    : defaultValue;
+    ? (stored as T)
+    : definition.defaultValue;
   return { value, setValue, reset };
 }

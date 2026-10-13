@@ -24,7 +24,7 @@ Environment: macOS, Node 22.14.0, npm 11.21.0. Baseline: typecheck/build pass, l
 | npm ci (original lock)                      | Passed before implementation                                                                                                     |
 | npm run typecheck                           | Passed for source, unit/browser tests and TypeScript configs                                                                     |
 | npm run lint                                | Passed with zero warnings, ESLint 10 and hooks rules                                                                             |
-| npm test                                    | 59 tests passed in 3 files                                                                                                       |
+| npm test                                    | 61 tests passed in 3 files                                                                                                       |
 | npm run build                               | ESM + CJS + both declaration formats + standalone CSS produced                                                                   |
 | npm audit                                   | Zero vulnerabilities after tooling/dependency updates (snapshot, not a perpetual guarantee)                                      |
 | npm pack / pack:check                       | Archive generated and inspected; required JS/types/CSS/license present; client boundary and CSS reset guard passed               |
@@ -50,9 +50,13 @@ Expected error-path unit tests deliberately trigger missing-provider and duplica
 
 [Initial hosted run](https://github.com/prabothcharith/accessibility-react/actions/runs/38327175897) on commit `0dc6ead`: Node 22 and 24 unit/type/lint/format/build/archive/audit jobs passed. Packed React/Next builds passed. Full browser matrix: 36 passed, five intentional skips, one Firefox failure caused by computed font-size quantization (`19.8125px` vs `19.8px`). Five other Firefox scenarios passed. The font-size test now permits less than 1/32 CSS-pixel rounding error and still verifies the intended enlargement.
 
-[Corrected hosted run](https://github.com/prabothcharith/accessibility-react/actions/runs/38327577761) on source/test/workflow commit `4fd3768` **passed all jobs**. Fresh final-lock installs, 59 unit tests on Node 22 and 24, type/lint/format/build/archive/audit checks, three packed consumer builds and the full Chromium/Firefox/WebKit/mobile matrix succeeded: **37 passed, five intentional Next-only skips**. Firefox 157 is verified on Linux. The final follow-up changes only documentation recording this result.
+[Corrected hosted run](https://github.com/prabothcharith/accessibility-react/actions/runs/38327577761) on source/test/workflow commit `4fd3768` **passed all jobs**. Fresh final-lock installs, 59 unit tests on Node 22 and 24, type/lint/format/build/archive/audit checks, three packed consumer builds and the full Chromium/Firefox/WebKit/mobile matrix succeeded: **37 passed, five intentional Next-only skips**. Firefox 157 is verified on Linux. This run verified the earlier stabilization snapshot. Follow-up regressions now cover proportional font/line-height scaling and restoration of nullable custom state before mount-effect initialization; their full hosted verification follows below.
 
 CI uses Ubuntu 24.04 and verified Node24-based action releases to avoid the deprecated action runtime and an impending ubuntu-latest image rollover. This configuration passed the corrected hosted run.
+
+## Final regression follow-up
+
+The local suite now passes 61 tests. Font enlargement scales fixed line heights too, preventing overlapping lines, and a validated nullable custom preference restores before a mount effect can initialize a fallback. Packed consumer builds/type checks passed; the text-layout browser regression passed locally in Chromium and desktop/mobile WebKit (18 passed, three intentional skips). Full hosted validation of this follow-up is pending.
 
 ## Known limits and release gates
 
