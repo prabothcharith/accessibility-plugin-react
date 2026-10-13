@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "textAlign";
@@ -14,7 +15,10 @@ export function TextAlignController() {
 
   return (
     <div className="arap-feature" role="group" aria-label="Text Alignment">
-      <span className="arap-label">Text Alignment</span>
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Text Alignment</span>
+      </span>
       <div className="arap-segmented">
         {OPTIONS.map((option) => (
           <button
@@ -25,6 +29,11 @@ export function TextAlignController() {
             type="button"
             style={{ textTransform: "capitalize" }}
           >
+            {value === option && (
+              <span className="arap-check" aria-hidden="true">
+                ✓
+              </span>
+            )}
             {option}
           </button>
         ))}

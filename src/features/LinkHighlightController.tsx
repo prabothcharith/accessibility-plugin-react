@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "linkHighlight";
@@ -13,7 +14,10 @@ export function LinkHighlightController() {
 
   return (
     <div className="arap-feature" role="group" aria-label="Link Highlight">
-      <span className="arap-label">Link Highlight</span>
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Link Highlight</span>
+      </span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
@@ -21,7 +25,7 @@ export function LinkHighlightController() {
         aria-pressed={!!value}
         type="button"
       >
-        <span className="arap-toggle-knob" />
+        <span className="arap-toggle-knob" aria-hidden="true" />
       </button>
       <div className="arap-segmented">
         {["yellow-on-black", "blue-on-yellow", "black-on-white"].map((mode) => (
@@ -32,6 +36,11 @@ export function LinkHighlightController() {
             aria-pressed={value === mode}
             onClick={() => setValue(mode)}
           >
+            {value === mode && (
+              <span className="arap-check" aria-hidden="true">
+                ✓
+              </span>
+            )}
             {mode.split("-").join(" ")}
           </button>
         ))}

@@ -100,6 +100,20 @@ test("widget remains unfiltered and fits a narrow viewport in every position", a
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(568);
     await expect(panel).toHaveCSS("filter", "none");
+    expect(await panel.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(
+      true,
+    );
+    // Visible controls must retain comfortable targets after the visual redesign.
+    const targets = await panel.locator("button").evaluateAll((buttons) =>
+      buttons.map((button) => {
+        const bounds = button.getBoundingClientRect();
+        return { width: bounds.width, height: bounds.height };
+      }),
+    );
+    for (const target of targets) {
+      expect(target.width).toBeGreaterThanOrEqual(44);
+      expect(target.height).toBeGreaterThanOrEqual(44);
+    }
     await page.getByLabel("Close accessibility settings").click();
   }
 });

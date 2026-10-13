@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "letterSpacing";
@@ -15,8 +16,15 @@ export function LetterSpacingController() {
   );
 
   return (
-    <div className="arap-feature" role="group" aria-label="Letter Spacing">
-      <span className="arap-label">Letter Spacing</span>
+    <div
+      className="arap-feature arap-feature-stepper"
+      role="group"
+      aria-label="Letter Spacing"
+    >
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Letter Spacing</span>
+      </span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"

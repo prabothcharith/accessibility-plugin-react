@@ -1,10 +1,19 @@
-/* Historical filename retained; standalone scoped CSS, no Tailwind runtime or reset. */
+/* Historical filename retained: scoped plain CSS, no Tailwind runtime or reset. */
 .arap-root {
+  --arap-surface: #fff;
+  --arap-text: #111827;
+  --arap-muted: #475569;
+  --arap-border: #cbd5e1;
+  --arap-divider: #e2e8f0;
+  --arap-accent: #1d4ed8;
+  --arap-accent-hover: #1e40af;
+  --arap-selected: #eff6ff;
+  --arap-control: #f8fafc;
   color-scheme: light;
   font:
-    14px/1.5 system-ui,
+    15px/1.5 system-ui,
     sans-serif;
-  color: #1f2937;
+  color: var(--arap-text);
   text-align: left;
   letter-spacing: normal;
 }
@@ -19,6 +28,9 @@
   color: inherit;
   text-transform: none;
   letter-spacing: normal;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
 }
 .arap-root button:disabled {
   opacity: 0.45;
@@ -26,7 +38,7 @@
 }
 .arap-root button:focus-visible,
 .arap-panel:focus-visible {
-  outline: 3px solid #1d4ed8;
+  outline: 3px solid var(--arap-accent);
   outline-offset: 3px;
 }
 .arap-root .arap-btn {
@@ -40,11 +52,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #fff;
+  border: 2px solid var(--arap-surface);
   border-radius: 50%;
-  background: #1d4ed8;
+  background: var(--arap-accent);
   color: #fff;
-  box-shadow: 0 4px 16px #0003;
+  box-shadow:
+    0 4px 12px #0f172a26,
+    0 10px 24px #0f172a14;
+}
+.arap-root .arap-btn:hover {
+  background: var(--arap-accent-hover);
 }
 .arap-root .arap-btn[data-position="left"] {
   right: auto;
@@ -59,16 +76,20 @@
   z-index: 2147483000;
   bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
   right: max(16px, env(safe-area-inset-right));
-  width: min(360px, calc(100vw - 32px));
+  width: min(400px, calc(100vw - 32px));
   max-height: calc(100vh - 120px);
   max-height: calc(100dvh - 120px - env(safe-area-inset-bottom));
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 16px;
-  border: 1px solid #cbd5e1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--arap-border) transparent;
+  padding: 20px;
+  border: 1px solid var(--arap-divider);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 40px #0003;
+  background: var(--arap-surface);
+  box-shadow:
+    0 8px 16px #0f172a0d,
+    0 20px 48px #0f172a1a;
 }
 .arap-root .arap-panel[hidden] {
   display: none !important;
@@ -84,114 +105,237 @@
 .arap-heading {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--arap-divider);
+}
+.arap-heading-copy {
+  min-width: 0;
 }
 .arap-heading h2 {
   margin: 0;
   font:
-    700 18px/1.4 system-ui,
+    700 22px/1.3 system-ui,
     sans-serif;
-  color: #111827;
+  letter-spacing: -0.025em;
+  color: var(--arap-text);
+  overflow-wrap: anywhere;
+}
+.arap-description {
+  margin: 6px 0 0;
+  color: var(--arap-muted);
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
 }
 .arap-heading button {
   flex: none;
   width: 44px;
   height: 44px;
-  border: 1px solid #94a3b8;
+  margin-top: -6px;
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: #fff;
-  font-size: 24px;
+  background: transparent;
+  color: var(--arap-muted);
+  font-size: 28px;
+  line-height: 1;
+}
+.arap-heading button:hover {
+  background: var(--arap-control);
+  border-color: var(--arap-border);
 }
 .arap-feature {
-  padding: 14px 0;
-  border-bottom: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--arap-divider);
 }
 .arap-feature:last-child {
   border: 0;
+  padding-bottom: 0;
 }
 .arap-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.arap-icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  vertical-align: middle;
 }
 .arap-controls {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: stretch;
+  border: 1px solid var(--arap-border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--arap-control);
 }
 .arap-root .arap-btn-sm {
+  flex: none;
   width: 44px;
   height: 44px;
-  border-radius: 8px;
-  border: 1px solid #94a3b8;
-  background: #fff;
-  font-size: 20px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 22px;
+}
+.arap-root .arap-btn-sm:hover:not(:disabled) {
+  background: var(--arap-selected);
+  color: var(--arap-accent);
+}
+/* Keep keyboard outlines outside a clipped stepper visible inside its control. */
+.arap-root .arap-controls button:focus-visible {
+  outline-offset: -4px;
 }
 .arap-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 56px;
+  padding: 0 6px;
   text-align: center;
   font-weight: 600;
+  border-inline: 1px solid var(--arap-divider);
+  background: var(--arap-surface);
 }
 .arap-segmented {
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  min-width: 0;
 }
 .arap-root .arap-segment {
-  flex: 1 0 auto;
-  padding: 8px;
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 44px;
   min-height: 44px;
-  border: 1px solid #94a3b8;
-  border-radius: 6px;
-  background: #fff;
-  color: #334155;
+  padding: 8px 10px;
+  border: 1px solid var(--arap-border);
+  border-radius: 8px;
+  background: var(--arap-control);
+  color: var(--arap-muted);
+  overflow-wrap: anywhere;
+}
+.arap-root .arap-segment:hover {
+  background: var(--arap-selected);
+  border-color: var(--arap-accent);
 }
 .arap-root .arap-segment-active {
-  background: #1d4ed8;
+  background: var(--arap-accent);
   color: #fff;
-  border-color: #1d4ed8;
+  border-color: var(--arap-accent);
+  font-weight: 600;
 }
+.arap-root .arap-segment-active:hover {
+  background: var(--arap-accent-hover);
+  color: #fff;
+}
+.arap-check {
+  flex: none;
+  font-size: 15px;
+  line-height: 1;
+}
+/* The visible switch is 32px tall; its actual button target is 44px. */
 .arap-root .arap-toggle {
   position: relative;
   width: 56px;
-  height: 32px;
+  height: 44px;
   padding: 0;
-  border-radius: 18px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+}
+.arap-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 6px 0;
   border: 2px solid #64748b;
+  border-radius: 20px;
   background: #e2e8f0;
 }
 .arap-toggle-knob {
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 10px;
+  left: 4px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #334155;
+  background: #475569;
   pointer-events: none;
   transition: transform 0.15s;
 }
-.arap-root .arap-toggle-active {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+.arap-toggle-active::before {
+  background: var(--arap-accent);
+  border-color: var(--arap-accent);
 }
 .arap-toggle-active .arap-toggle-knob {
   transform: translateX(24px);
   background: #fff;
 }
+.arap-toggle-active .arap-toggle-knob::after {
+  content: "✓";
+  display: block;
+  color: var(--arap-accent);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+}
+.arap-root .arap-toggle:hover::before {
+  border-color: var(--arap-accent);
+}
+.arap-feature-reset {
+  display: block;
+}
 .arap-root .arap-reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   padding: 10px;
-  border: 1px solid #94a3b8;
-  border-radius: 8px;
-  background: #fff;
-  color: #b91c1c;
+  border: 1px solid var(--arap-border);
+  border-radius: 10px;
+  background: var(--arap-control);
+  color: var(--arap-accent);
   font-weight: 600;
 }
-.arap-root button:hover:not(:disabled) {
-  box-shadow: inset 0 0 0 2px currentColor;
+.arap-root .arap-reset-btn:hover {
+  background: var(--arap-selected);
+  border-color: var(--arap-accent);
+}
+@media (max-width: 380px) {
+  .arap-root .arap-panel {
+    padding: 16px;
+  }
+  .arap-heading h2 {
+    font-size: 20px;
+  }
+  .arap-feature-stepper {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .arap-controls {
+    width: 100%;
+  }
+  .arap-value {
+    flex: 1;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .arap-root *,
@@ -202,10 +346,35 @@
   }
 }
 @media (forced-colors: active) {
+  .arap-root {
+    --arap-surface: Canvas;
+    --arap-text: CanvasText;
+    --arap-muted: CanvasText;
+    --arap-border: ButtonText;
+    --arap-divider: ButtonText;
+    --arap-accent: Highlight;
+    --arap-control: Canvas;
+    --arap-selected: Canvas;
+  }
   .arap-root button[aria-pressed="true"] {
-    outline: 3px solid Highlight;
+    outline: 2px solid Highlight;
+    outline-offset: -4px;
+  }
+  .arap-root .arap-segment-active {
+    color: HighlightText;
+    background: Highlight;
+  }
+  .arap-toggle::before {
+    border-color: ButtonText;
+    background: Canvas;
   }
   .arap-toggle-knob {
     background: ButtonText;
+  }
+  .arap-toggle-active .arap-toggle-knob {
+    background: Highlight;
+  }
+  .arap-toggle-active .arap-toggle-knob::after {
+    color: HighlightText;
   }
 }

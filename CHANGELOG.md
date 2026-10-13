@@ -2,6 +2,8 @@
 
 ## Unreleased — stabilization based on 0.1.0
 
+- Clean light base design: scoped palette variables, consistent decorative icons, compact steppers, selected checkmarks, 44px switch targets and responsive spacing. Optional panel description supports custom text or omission.
+
 - Font enlargement preserves fixed line-height proportions; nullable custom state restores before mount-effect initialization.
 - Provider-owned built-in/custom effects persist across panel closure and control removal; cleanup restores host styles.
 - Compose simultaneous color filters and restore reduced contrast, link palette variants and older React color palettes.
@@ -13,7 +15,7 @@
 - Regression, packed-consumer, browser/axe tests, CI and maintained integration/release documentation.
 - Upgrade vulnerable development tooling; no runtime dependencies beyond React peers.
 
-No version bump, npm publication, release tag or default-branch merge has occurred. See PROJECT_STATUS.md for limitations and release gates.
+Stabilization was merged into main through PR #3. No version bump, npm publication or release tag has occurred. See PROJECT_STATUS.md for limitations and release gates.
 
 ## Historical 0.1.0 branch
 

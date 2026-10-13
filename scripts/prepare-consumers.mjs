@@ -1,4 +1,4 @@
-import { mkdir, writeFile, copyFile, readFile } from "node:fs/promises";
+import { mkdir, writeFile, copyFile, readFile, rm } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 const run = (args, cwd) =>
@@ -155,5 +155,8 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
       `import React from 'react'; import {createRoot} from 'react-dom/client'; ${name === "react19" ? "import './tailwind-built.css';" : ""} import 'react-accessibility-plugin/style.css'; import './host.css'; import Fixture from './Fixture'; createRoot(document.getElementById('root')).render(<React.StrictMode><Fixture/></React.StrictMode>);`,
     );
   }
+  // Repacking the same unreleased version can retain archive timestamps.
+  // A clean Next cache must verify this archive rather than an earlier bundle.
+  if (next) await rm(`${directory}/.next`, { recursive: true, force: true });
   run(["run", "build"], directory);
 }

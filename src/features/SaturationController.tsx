@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "saturation";
@@ -18,7 +19,10 @@ export function SaturationController() {
 
   return (
     <div className="arap-feature" role="group" aria-label="Saturation">
-      <span className="arap-label">Saturation</span>
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Saturation</span>
+      </span>
       <div className="arap-segmented">
         {LEVELS.map((level) => (
           <button
@@ -28,6 +32,11 @@ export function SaturationController() {
             aria-pressed={value === level.value}
             type="button"
           >
+            {value === level.value && (
+              <span className="arap-check" aria-hidden="true">
+                ✓
+              </span>
+            )}
             {level.label}
           </button>
         ))}

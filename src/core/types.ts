@@ -43,6 +43,8 @@ export interface AccessibilityButtonProps {
   style?: CSSProperties;
 }
 export interface AccessibilityListProps {
+  /** Supporting panel text. Pass an empty string to omit it. */
+  description?: string;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;

@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "readingGuide";
@@ -13,7 +14,10 @@ export function ReadingGuideController() {
 
   return (
     <div className="arap-feature" role="group" aria-label="Reading Guide">
-      <span className="arap-label">Reading Guide</span>
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Reading Guide</span>
+      </span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
@@ -21,7 +25,7 @@ export function ReadingGuideController() {
         aria-pressed={value}
         type="button"
       >
-        <span className="arap-toggle-knob" />
+        <span className="arap-toggle-knob" aria-hidden="true" />
       </button>
     </div>
   );

@@ -93,3 +93,5 @@ Place `<OutlineFeature />` inside `<AccessibilityList>`. Its state restores from
 - [Status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [baseline](docs/BASELINE.md)
 
 The original [vanilla JavaScript project](https://github.com/prabothcharith/accessibility-plugin) remains a separate repository. This branch retains its existing GPL-3.0 declaration and includes [LICENSE](LICENSE). Historical ISC metadata conflicts are recorded in the status document; the owner must resolve release licensing and package identity before publication.
+
+The default visual foundation is [Clean light](docs/DESIGN.md): scoped plain CSS, reusable palette variables, outline icons and responsive control rows. See the design guide for actual desktop/mobile screenshots.

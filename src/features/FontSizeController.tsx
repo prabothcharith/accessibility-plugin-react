@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "fontSize";
@@ -15,8 +16,15 @@ export function FontSizeController() {
   );
 
   return (
-    <div className="arap-feature" role="group" aria-label="Font Size">
-      <span className="arap-label">Font Size</span>
+    <div
+      className="arap-feature arap-feature-stepper"
+      role="group"
+      aria-label="Font Size"
+    >
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Font Size</span>
+      </span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"

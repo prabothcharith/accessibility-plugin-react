@@ -8,6 +8,7 @@ function Panel({
   className = "",
   style,
   title = "Accessibility settings",
+  description = "Adjust your reading experience",
   closeLabel = "Close accessibility settings",
 }: AccessibilityListProps) {
   const ctx = useContext(AccessibilityContext)!;
@@ -41,6 +42,7 @@ function Panel({
       hidden={!ctx.isOpen}
       role="region"
       aria-label={title}
+      aria-describedby={description ? `${ctx.panelId}-description` : undefined}
       tabIndex={-1}
       onKeyDown={(event) => {
         if (event.key === "Escape" && !event.defaultPrevented) {
@@ -50,7 +52,14 @@ function Panel({
       }}
     >
       <div className="arap-heading">
-        <h2>{title}</h2>
+        <div className="arap-heading-copy">
+          <h2>{title}</h2>
+          {description && (
+            <p id={`${ctx.panelId}-description`} className="arap-description">
+              {description}
+            </p>
+          )}
+        </div>
         <button type="button" aria-label={closeLabel} onClick={ctx.closeMenu}>
           ×
         </button>
