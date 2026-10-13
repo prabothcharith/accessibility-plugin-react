@@ -36,4 +36,8 @@ Retain compound JSX composition, all named controllers, generic hook, npm, TypeS
 
 Replace controller-owned mutations and shared debounce; these failed lifecycle guarantees. Remove Tailwind build/reset machinery: authored CSS uses no utility generation, so a scoped static copy is simpler and avoids leaking preflight into consumers. Preserve the historical CSS source filename to keep history understandable. No runtime dependencies beyond React peers. Preserve both CSS export paths.
 
-The selected branch is already a different API/package identity from `development`; do not claim old `tools`/`trigger` APIs remain compatible. See migration notes. Dragging is deferred because four placements already work without introducing pointer/activation ambiguity.
+The selected branch is already a different API/package identity from `development`; do not claim old `tools`/`trigger` APIs remain compatible. See migration notes. Movement uses pointer capture with an activation threshold, normalized persisted coordinates and explicit keyboard/click alternatives. The panel has a fixed header/action area and a separate scrollable tools region. ResetController portals its button to the action host through an internal context; its public composition and provider reset contract remain.
+
+## Placement ownership
+
+The provider validates and stores widget placement in its existing preference store under a reserved internal key. Display reset preserves that key, while position reset removes it. Preview coordinates are local to the trigger during a drag; only a completed drag saves them. Pointer cancellation/lost capture discard the preview. Viewport and trigger-size observers keep geometry bounded without writing new coordinates during resize. Persist=false applies to both placement and display state. Panel open state remains transient.

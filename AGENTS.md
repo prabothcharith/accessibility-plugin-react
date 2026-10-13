@@ -14,3 +14,5 @@ Build a composable React display-preference library. Read [status](docs/PROJECT_
 - GPL declaration retained from selected branch; conflicting historical ISC metadata and package identity need owner resolution before release. Do not silently change license or publish.
 
 - Base appearance follows the owner-selected Clean light principles in docs/DESIGN.md. Keep scoped palette variables, decorative icons, native controls, visible checked states and at least 44px button targets. Keep every existing mode; do not copy mockup omissions or add fake navigation.
+
+- Widget placement is reserved provider-owned state. Display reset preserves it; position reset removes it. Keep drag cancellation/activation guards, non-drag alternatives and resize clamping. Only the tools list scrolls; reset/footer actions stay fixed through the internal action portal.

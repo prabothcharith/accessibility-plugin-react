@@ -18,31 +18,31 @@ All features are opt-in via controllers, use native buttons, support Enter/Space
 | BigCursorController / bigCursor         | false; boolean                                                       | 40px high-contrast pointer via SVG cursor with native fallback. Host CSS cursor effects are restored. No effect on touch-only hardware.                              |
 | ReadingMaskController / readingMask     | false; boolean                                                       | Transparent 100px reading window; surrounding screen dimmed. Follows pointer or host focus.                                                                          |
 | ReadingGuideController / readingGuide   | false; boolean                                                       | 4px blue line with white border follows pointer or host focus. Can coexist with mask.                                                                                |
-| ResetController                         | No feature state                                                     | Clears all stored values including custom/unmounted controls; runs legacy reset callbacks; keeps panel open.                                                         |
+| ResetController                         | No feature state                                                     | Clears display settings including custom/unmounted controls, preserves widget placement; runs legacy reset callbacks; keeps panel open.                              |
 
 ## Original JavaScript and branch comparison
 
 Reference: vanilla `47f44c5` (`accessibility-menu.js`, package 1.2.2); older React `7aef17c`; newer baseline `6dfbd44`. “Present” is source evidence, not proof of correctness. See baseline for defects.
 
-| Original behavior                     | Older React                 | Newer baseline                          | Stabilized behavior                                                        |
-| ------------------------------------- | --------------------------- | --------------------------------------- | -------------------------------------------------------------------------- |
-| Invert + grayscale                    | Exclusive contrast enum     | Independent but overwrite               | Independent, composable                                                    |
-| Low 20% / high 200% saturation        | Exclusive modes             | 50% / 200%, overwrite                   | Restore original 20% / 200%                                                |
-| Contrast 0.5 / 1.5 / 2                | Replaced by named palettes  | 1.25 / 1.5 / 2                          | Preserve newer levels, add reduced 0.5 and older palettes                  |
-| 3 link palettes                       | One highlighting toggle     | One toggle                              | Default toggle plus all 3 original palettes                                |
-| Font size 1.3/1.5/1.8rem on html      | Root scale                  | 50–200% on html                         | Fine-grained computed font scaling, including px fonts                     |
-| Line height 1.5/1.8/2 on descendants  | Root inherited value        | Root percent                            | Scale actual computed line height across descendants                       |
-| Letter spacing .1/.2/.3rem            | em slider                   | 0–10px root                             | 0–10px descendant override                                                 |
-| Left/center/right text alignment      | Includes initial            | Left is “off”                           | Explicit default plus left/center/right/justify                            |
-| Hide img / video with display:none    | Images only                 | Images/videos plus some embeds          | Both; retain layout, restrict video embeds                                 |
-| Circle cursor enlarges on link hover  | Big cursor                  | Static circle CSS cursor                | Large contrast pointer; decorative hover enlargement replaced              |
-| Reading mask clear center             | Guide only                  | Dark strip obscures center              | Clear center restored                                                      |
-| Quarter-width guide + triangle        | Guide                       | Full-width line                         | Full-width line; native cursor retained                                    |
-| Reset classes, sizes, counters        | Fixed state reset           | Generic reset, stale timer              | Generic reset, cancellation and effect restoration                         |
-| Four user-selected placements, saved  | Draggable trigger           | Position prop, broken panel positioning | Four working configurable placements; host can persist its position choice |
-| Save on beforeunload, unguarded parse | No localStorage persistence | Debounced but shared timer              | Versioned/validated, per-owner debounce, pagehide/unmount flush            |
+| Original behavior                     | Older React                 | Newer baseline                          | Stabilized behavior                                             |
+| ------------------------------------- | --------------------------- | --------------------------------------- | --------------------------------------------------------------- |
+| Invert + grayscale                    | Exclusive contrast enum     | Independent but overwrite               | Independent, composable                                         |
+| Low 20% / high 200% saturation        | Exclusive modes             | 50% / 200%, overwrite                   | Restore original 20% / 200%                                     |
+| Contrast 0.5 / 1.5 / 2                | Replaced by named palettes  | 1.25 / 1.5 / 2                          | Preserve newer levels, add reduced 0.5 and older palettes       |
+| 3 link palettes                       | One highlighting toggle     | One toggle                              | Default toggle plus all 3 original palettes                     |
+| Font size 1.3/1.5/1.8rem on html      | Root scale                  | 50–200% on html                         | Fine-grained computed font scaling, including px fonts          |
+| Line height 1.5/1.8/2 on descendants  | Root inherited value        | Root percent                            | Scale actual computed line height across descendants            |
+| Letter spacing .1/.2/.3rem            | em slider                   | 0–10px root                             | 0–10px descendant override                                      |
+| Left/center/right text alignment      | Includes initial            | Left is “off”                           | Explicit default plus left/center/right/justify                 |
+| Hide img / video with display:none    | Images only                 | Images/videos plus some embeds          | Both; retain layout, restrict video embeds                      |
+| Circle cursor enlarges on link hover  | Big cursor                  | Static circle CSS cursor                | Large contrast pointer; decorative hover enlargement replaced   |
+| Reading mask clear center             | Guide only                  | Dark strip obscures center              | Clear center restored                                           |
+| Quarter-width guide + triangle        | Guide                       | Full-width line                         | Full-width line; native cursor retained                         |
+| Reset classes, sizes, counters        | Fixed state reset           | Generic reset, stale timer              | Generic reset, cancellation and effect restoration              |
+| Four user-selected placements, saved  | Draggable trigger           | Position prop, broken panel positioning | Persisted free drag, four corners, Alt+arrow and click controls |
+| Save on beforeunload, unguarded parse | No localStorage persistence | Debounced but shared timer              | Versioned/validated, per-owner debounce, pagehide/unmount flush |
 
-Position is configuration, not a persisted preference in this release, consistent with the newer specification. A consuming application can provide a position selector and store its choice. Dragging and original cursor decoration are consciously deferred, not counted as visual parity. Original combinations enumerated CSS selectors; centralized composition avoids that unmaintainable combinatorial model. Original click-only div controls are replaced with native named buttons.
+Widget placement is now a persisted preference with pointer dragging and non-drag alternatives. The initial position prop remains a fallback. Original cursor decoration remains deferred, not counted as visual parity. Original combinations enumerated CSS selectors; centralized composition avoids that unmaintainable combinatorial model. Original click-only div controls are replaced with native named buttons.
 
 ## Verification mapping
 

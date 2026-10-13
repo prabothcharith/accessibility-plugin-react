@@ -1,6 +1,8 @@
 "use client";
 
 import { FeatureIcon } from "../core/FeatureIcon";
+import { createPortal } from "react-dom";
+import { PanelActionsContext } from "../core/PanelActionsContext";
 import { useContext } from "react";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 
@@ -12,9 +14,10 @@ export function ResetController() {
     );
   }
 
+  const actionHost = useContext(PanelActionsContext);
   const { resetAll } = ctx;
 
-  return (
+  const button = (
     <div className="arap-feature arap-feature-reset">
       <button className="arap-reset-btn" onClick={resetAll} type="button">
         <FeatureIcon name="reset" />
@@ -22,6 +25,7 @@ export function ResetController() {
       </button>
     </div>
   );
+  return actionHost ? createPortal(button, actionHost) : button;
 }
 
 export default ResetController;

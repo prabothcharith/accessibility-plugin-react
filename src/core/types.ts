@@ -18,6 +18,8 @@ export interface AccessibilityContextValue {
   isOpen: boolean;
   panelId: string;
   position: PluginPosition;
+  widgetPlacement: WidgetPlacement | null;
+  setWidgetPlacement: (next: WidgetPlacement | null) => void;
   toggleOpen: () => void;
   closeMenu: () => void;
   getFeatureState: <T>(key: string, defaultValue: T) => T;
@@ -27,6 +29,12 @@ export interface AccessibilityContextValue {
   registerReset: (key: string, resetFn: () => void) => void;
   unregisterReset: (key: string) => void;
 }
+export type WidgetPlacement =
+  | {
+      kind: "corner";
+      corner: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+    }
+  | { kind: "point"; x: number; y: number };
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
   children: ReactNode;
@@ -36,6 +44,8 @@ export interface AccessibilityPluginProps {
   persist?: boolean;
 }
 export interface AccessibilityButtonProps {
+  /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
+  draggable?: boolean;
   icon?: ReactNode;
   title?: string;
   description?: string;
@@ -43,6 +53,8 @@ export interface AccessibilityButtonProps {
   style?: CSSProperties;
 }
 export interface AccessibilityListProps {
+  /** Additional always-visible actions next to ResetController. */
+  footer?: ReactNode;
   /** Supporting panel text. Pass an empty string to omit it. */
   description?: string;
   children: ReactNode;

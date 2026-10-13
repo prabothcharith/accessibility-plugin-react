@@ -2,6 +2,9 @@
 
 ## Unreleased — stabilization based on 0.1.0
 
+- Movable trigger with persisted placement, drag activation/cancellation handling, Alt+arrow/click alternatives, corner picker and position reset.
+- Fixed header/action bar with pinned ResetController, keyboard jump to actions and optional footer slot; compact short-screen layout. Display reset preserves placement. Trigger/panel descriptions use distinct IDs.
+
 - Clean light base design: scoped palette variables, consistent decorative icons, compact steppers, selected checkmarks, 44px switch targets and responsive spacing. Optional panel description supports custom text or omission.
 
 - Font enlargement preserves fixed line-height proportions; nullable custom state restores before mount-effect initialization.
