@@ -1,3 +1,5 @@
+> Historical document. Current architecture, tested status and examples are maintained in [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/CUSTOM_FEATURES.md](docs/CUSTOM_FEATURES.md). Claims below describe the earlier branch and are not current verification.
+
 # React Accessibility Plugin — Full Build Specification (for Antigravity)
 
 ## 0. Context & Goal

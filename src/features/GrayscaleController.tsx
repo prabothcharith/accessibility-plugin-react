@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { applyFilter, clearFilter } from "../utils/dom";
 
 const FEATURE_KEY = "grayscale";
 const DEFAULT_VALUE = false;
@@ -10,29 +8,16 @@ const DEFAULT_VALUE = false;
 export function GrayscaleController() {
   const { value, setValue } = useAccessibility<boolean>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    if (value) {
-      applyFilter("grayscale(1)");
-    } else {
-      clearFilter();
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      clearFilter();
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Grayscale</label>
+    <div className="arap-feature" role="group" aria-label="Grayscale">
+      <span className="arap-label">Grayscale</span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
+        aria-label="Grayscale"
         aria-pressed={value}
         type="button"
       >

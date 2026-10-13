@@ -1,203 +1,245 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import React from "react";
-import { AccessibilityPlugin } from "../src/core/AccessibilityPlugin";
-import { AccessibilityButton } from "../src/core/AccessibilityButton";
-import { AccessibilityList } from "../src/core/AccessibilityList";
-import { FontSizeController } from "../src/features/FontSizeController";
-import { ContrastController } from "../src/features/ContrastController";
-import { InvertColorsController } from "../src/features/InvertColorsController";
-import { GrayscaleController } from "../src/features/GrayscaleController";
-import { TextAlignController } from "../src/features/TextAlignController";
-import { ResetController } from "../src/features/ResetController";
-import { useAccessibility } from "../src/core/useAccessibility";
-
-function renderWithFeatures(...features: React.ReactElement[]) {
-  return render(
-    <AccessibilityPlugin>
-      <AccessibilityButton icon={<span>Icon</span>} />
-      <AccessibilityList>
-        {features}
-      </AccessibilityList>
-    </AccessibilityPlugin>
-  );
-}
-
-function openPanel() {
-  fireEvent.click(screen.getByLabelText("Accessibility"));
-}
-
-describe("FontSizeController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.fontSize = "";
-  });
-
-  it("renders with default value", () => {
-    renderWithFeatures(<FontSizeController />);
-    openPanel();
-    expect(screen.getByText("100%")).toBeInTheDocument();
-  });
-
-  it("increases font size", () => {
-    renderWithFeatures(<FontSizeController />);
-    openPanel();
-    fireEvent.click(screen.getByLabelText("Increase font size"));
-    expect(screen.getByText("110%")).toBeInTheDocument();
-    expect(document.documentElement.style.fontSize).toBe("110%");
-  });
-
-  it("decreases font size", () => {
-    renderWithFeatures(<FontSizeController />);
-    openPanel();
-    fireEvent.click(screen.getByLabelText("Increase font size"));
-    fireEvent.click(screen.getByLabelText("Increase font size"));
-    fireEvent.click(screen.getByLabelText("Decrease font size"));
-    expect(screen.getByText("110%")).toBeInTheDocument();
-  });
-
-  it("disables decrease at minimum", () => {
-    renderWithFeatures(<FontSizeController />);
-    openPanel();
-    // Default is 100%, decrease should be enabled
-    expect(screen.getByLabelText("Decrease font size")).not.toBeDisabled();
-    // Decrease to minimum (50%)
-    for (let i = 0; i < 5; i++) {
-      fireEvent.click(screen.getByLabelText("Decrease font size"));
-    }
-    expect(screen.getByText("50%")).toBeInTheDocument();
-    expect(screen.getByLabelText("Decrease font size")).toBeDisabled();
-  });
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import {
+  screen,
+  fireEvent,
+  within,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
+import * as API from "../src";
+import { renderFeatures } from "./helpers";
+beforeEach(() => localStorage.clear());
+afterEach(() => {
+  cleanup();
+  document.body.innerHTML = "";
 });
 
-describe("ContrastController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.filter = "";
-  });
-
-  it("renders with default off state", () => {
-    renderWithFeatures(<ContrastController />);
-    openPanel();
-    expect(screen.getByText("Off")).toBeInTheDocument();
-  });
-
-  it("applies contrast filter", () => {
-    renderWithFeatures(<ContrastController />);
-    openPanel();
-    fireEvent.click(screen.getByText("High"));
-    expect(document.documentElement.style.filter).toBe("contrast(1.5)");
-  });
-
-  it("clears filter when set to off", () => {
-    renderWithFeatures(<ContrastController />);
-    openPanel();
-    fireEvent.click(screen.getByText("High"));
-    fireEvent.click(screen.getByText("Off"));
-    expect(document.documentElement.style.filter).toBe("");
-  });
-});
-
-describe("InvertColorsController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.filter = "";
-  });
-
-  it("toggles invert filter", () => {
-    renderWithFeatures(<InvertColorsController />);
-    openPanel();
-    const toggle = screen.getByRole("button", { pressed: false });
-    fireEvent.click(toggle);
-    expect(document.documentElement.style.filter).toBe("invert(1)");
-    expect(toggle).toHaveAttribute("aria-pressed", "true");
-  });
-});
-
-describe("GrayscaleController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.filter = "";
-  });
-
-  it("toggles grayscale filter", () => {
-    renderWithFeatures(<GrayscaleController />);
-    openPanel();
-    const toggle = screen.getByRole("button", { pressed: false });
-    fireEvent.click(toggle);
-    expect(document.documentElement.style.filter).toBe("grayscale(1)");
-  });
-});
-
-describe("TextAlignController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.textAlign = "";
-  });
-
-  it("changes text alignment", () => {
-    renderWithFeatures(<TextAlignController />);
-    openPanel();
-    fireEvent.click(screen.getByText("center"));
-    expect(document.documentElement.style.textAlign).toBe("center");
-  });
-});
-
-describe("ResetController", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    document.documentElement.style.fontSize = "";
-    document.documentElement.style.filter = "";
-  });
-
-  it("resets all features", () => {
-    function App() {
-      return (
-        <AccessibilityPlugin>
-          <AccessibilityButton icon={<span>Icon</span>} />
-          <AccessibilityList>
-            <FontSizeController />
-            <ContrastController />
-            <ResetController />
-          </AccessibilityList>
-        </AccessibilityPlugin>
+const steppers = [
+  {
+    Component: API.FontSizeController,
+    label: "font size",
+    initial: 100,
+    min: 50,
+    max: 200,
+    step: 10,
+    property: "fontSize",
+    expected: "22px",
+  },
+  {
+    Component: API.LineHeightController,
+    label: "line height",
+    initial: 100,
+    min: 50,
+    max: 200,
+    step: 10,
+    property: "lineHeight",
+    expected: "33px",
+  },
+  {
+    Component: API.LetterSpacingController,
+    label: "letter spacing",
+    initial: 0,
+    min: 0,
+    max: 10,
+    step: 1,
+    property: "letterSpacing",
+    expected: "1px",
+  },
+] as const;
+describe.each(steppers)(
+  "$label",
+  ({ Component, label, initial, min, max, step, property, expected }) => {
+    it("applies a step, clamps buttons at both bounds, restores host styles", () => {
+      const { host, unmount } = renderFeatures(<Component />);
+      fireEvent.click(screen.getByLabelText(`Increase ${label}`));
+      expect((host.querySelector("h1") as HTMLElement).style[property]).toBe(
+        expected,
       );
-    }
-
-    render(<App />);
-    openPanel();
-
-    // Change some values
-    fireEvent.click(screen.getByLabelText("Increase font size"));
-    fireEvent.click(screen.getByText("High"));
-
-    expect(screen.getByText("110%")).toBeInTheDocument();
-
-    // Reset
-    fireEvent.click(screen.getByText("Reset All"));
-    expect(screen.getByText("100%")).toBeInTheDocument();
-    expect(document.documentElement.style.filter).toBe("");
-  });
+      for (let i = initial; i <= max; i += step)
+        fireEvent.click(screen.getByLabelText(`Increase ${label}`));
+      expect(screen.getByLabelText(`Increase ${label}`)).toBeDisabled();
+      for (let i = max; i > min; i -= step)
+        fireEvent.click(screen.getByLabelText(`Decrease ${label}`));
+      expect(screen.getByLabelText(`Decrease ${label}`)).toBeDisabled();
+      unmount();
+      expect(host.querySelector("h1")?.getAttribute("style")).toContain(
+        "font-size: 20px",
+      );
+    });
+  },
+);
+it("composes every filter in a stable order and retains host filter", () => {
+  const { host } = renderFeatures(
+    <>
+      <API.ContrastController />
+      <API.SaturationController />
+      <API.GrayscaleController />
+      <API.InvertColorsController />
+    </>,
+  );
+  host.style.filter = "brightness(0.8)";
+  fireEvent.click(
+    within(screen.getByRole("group", { name: "Contrast" })).getByText("High"),
+  );
+  fireEvent.click(
+    within(screen.getByRole("group", { name: "Saturation" })).getByText("Low"),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Invert Colors" }));
+  fireEvent.click(screen.getByRole("button", { name: "Grayscale" }));
+  expect(host.style.filter).toBe(
+    "brightness(0.8) contrast(1.5) saturate(0.2) invert(1) grayscale(1)",
+  );
+  fireEvent.click(
+    within(screen.getByRole("group", { name: "Contrast" })).getByText("Off"),
+  );
+  expect(host.style.filter).toBe(
+    "brightness(0.8) saturate(0.2) invert(1) grayscale(1)",
+  );
+  fireEvent.click(screen.getByText("Reset All"));
+  expect(host.style.filter).toBe("brightness(0.8)");
 });
-
-describe("Custom feature support", () => {
-  function CustomFeature() {
-    const { value, setValue } = useAccessibility("customFeature", false);
-    return (
-      <button onClick={() => setValue(!value)} aria-pressed={value}>
-        Custom: {String(value)}
-      </button>
-    );
+it.each([
+  ["Reduced", "contrast(0.5)"],
+  ["Low", "contrast(1.25)"],
+  ["High", "contrast(1.5)"],
+  ["Extra", "contrast(2)"],
+])("contrast %s works", (label, expected) => {
+  const { host } = renderFeatures(<API.ContrastController />);
+  fireEvent.click(screen.getByText(label));
+  expect(host.style.filter).toBe(expected);
+});
+it.each(["Yellow on black", "White on black", "Blue on yellow"])(
+  "restores legacy palette %s",
+  (label) => {
+    const { host } = renderFeatures(<API.ContrastController />);
+    fireEvent.click(screen.getByText(label));
+    expect(host.style.backgroundColor).not.toBe("");
+    fireEvent.click(screen.getByText("Off"));
+    expect(host.style.backgroundColor).toBe("");
+  },
+);
+it.each(["default", "left", "center", "right", "justify"])(
+  "text alignment %s",
+  (value) => {
+    const { host } = renderFeatures(<API.TextAlignController />);
+    fireEvent.click(screen.getByText(value));
+    expect(host.style.textAlign).toBe(value === "default" ? "" : value);
+  },
+);
+it.each([
+  [API.HideImagesController, "Hide Images", "img", "visibility", "hidden"],
+  [API.HideVideosController, "Hide Videos", "video", "visibility", "hidden"],
+  [API.BigCursorController, "Big Cursor", "a", "cursor", "data:image/svg+xml"],
+  [
+    API.LinkHighlightController,
+    "Link Highlight",
+    "a",
+    "text-decoration",
+    "underline",
+  ],
+] as const)(
+  "toggle %s applies and resets",
+  (Component, label, selector, property, expected) => {
+    const { host } = renderFeatures(<Component />);
+    const button = screen.getByRole("button", { name: label });
+    fireEvent.click(button);
+    expect(
+      (host.querySelector(selector) as HTMLElement).style.getPropertyValue(
+        property,
+      ),
+    ).toContain(expected);
+    expect(host.querySelector("iframe")?.style.visibility).toBe("");
+    fireEvent.click(button);
+    expect(
+      (host.querySelector(selector) as HTMLElement).style.getPropertyValue(
+        property,
+      ),
+    ).toBe("");
+  },
+);
+it.each(["yellow on black", "blue on yellow", "black on white"])(
+  "link palette %s",
+  (label) => {
+    const { host } = renderFeatures(<API.LinkHighlightController />);
+    fireEvent.click(screen.getByText(label));
+    expect(host.querySelector("a")?.style.backgroundColor).not.toBe("");
+  },
+);
+it.each([
+  [API.ReadingMaskController, "Reading Mask", ".arap-reading-mask"],
+  [API.ReadingGuideController, "Reading Guide", ".arap-reading-guide"],
+] as const)("reading aid %s cleans up", (Component, label, selector) => {
+  const { unmount } = renderFeatures(<Component />);
+  fireEvent.click(screen.getByRole("button", { name: label }));
+  const aid = document.querySelector(selector) as HTMLElement;
+  expect(aid).toHaveAttribute("aria-hidden", "true");
+  expect(aid.style.pointerEvents).toBe("none");
+  if (label === "Reading Mask") {
+    expect(aid.style.background).toBe("transparent");
+    expect(aid.style.boxShadow).toContain("200vmax");
   }
-
-  it("works as a child of AccessibilityList", () => {
-    renderWithFeatures(<CustomFeature />);
-    openPanel();
-
-    const customBtn = screen.getByText("Custom: false");
-    expect(customBtn).toBeInTheDocument();
-
-    fireEvent.click(customBtn);
-    expect(screen.getByText("Custom: true")).toBeInTheDocument();
-  });
+  unmount();
+  expect(document.querySelector(selector)).toBeNull();
+});
+it("keeps effects while closed, reopened and after dynamic route content", async () => {
+  const { host } = renderFeatures(
+    <>
+      <API.FontSizeController />
+      <API.GrayscaleController />
+    </>,
+  );
+  fireEvent.click(screen.getByLabelText("Increase font size"));
+  fireEvent.click(screen.getByRole("button", { name: "Grayscale" }));
+  fireEvent.click(screen.getByLabelText("Close accessibility settings"));
+  expect(host.style.filter).toBe("grayscale(1)");
+  host.innerHTML = '<p style="font-size:30px">New route</p>';
+  await waitFor(() =>
+    expect(host.querySelector("p")?.style.fontSize).toBe("33px"),
+  );
+  fireEvent.click(screen.getByLabelText("Accessibility"));
+  expect(screen.getByRole("button", { name: "Grayscale" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(document.querySelector(".arap-btn")?.getAttribute("style")).toBeNull();
+});
+it.each([
+  ["Off", ""],
+  ["Low", "saturate(0.2)"],
+  ["High", "saturate(2)"],
+])("saturation %s", (label, filter) => {
+  const { host } = renderFeatures(<API.SaturationController />);
+  fireEvent.click(screen.getByText(label));
+  expect(host.style.filter).toBe(filter);
+});
+it("preserves inline priority and a newer host mutation on cleanup", () => {
+  const { host, unmount } = renderFeatures(<API.LetterSpacingController />);
+  host.style.setProperty("letter-spacing", "2px", "important");
+  fireEvent.click(screen.getByLabelText("Increase letter spacing"));
+  fireEvent.click(screen.getByText("Reset All"));
+  expect(host.style.getPropertyValue("letter-spacing")).toBe("2px");
+  expect(host.style.getPropertyPriority("letter-spacing")).toBe("important");
+  fireEvent.click(screen.getByLabelText("Increase letter spacing"));
+  host.style.letterSpacing = "4px";
+  unmount();
+  expect(host.style.letterSpacing).toBe("4px");
+});
+it("restores omitted persisted features only once registered", () => {
+  localStorage.setItem(
+    "react-accessibility-plugin:state",
+    JSON.stringify({ grayscale: true }),
+  );
+  const { host } = renderFeatures(<API.FontSizeController />);
+  expect(host.style.filter).toBe("");
+});
+it("font enlargement preserves fixed line-height proportions and reset restores them", () => {
+  const { host } = renderFeatures(<API.FontSizeController />);
+  const heading = host.querySelector("h1") as HTMLElement;
+  for (let step = 0; step < 10; step++)
+    fireEvent.click(screen.getByLabelText("Increase font size"));
+  expect(heading.style.fontSize).toBe("40px");
+  expect(heading.style.lineHeight).toBe("60px");
+  fireEvent.click(screen.getByText("Reset All"));
+  expect(heading.style.fontSize).toBe("20px");
+  expect(heading.style.lineHeight).toBe("30px");
 });

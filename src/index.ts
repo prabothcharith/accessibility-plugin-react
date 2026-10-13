@@ -15,6 +15,8 @@ export type {
   AccessibilityState,
   AccessibilityContextValue,
   PluginPosition,
+  FeatureOptions,
+  FeatureRegistration,
 } from "./core/types";
 
 // Prebuilt Features

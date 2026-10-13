@@ -1,125 +1,138 @@
 "use client";
-
 import {
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
+  useSyncExternalStore,
 } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
-import { loadState, saveState, clearState } from "./storage";
-import type { PluginPosition } from "./types";
+import { validKey } from "./storage";
+import { createPreferenceStore } from "./preferenceStore";
+import { builtins, validValue } from "./featureSchema";
+import { CustomEffect, useBuiltinEffects } from "./effects";
+import type { AccessibilityPluginProps, FeatureRegistration } from "./types";
 
-interface AccessibilityPluginProps {
-  children: ReactNode;
-  position?: PluginPosition;
-  persistenceKey?: string;
-}
-
-const POSITION_STYLES: Record<PluginPosition, React.CSSProperties> = {
-  right: { top: 0, right: 0, bottom: 0, width: "380px" },
-  left: { top: 0, left: 0, bottom: 0, width: "380px" },
-  top: { top: 0, left: 0, right: 0, height: "100vh" },
-  bottom: { bottom: 0, left: 0, right: 0, height: "100vh" },
-};
-
-const POSITION_PANEL_STYLES: Record<PluginPosition, React.CSSProperties> = {
-  right: {
-    top: "70px",
-    right: "16px",
-    bottom: "16px",
-    width: "348px",
-  },
-  left: {
-    top: "70px",
-    left: "16px",
-    bottom: "16px",
-    width: "348px",
-  },
-  top: {
-    top: "70px",
-    left: "16px",
-    right: "16px",
-    maxHeight: "calc(100vh - 86px)",
-  },
-  bottom: {
-    bottom: "16px",
-    left: "16px",
-    right: "16px",
-    maxHeight: "calc(100vh - 86px)",
-  },
-};
-
+// Host-wide preferences have one owner. Fail explicitly rather than silently racing.
+const owners = new WeakMap<Document, object>();
 export function AccessibilityPlugin({
   children,
   position = "right",
   persistenceKey,
+  persist = true,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [features, setFeatures] = useState<Record<string, unknown>>({});
-  const resetFnsRef = useRef<Map<string, () => void>>(new Map());
-  const hydratedRef = useRef(false);
-
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    if (hydratedRef.current) return;
-    hydratedRef.current = true;
-    const saved = loadState(persistenceKey);
-    if (saved && typeof saved === "object") {
-      setFeatures((prev) => ({ ...prev, ...saved }));
-    }
-  }, [persistenceKey]);
-
-  // Persist to localStorage on feature changes (after hydration)
-  useEffect(() => {
-    if (!hydratedRef.current) return;
-    saveState(features, persistenceKey);
-  }, [features, persistenceKey]);
-
-  const toggleOpen = useCallback(() => setIsOpen((prev) => !prev), []);
-  const closeMenu = useCallback(() => setIsOpen(false), []);
-
-  const getFeatureState = useCallback(
-    <T,>(key: string, defaultValue: T): T => {
-      return (features[key] as T) ?? defaultValue;
-    },
-    [features]
+  const [store] = useState(() =>
+    createPreferenceStore(persistenceKey, persist),
   );
-
+  const features = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getServerSnapshot,
+  );
+  const setFeatures = store.update;
+  const registrations = useRef(new Map<string, FeatureRegistration>());
+  const [definitions, setDefinitions] = useState<
+    Record<string, FeatureRegistration>
+  >({});
+  const panelId = `arap-${useId()}`;
+  const owner = useRef({});
+  const [initialKey] = useState(persistenceKey);
+  const [initialPersist] = useState(persist);
+  if (initialKey !== persistenceKey || initialPersist !== persist)
+    throw new Error(
+      "Remount AccessibilityPlugin with a React key to change persistence configuration.",
+    );
+  const resetFns = useRef(new Map<string, () => void>());
+  useEffect(() => {
+    if (owners.has(document))
+      throw new Error(
+        "Only one AccessibilityPlugin may own a document. Mount it above your routes.",
+      );
+    const token = owner.current;
+    owners.set(document, token);
+    const flush = () => store.flush();
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      store.flush();
+      if (owners.get(document) === token) owners.delete(document);
+    };
+  }, [store]);
+  const registerFeature = useCallback(
+    (key: string, definition: FeatureRegistration) => {
+      if (!validKey(key)) throw new Error("Invalid feature key.");
+      if (registrations.current.has(key)) return;
+      // Registration must be visible to a consumer's subsequent mount effect.
+      registrations.current.set(key, definition);
+      setDefinitions((previous) => ({ ...previous, [key]: definition }));
+    },
+    [],
+  );
+  const getFeatureState = useCallback(
+    <T,>(key: string, fallback: T): T => {
+      const definition = Object.prototype.hasOwnProperty.call(definitions, key)
+        ? definitions[key]
+        : undefined;
+      const value = features[key];
+      return Object.prototype.hasOwnProperty.call(features, key) &&
+        validValue(key, value, fallback, definition?.validate)
+        ? (value as T)
+        : fallback;
+    },
+    [features, definitions],
+  );
   const setFeatureState = useCallback(
     <T,>(key: string, value: T) => {
-      setFeatures((prev) => ({ ...prev, [key]: value }));
+      const definition = registrations.current.get(key);
+      if (
+        !validKey(key) ||
+        !definition ||
+        !validValue(key, value, definition.defaultValue, definition.validate)
+      )
+        throw new Error(`Invalid value or unregistered feature: ${key}`);
+      setFeatures((previous) => ({ ...previous, [key]: value }));
     },
-    []
+    [setFeatures],
   );
-
   const resetAll = useCallback(() => {
-    // Call all registered reset functions
-    resetFnsRef.current.forEach((fn) => fn());
-    // Clear features state
-    setFeatures({});
-    // Clear localStorage
-    clearState(persistenceKey);
-  }, [persistenceKey]);
-
-  const registerReset = useCallback((key: string, resetFn: () => void) => {
-    resetFnsRef.current.set(key, resetFn);
+    resetFns.current.forEach((fn) => fn());
+    setFeatures(() => ({}));
+  }, [setFeatures]);
+  const registerReset = useCallback((key: string, fn: () => void) => {
+    resetFns.current.set(key, fn);
   }, []);
-
   const unregisterReset = useCallback((key: string) => {
-    resetFnsRef.current.delete(key);
+    resetFns.current.delete(key);
   }, []);
-
+  const toggleOpen = useCallback(() => setIsOpen((previous) => !previous), []);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const active = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(definitions)
+          .filter(([key]) => key in builtins)
+          .map(([key]) => [
+            key,
+            getFeatureState(key, builtins[key].defaultValue),
+          ]),
+      ),
+    [definitions, getFeatureState],
+  );
+  useBuiltinEffects(active);
   const value = useMemo(
     () => ({
       state: { isOpen, features },
       isOpen,
+      panelId,
+      position,
       toggleOpen,
       closeMenu,
       getFeatureState,
       setFeatureState,
+      registerFeature,
       resetAll,
       registerReset,
       unregisterReset,
@@ -127,45 +140,31 @@ export function AccessibilityPlugin({
     [
       isOpen,
       features,
+      panelId,
+      position,
       toggleOpen,
       closeMenu,
       getFeatureState,
       setFeatureState,
+      registerFeature,
       resetAll,
       registerReset,
       unregisterReset,
-    ]
+    ],
   );
-
-  const containerStyle: React.CSSProperties = {
-    position: "fixed",
-    zIndex: 999999,
-    fontFamily:
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-    fontSize: "14px",
-    color: "#1f2937",
-    ...POSITION_STYLES[position],
-  };
-
-  const panelStyle: React.CSSProperties = {
-    position: "absolute",
-    background: "#ffffff",
-    borderRadius: "12px",
-    boxShadow:
-      "0 20px 60px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.08)",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    ...POSITION_PANEL_STYLES[position],
-  };
-
   return (
     <AccessibilityContext.Provider value={value}>
-      <div className="arap-root" style={containerStyle}>
-        {children}
-      </div>
+      {children}
+      {Object.entries(definitions)
+        .filter(([, definition]) => definition.apply)
+        .map(([key, definition]) => (
+          <CustomEffect
+            key={key}
+            definition={definition}
+            value={getFeatureState(key, definition.defaultValue)}
+          />
+        ))}
     </AccessibilityContext.Provider>
   );
 }
-
 export default AccessibilityPlugin;

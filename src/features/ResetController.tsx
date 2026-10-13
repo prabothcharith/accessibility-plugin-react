@@ -7,7 +7,7 @@ export function ResetController() {
   const ctx = useContext(AccessibilityContext);
   if (!ctx) {
     throw new Error(
-      "ResetController must be used within an <AccessibilityPlugin> provider."
+      "ResetController must be used within an <AccessibilityPlugin> provider.",
     );
   }
 
@@ -15,11 +15,7 @@ export function ResetController() {
 
   return (
     <div className="arap-feature">
-      <button
-        className="arap-reset-btn"
-        onClick={resetAll}
-        type="button"
-      >
+      <button className="arap-reset-btn" onClick={resetAll} type="button">
         Reset All
       </button>
     </div>

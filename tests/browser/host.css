@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  font:
+    18px/1.6 Georgia,
+    serif;
+  background: #f8fafc;
+  color: #172033;
+}
+#host {
+  padding: 32px;
+  min-height: 160vh;
+}
+#host h1 {
+  font-size: 36px;
+  line-height: 1.2;
+  margin: 0 0 24px;
+}
+#host button,
+#host select {
+  background: #fff;
+  color: #172033;
+  padding: 12px;
+  border: 1px solid #64748b;
+  margin: 8px;
+}
+#host a {
+  color: #1747ac;
+}
+#host img {
+  display: block;
+  margin-top: 40px;
+}
+#host-action {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+}
+#host.dark {
+  background: #111827;
+  color: #f9fafb;
+}
+#host.dark a {
+  color: #a5c5ff;
+}

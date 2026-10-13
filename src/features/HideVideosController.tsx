@@ -1,40 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { getBodyElement, addClass, removeClass } from "../utils/dom";
 
 const FEATURE_KEY = "hideVideos";
 const DEFAULT_VALUE = false;
-const CSS_CLASS = "arap-hide-videos";
 
 export function HideVideosController() {
   const { value, setValue } = useAccessibility<boolean>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const body = getBodyElement();
-    if (value) {
-      addClass(body, CSS_CLASS);
-    } else {
-      removeClass(body, CSS_CLASS);
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      removeClass(getBodyElement(), CSS_CLASS);
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Hide Videos</label>
+    <div className="arap-feature" role="group" aria-label="Hide Videos">
+      <span className="arap-label">Hide Videos</span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
+        aria-label="Hide Videos"
         aria-pressed={value}
         type="button"
       >

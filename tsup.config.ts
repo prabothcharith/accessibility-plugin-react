@@ -7,6 +7,7 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   external: ["react", "react-dom"],
-  treeshake: true,
+  treeshake: false,
+  banner: { js: '"use client";' },
   splitting: false,
 });

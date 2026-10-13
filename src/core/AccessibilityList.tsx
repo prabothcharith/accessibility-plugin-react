@@ -1,103 +1,74 @@
 "use client";
-
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  type ReactNode,
-  type KeyboardEvent,
-} from "react";
+import { useContext, useEffect, useRef } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
+import { WidgetPortal } from "./WidgetPortal";
 import type { AccessibilityListProps } from "./types";
-
-export function AccessibilityList({
+function Panel({
   children,
   className = "",
+  style,
+  title = "Accessibility settings",
+  closeLabel = "Close accessibility settings",
 }: AccessibilityListProps) {
-  const ctx = useContext(AccessibilityContext);
-  if (!ctx) {
-    throw new Error(
-      "AccessibilityList must be used within an <AccessibilityPlugin> provider."
-    );
-  }
-
-  const { isOpen, closeMenu } = ctx;
-  const panelRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  // Focus trap
+  const ctx = useContext(AccessibilityContext)!;
+  const panel = useRef<HTMLDivElement>(null);
+  const previous = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    if (isOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      // Focus the panel when it opens
-      requestAnimationFrame(() => {
-        panelRef.current?.focus();
-      });
-    } else if (previousFocusRef.current) {
-      previousFocusRef.current.focus();
-      previousFocusRef.current = null;
+    if (ctx.isOpen) {
+      previous.current =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      panel.current?.focus();
+    } else if (previous.current) {
+      previous.current.focus();
+      previous.current = null;
     }
-  }, [isOpen]);
-
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "Escape") {
-        closeMenu();
-        return;
-      }
-
-      // Basic focus trap: Tab cycles within the panel
-      if (e.key === "Tab" && panelRef.current) {
-        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      }
+  }, [ctx.isOpen]);
+  useEffect(
+    () => () => {
+      if (previous.current?.isConnected) previous.current.focus();
     },
-    [closeMenu]
+    [],
   );
-
-  if (!isOpen) return null;
-
-  const panelStyle: React.CSSProperties = {
-    padding: "16px",
-    overflowY: "auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  };
-
   return (
     <div
-      ref={panelRef}
-      id="arap-panel"
+      ref={panel}
+      id={ctx.panelId}
       className={`arap-panel ${className}`}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Accessibility settings"
+      style={style}
+      data-position={ctx.position}
+      hidden={!ctx.isOpen}
+      role="region"
+      aria-label={title}
       tabIndex={-1}
-      style={panelStyle}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && !event.defaultPrevented) {
+          event.stopPropagation();
+          ctx.closeMenu();
+        }
+      }}
     >
+      <div className="arap-heading">
+        <h2>{title}</h2>
+        <button type="button" aria-label={closeLabel} onClick={ctx.closeMenu}>
+          ×
+        </button>
+      </div>
       {children}
     </div>
   );
 }
-
+export function AccessibilityList(props: AccessibilityListProps) {
+  const ctx = useContext(AccessibilityContext);
+  if (!ctx)
+    throw new Error(
+      "AccessibilityList must be used within an <AccessibilityPlugin> provider.",
+    );
+  return (
+    <WidgetPortal>
+      <Panel {...props} />
+    </WidgetPortal>
+  );
+}
 export default AccessibilityList;

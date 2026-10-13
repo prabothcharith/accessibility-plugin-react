@@ -1,55 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
 import { useAccessibility } from "../core/useAccessibility";
-import { applyFilter, clearFilter } from "../utils/dom";
 
 const FEATURE_KEY = "contrast";
 const DEFAULT_VALUE = 0;
 const LEVELS = [
   { label: "Off", value: 0 },
+  { label: "Reduced", value: "reduced" },
   { label: "Low", value: 1 },
   { label: "High", value: 2 },
   { label: "Extra", value: 3 },
+  { label: "Yellow on black", value: "yellow-on-black" },
+  { label: "White on black", value: "white-on-black" },
+  { label: "Blue on yellow", value: "blue-on-yellow" },
 ];
 
-function buildFilter(level: number): string {
-  switch (level) {
-    case 1:
-      return "contrast(1.25)";
-    case 2:
-      return "contrast(1.5)";
-    case 3:
-      return "contrast(2)";
-    default:
-      return "";
-  }
-}
-
 export function ContrastController() {
-  const { value, setValue } = useAccessibility<number>(
+  const { value, setValue } = useAccessibility<number | string>(
     FEATURE_KEY,
-    DEFAULT_VALUE
+    DEFAULT_VALUE,
   );
 
-  useEffect(() => {
-    const filter = buildFilter(value);
-    if (filter) {
-      applyFilter(filter);
-    } else {
-      clearFilter();
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      clearFilter();
-    };
-  }, []);
-
   return (
-    <div className="arap-feature">
-      <label className="arap-label">Contrast</label>
+    <div className="arap-feature" role="group" aria-label="Contrast">
+      <span className="arap-label">Contrast</span>
       <div className="arap-segmented">
         {LEVELS.map((level) => (
           <button
