@@ -9,6 +9,8 @@ import {
   useSyncExternalStore,
 } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
+import { PLACEMENT_KEY, validPlacement } from "./widgetPlacement";
+import type { WidgetPlacement } from "./types";
 import { validKey } from "./storage";
 import { createPreferenceStore } from "./preferenceStore";
 import { builtins, validValue } from "./featureSchema";
@@ -33,6 +35,22 @@ export function AccessibilityPlugin({
     store.getServerSnapshot,
   );
   const setFeatures = store.update;
+  const widgetPlacement = validPlacement(features[PLACEMENT_KEY])
+    ? features[PLACEMENT_KEY]
+    : null;
+  const setWidgetPlacement = useCallback(
+    (next: WidgetPlacement | null) => {
+      if (next !== null && !validPlacement(next))
+        throw new Error("Invalid widget placement.");
+      setFeatures((previous) => {
+        const copy = { ...previous };
+        if (next) copy[PLACEMENT_KEY] = next;
+        else delete copy[PLACEMENT_KEY];
+        return copy;
+      });
+    },
+    [setFeatures],
+  );
   const registrations = useRef(new Map<string, FeatureRegistration>());
   const [definitions, setDefinitions] = useState<
     Record<string, FeatureRegistration>
@@ -63,7 +81,8 @@ export function AccessibilityPlugin({
   }, [store]);
   const registerFeature = useCallback(
     (key: string, definition: FeatureRegistration) => {
-      if (!validKey(key)) throw new Error("Invalid feature key.");
+      if (!validKey(key) || key === PLACEMENT_KEY)
+        throw new Error("Invalid feature key.");
       if (registrations.current.has(key)) return;
       // Registration must be visible to a consumer's subsequent mount effect.
       registrations.current.set(key, definition);
@@ -99,7 +118,11 @@ export function AccessibilityPlugin({
   );
   const resetAll = useCallback(() => {
     resetFns.current.forEach((fn) => fn());
-    setFeatures(() => ({}));
+    setFeatures((previous) =>
+      validPlacement(previous[PLACEMENT_KEY])
+        ? { [PLACEMENT_KEY]: previous[PLACEMENT_KEY] }
+        : {},
+    );
   }, [setFeatures]);
   const registerReset = useCallback((key: string, fn: () => void) => {
     resetFns.current.set(key, fn);
@@ -128,6 +151,8 @@ export function AccessibilityPlugin({
       isOpen,
       panelId,
       position,
+      widgetPlacement,
+      setWidgetPlacement,
       toggleOpen,
       closeMenu,
       getFeatureState,
@@ -142,6 +167,8 @@ export function AccessibilityPlugin({
       features,
       panelId,
       position,
+      widgetPlacement,
+      setWidgetPlacement,
       toggleOpen,
       closeMenu,
       getFeatureState,

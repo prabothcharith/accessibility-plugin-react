@@ -104,12 +104,14 @@ test("widget remains unfiltered and fits a narrow viewport in every position", a
       true,
     );
     // Visible controls must retain comfortable targets after the visual redesign.
-    const targets = await panel.locator("button").evaluateAll((buttons) =>
-      buttons.map((button) => {
-        const bounds = button.getBoundingClientRect();
-        return { width: bounds.width, height: bounds.height };
-      }),
-    );
+    const targets = await panel
+      .locator("button:visible")
+      .evaluateAll((buttons) =>
+        buttons.map((button) => {
+          const bounds = button.getBoundingClientRect();
+          return { width: bounds.width, height: bounds.height };
+        }),
+      );
     for (const target of targets) {
       expect(target.width).toBeGreaterThanOrEqual(44);
       expect(target.height).toBeGreaterThanOrEqual(44);
@@ -117,6 +119,20 @@ test("widget remains unfiltered and fits a narrow viewport in every position", a
     await page.getByLabel("Close accessibility settings").click();
   }
 });
+test("quick actions fit a short screen without the trigger covering them", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 240 });
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  const reset = page.getByRole("button", { name: "Reset All", exact: true });
+  const rect = (await reset.boundingBox())!;
+  expect(rect.y).toBeGreaterThanOrEqual(0);
+  expect(rect.y + rect.height).toBeLessThanOrEqual(240);
+  await reset.click();
+  await page.getByLabel("Close accessibility settings").click();
+  await expect(page.getByLabel("Accessibility", { exact: true })).toBeFocused();
+});
+
 test("custom effects restore and clean up when widget is removed", async ({
   page,
 }) => {
@@ -200,4 +216,138 @@ test("Next Pages Router and direct Server Component imports hydrate", async ({
     await page.evaluate(() => localStorage.clear());
   }
   expect(errors).toEqual([]);
+});
+
+test("trigger drag remembers placement and preferences without accidental activation", async ({
+  page,
+  browserName,
+}, info) => {
+  await page.setViewportSize({ width: 900, height: 700 });
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+  await page.getByLabel("Increase font size").click();
+  await page.getByLabel("Close accessibility settings").click();
+  const before = (await trigger.boundingBox())!;
+  await page.mouse.move(before.x + 28, before.y + 28);
+  await page.mouse.down();
+  await page.mouse.move(80, 100, { steps: 12 });
+  await page.mouse.up();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  let moved = (await trigger.boundingBox())!;
+  if (browserName === "chromium") {
+    // Exercise actual browser touch input as well as mouse pointer capture.
+    const touch = await page.context().newCDPSession(page);
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: moved.x + 28, y: moved.y + 28 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x: moved.x + 28, y: moved.y + 88 }],
+    });
+    await touch.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await expect(trigger).toHaveAttribute("data-dragging", "false");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    const touched = (await trigger.boundingBox())!;
+    expect(touched.y).toBeGreaterThan(moved.y + 50);
+    moved = touched;
+    await touch.detach();
+  }
+  expect(moved.x).toBeLessThan(100);
+  expect(moved.y).toBeLessThan(200);
+  await page.waitForFunction(() =>
+    localStorage
+      .getItem("react-accessibility-plugin:state")
+      ?.includes("__arap_widget_placement"),
+  );
+  await page.reload();
+  const restored = (await trigger.boundingBox())!;
+  expect(Math.abs(restored.x - moved.x)).toBeLessThan(2);
+  expect(Math.abs(restored.y - moved.y)).toBeLessThan(2);
+  await trigger.click();
+  await expect(
+    page
+      .getByRole("group", { name: "Font Size", exact: true })
+      .locator("output"),
+  ).toHaveText("110%");
+  await page.getByLabel("Close accessibility settings").click();
+  // A cancelled drag must not change the saved point or activate the panel.
+  await page.mouse.move(restored.x + 28, restored.y + 28);
+  await page.mouse.down();
+  await page.mouse.move(restored.x + 100, restored.y + 100, { steps: 4 });
+  await trigger.dispatchEvent("pointercancel");
+  await page.mouse.up();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  const cancelled = (await trigger.boundingBox())!;
+  expect(Math.abs(cancelled.x - restored.x)).toBeLessThan(2);
+  await trigger.focus();
+  await page.keyboard.press("Alt+ArrowRight");
+  const keyboardMoved = (await trigger.boundingBox())!;
+  expect(keyboardMoved.x).toBeGreaterThan(restored.x + 15);
+  await page.setViewportSize({ width: 320, height: 568 });
+  const small = (await trigger.boundingBox())!;
+  expect(small.x).toBeGreaterThanOrEqual(0);
+  expect(small.x + small.width).toBeLessThanOrEqual(320);
+  expect(small.y + small.height).toBeLessThanOrEqual(568);
+  if (info.project.name === "mobile")
+    await page.touchscreen.tap(small.x + 28, small.y + 28);
+  else await trigger.click();
+  const panel = (await page.getByRole("region").boundingBox())!;
+  expect(panel.x).toBeGreaterThanOrEqual(0);
+  expect(panel.y).toBeGreaterThanOrEqual(0);
+  expect(panel.y + panel.height).toBeLessThanOrEqual(568);
+});
+
+test("quick actions stay visible and click controls move or reset placement", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+  const reset = page.getByRole("button", { name: "Reset All", exact: true });
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("button", { name: "Jump to quick actions", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(reset).toBeFocused();
+  const before = (await reset.boundingBox())!;
+  await page
+    .locator(".arap-tools")
+    .evaluate((el) => (el.scrollTop = el.scrollHeight));
+  const after = (await reset.boundingBox())!;
+  expect(after.y).toBe(before.y);
+  await reset.click();
+  await page.getByRole("button", { name: "Move button", exact: true }).click();
+  await page
+    .getByLabel("Accessibility button position")
+    .selectOption("top-left");
+  await expect(trigger).toHaveAttribute("data-corner", "top-left");
+  await page
+    .getByLabel("Move accessibility button down", { exact: true })
+    .click();
+  await expect(page.getByLabel("Accessibility button position")).toHaveValue(
+    "custom",
+  );
+  await page
+    .getByRole("button", { name: "Reset button position", exact: true })
+    .click();
+  await expect(trigger).toHaveAttribute("data-corner", "bottom-right");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("region")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Move button", exact: true }),
+  ).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
 });

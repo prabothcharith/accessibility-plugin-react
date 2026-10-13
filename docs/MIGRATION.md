@@ -14,7 +14,7 @@ Behavior changes with rationale:
 - Image hiding preserves layout and removes CSS backgrounds. Videos use targeted embed recognition; unrelated document/map iframes remain visible. Reading mask now has a transparent reading window.
 - Single provider/document is enforced. Changing persistence configuration in place is rejected; remount with a React key.
 - Custom callbacks passed in hook options are immutable definitions. Direct click-handler DOM mutations must move into an apply callback with cleanup. Ordinary React effects remain supported but end when their own component unmounts.
-- Persisted root data gains a version envelope. Unversioned records still load; invalid values fall back. Reset deletes storage and cancels pending writes.
+- Persisted root data gains a version envelope. Unversioned records still load; invalid values fall back. Reset cancels pending writes and deletes display preferences; when a widget placement is saved, that preference remains. Reset button position removes it separately.
 - Plain scoped CSS replaces Tailwind's global reset. Hosts must import CSS, but need no build-time scanning/configuration.
 
 ## From older development (7aef17c / PR #1)
@@ -28,3 +28,7 @@ Replace `useAccessibility().fontSize/setFontSize` with `useAccessibility('fontSi
 ## Historical documents
 
 `react-accessibility-plugin-spec.md` and `COMMIT_SUMMARY.md` remain historical evidence. They describe prior intent/results, not current guarantees. Current docs, tests, public declarations and PROJECT_STATUS.md supersede contradictory examples and completion claims.
+
+## Movable trigger and fixed actions
+
+Pointer dragging is enabled by default; set AccessibilityButton draggable={false} to disable it. Normal activation is preserved through a movement threshold. Saved placement overrides the position prop until reset separately. ResetController keeps the saved placement while resetting display features. Its button moves to the fixed panel action area even when composed inside nested children; CSS overrides relying on its old scroll-list DOM ancestry may need updates. AccessibilityList footer is an additive slot for other fixed actions. Trigger and panel description IDs are now distinct.

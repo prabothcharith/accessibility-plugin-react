@@ -15,6 +15,7 @@ export type {
   AccessibilityState,
   AccessibilityContextValue,
   PluginPosition,
+  WidgetPlacement,
   FeatureOptions,
   FeatureRegistration,
 } from "./core/types";

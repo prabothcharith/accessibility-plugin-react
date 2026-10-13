@@ -378,3 +378,216 @@
     color: HighlightText;
   }
 }
+
+/* The shell stays still: only the tools region scrolls. */
+.arap-root .arap-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+.arap-heading {
+  flex: none;
+}
+.arap-tools {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--arap-border) transparent;
+  padding: 0 3px;
+  margin: 0 -3px;
+}
+.arap-tools:focus-visible {
+  outline: 3px solid var(--arap-accent);
+  outline-offset: -3px;
+}
+.arap-quick-actions {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+  margin-top: 8px;
+  border-top: 1px solid var(--arap-divider);
+}
+.arap-actions {
+  flex: 1;
+  min-width: 0;
+}
+.arap-actions:empty {
+  display: none;
+}
+.arap-actions .arap-feature-reset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.arap-root .arap-position-button,
+.arap-root .arap-position-default,
+.arap-root .arap-position-arrows button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--arap-border);
+  border-radius: 8px;
+  background: var(--arap-control);
+  color: var(--arap-accent);
+}
+.arap-root .arap-position-button:hover,
+.arap-root .arap-position-default:hover,
+.arap-root .arap-position-arrows button:hover {
+  background: var(--arap-selected);
+  border-color: var(--arap-accent);
+}
+.arap-position-popover {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  max-height: calc(100dvh - 160px);
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--arap-border);
+  border-radius: 12px;
+  background: var(--arap-surface);
+  box-shadow: 0 8px 24px #0f172a26;
+}
+.arap-position-popover[hidden] {
+  display: none !important;
+}
+.arap-position-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.arap-position-popover select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--arap-border);
+  border-radius: 8px;
+  font: inherit;
+  color: var(--arap-text);
+  background: var(--arap-surface);
+}
+.arap-position-popover select:focus-visible {
+  outline: 3px solid var(--arap-accent);
+  outline-offset: 2px;
+}
+.arap-position-arrows {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 10px;
+}
+.arap-position-default {
+  width: 100%;
+  margin-top: 8px;
+}
+.arap-root .arap-btn[data-draggable="true"] {
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.arap-root .arap-btn[data-dragging="true"] {
+  cursor: grabbing;
+}
+.arap-root .arap-btn[data-corner$="left"],
+.arap-root .arap-panel[data-corner$="left"] {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+}
+.arap-root .arap-btn[data-corner$="right"],
+.arap-root .arap-panel[data-corner$="right"] {
+  left: auto;
+  right: max(16px, env(safe-area-inset-right));
+}
+.arap-root .arap-btn[data-corner^="top"] {
+  bottom: auto;
+  top: max(16px, env(safe-area-inset-top));
+}
+.arap-root .arap-btn[data-corner^="bottom"] {
+  top: auto;
+  bottom: max(16px, env(safe-area-inset-bottom));
+}
+.arap-root .arap-panel[data-corner^="top"] {
+  bottom: auto;
+  top: max(88px, calc(env(safe-area-inset-top) + 72px));
+}
+.arap-root .arap-panel[data-corner^="bottom"] {
+  top: auto;
+  bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
+}
+.arap-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.arap-root .arap-skip-actions {
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+.arap-root .arap-skip-actions:focus-visible {
+  right: 20px;
+  width: auto;
+  height: auto;
+  min-height: 44px;
+  clip-path: none;
+  pointer-events: auto;
+  z-index: 2;
+  padding: 8px;
+  border: 1px solid var(--arap-accent);
+  border-radius: 8px;
+  background: var(--arap-surface);
+  color: var(--arap-accent);
+}
+@media (max-height: 480px) {
+  .arap-root .arap-panel {
+    top: max(16px, env(safe-area-inset-top)) !important;
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    max-height: calc(
+      100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    ) !important;
+    padding: 8px;
+  }
+  .arap-heading {
+    padding-bottom: 8px;
+  }
+  .arap-heading h2 {
+    font-size: 18px;
+  }
+  .arap-heading button {
+    margin-top: 0;
+  }
+  .arap-description {
+    display: none;
+  }
+  .arap-quick-actions {
+    padding-top: 8px;
+    margin-top: 0;
+  }
+  .arap-root .arap-reset-btn {
+    min-height: 44px;
+  }
+  .arap-root .arap-btn[data-open="true"] {
+    visibility: hidden;
+  }
+  .arap-position-popover {
+    max-height: calc(100dvh - 96px);
+  }
+}

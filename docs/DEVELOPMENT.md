@@ -5,7 +5,9 @@
 Use Node >=22.13 and npm. The committed package-lock is the library dependency source of truth. No application environment variables or services are required.
 
 ```sh
-git switch codex/stabilize-accessibility # or your branch based on the reviewed source
+git switch main
+git pull --ff-only origin main
+git switch -c codex/your-feature
 npm ci
 npm run validate
 npm run pack:check
@@ -13,6 +15,8 @@ npm run test:consumers
 npx playwright install --with-deps chromium firefox webkit
 npm run test:browser
 ```
+
+For a PR under review, check out its head branch instead and record the tested commit. Main contains the merged stabilization and Clean light foundation; PR #17 adds movement and fixed actions.
 
 `validate` runs typecheck, lint, unit tests and JS/declaration/CSS build. `test:consumers` builds, packs and installs the archive in `.consumers/react18`, `.consumers/react19` and `.consumers/next`, checks ESM/CJS and declarations/SSR, and produces application production builds. Consumers use explicitly selected framework versions; generated install locks reside in disposable `.consumers`. Network access is required for installation, not widget runtime. Browser tests start local ports 4311/4312/4313 and close their servers afterward. Avoid using these ports for unrelated processes. `CI` disables server reuse and is a test-runner environment flag, not a library setting.
 
@@ -34,6 +38,10 @@ src/
     AccessibilityButton.tsx   trigger
     AccessibilityList.tsx     non-modal region and focus
     WidgetPortal.tsx          client-only body portal boundary
+    widgetPlacement.ts        validated placement and viewport geometry
+    PositionControls.tsx      non-drag movement alternatives
+    PanelActionsContext.ts    fixed-action portal host
+    FeatureIcon.tsx            decorative control icons
     types.ts                  public contracts
   features/*Controller.tsx    fifteen opt-in native controls
   styles/tailwind.css          scoped plain CSS (historical filename)

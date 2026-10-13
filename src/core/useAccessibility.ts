@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
 import type { FeatureOptions, FeatureRegistration } from "./types";
 import { validValue } from "./featureSchema";
+import { PLACEMENT_KEY } from "./widgetPlacement";
 import { validKey } from "./storage";
 
 export function useAccessibility<T>(
@@ -19,7 +20,7 @@ export function useAccessibility<T>(
     throw new Error(
       "useAccessibility must be used within an <AccessibilityPlugin> provider.",
     );
-  if (!validKey(featureKey))
+  if (!validKey(featureKey) || featureKey === PLACEMENT_KEY)
     throw new Error(
       "Feature keys must be nonempty and cannot be prototype keys.",
     );
