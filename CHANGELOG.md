@@ -18,7 +18,7 @@
 - Regression, packed-consumer, browser/axe tests, CI and maintained integration/release documentation.
 - Upgrade vulnerable development tooling; no runtime dependencies beyond React peers.
 
-Stabilization was merged into main through PR #3. No version bump, npm publication or release tag has occurred. See PROJECT_STATUS.md for limitations and release gates.
+Stabilization merged into main through PR #3; the Clean light foundation merged through PR #16. Movement/fixed actions and corrected release-status documentation are in PR #17. No version bump, npm publication or release tag has occurred. See PROJECT_STATUS.md for limitations and release gates.
 
 ## Historical 0.1.0 branch
 

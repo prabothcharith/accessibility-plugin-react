@@ -1,6 +1,6 @@
 # Project status — 2026-10-13
 
-**Local stabilization implemented and automatically verified; stable release not yet approved.** Stabilization was merged into `main` through PR #3 at `2893b6c`. No npm publication or release tag. The original stabilization foundation was `new-development` at `6dfbd44`; Clean light design work is on `codex/clean-light-design`.
+**Local stabilization implemented and automatically verified; stable release not yet approved.** Stabilization was merged into `main` through PR #3 at `2893b6c`. No npm publication or release tag. The original stabilization foundation was `new-development` at `6dfbd44`; Clean light merged through [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) at `15e9465`. Movement and fixed actions are in [PR #17](https://github.com/prabothcharith/accessibility-react/pull/17) on `codex/movable-quick-actions`, not yet merged.
 
 ## Status categories
 
@@ -9,13 +9,13 @@
 | Implemented and verified   | Provider-owned built-in/custom effects; reset cancellation; validated restoration; all fifteen controllers; combined filters; host style cleanup; dynamic child content; non-modal focus; portal layout; scoped CSS; React18/19 packed consumers; Next App/Pages and direct Server Component imports |
 | Implemented but unverified | Broader React19 patch versions, physical devices, assistive technologies and browser versions outside the executed matrix                                                                                                                                                                            |
 | Partially implemented      | Broad accessibility acceptance: automated keyboard/axe/reflow checks passed, real screen-reader/physical-device/actual zoom review remains. Host-wide integration: known filter/CSP/Shadow DOM/attribute-change limits remain.                                                                       |
-| In progress                | Clean light design, movable trigger and fixed quick actions are implemented on a review branch; manual release acceptance remains pending.                                                                                                                                                           |
+| In progress                | Movable trigger and fixed quick actions are implemented in PR #17; manual release acceptance remains pending.                                                                                                                                                                                        |
 | Planned                    | Large-DOM profiling, attribute/font-load refresh, explicit effect scopes and richer localization                                                                                                                                                                                                     |
 | Blocked                    | Local macOS Firefox launch only (Linux coverage passed); owner decision on conflicting historical license metadata and intended registry identity before release                                                                                                                                     |
 | Deferred                   | Multi-provider arbitration and live cross-tab sync                                                                                                                                                                                                                                                   |
 | Completed                  | Investigation/baseline, local P0 stabilization, feature regression suite, packed consumer/build verification, documentation, local example verification and full hosted CI meet their stated local acceptance criteria                                                                               |
 
-## Executed checks
+## Stabilization and Clean light checks
 
 Environment: macOS, Node 22.14.0, npm 11.21.0. Baseline: typecheck/build pass, lint seven errors, 24 nominal tests with three ineffective async assertions, 15 audit findings. See BASELINE.md.
 
@@ -42,9 +42,9 @@ The initial full browser run had 10 failures: seven Firefox launch failures befo
 
 Expected error-path unit tests deliberately trigger missing-provider and duplicate-provider errors; jsdom logs these while their throw assertions pass. The continuation added regressions for mount-effect state initialization and focus return when the panel itself is removed. No unexpected runtime errors were observed in the passing browser/examples matrix.
 
-## Review branch
+## Merge and review state
 
-[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged stabilization into `new-development`; [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged the complete implementation into `main`. [Merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38345207412) passed all jobs. No release tag or npm publication has occurred.
+[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged stabilization into `new-development`; [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged the complete implementation into `main`. [Merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38345207412) passed all jobs. PR #16 merged Clean light into main at `15e9465`; [that main run](https://github.com/prabothcharith/accessibility-react/actions/runs/38353340223) also passed all jobs. PR #17 is the movement follow-up awaiting review. No release tag or npm publication has occurred.
 
 ## Hosted validation
 
@@ -72,8 +72,12 @@ The local suite now passes 61 tests. Font enlargement scales fixed line heights 
 
 ## Clean light design follow-up
 
-The selected Clean light foundation adds scoped palette variables, decorative icons, compact steppers, responsive spacing, checked selected states, 44px toggle targets and an optional panel description. Local validation: 61 unit tests, type/lint/build/archive checks and all packed consumers passed; Chromium/desktop and mobile WebKit matrix passed 31 tests with four intentional skips. Narrow viewport checks also verify horizontal fit and 44px button dimensions. Runtime screenshots were visually inspected. Full hosted results are available through the design PR checks once executed. See DESIGN.md.
+The selected Clean light foundation adds scoped palette variables, decorative icons, compact steppers, responsive spacing, checked selected states, 44px toggle targets and an optional panel description. Local validation: 61 unit tests, type/lint/build/archive checks and all packed consumers passed; Chromium/desktop and mobile WebKit matrix passed 31 tests with four intentional skips. Narrow viewport checks also verify horizontal fit and 44px button dimensions. Runtime screenshots were visually inspected. [Hosted design validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38350884486) and [merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38353340223) passed all jobs. This foundation is merged, not an outstanding draft. See DESIGN.md.
 
 ## Movement and quick-action follow-up
 
-The trigger now persists normalized drag/corner placement alongside display settings, with pointer-cancellation/activation guards and keyboard/click alternatives. Fixed header/footer controls and a keyboard action jump keep reset available without scrolling. Resetting display settings preserves placement; position reset is separate. Local validation: 66 unit tests and packed React18/React19/Next consumers passed; the final local browser matrix passed 46 tests with four intentional skips, including measured-size geometry, mouse/Chromium touch dragging, WebKit mobile taps, cancelled drags, 320px/short-screen fit, persistence and fixed-action checks. Human touch, screen-reader and actual zoom acceptance remains pending.
+On PR #17 (movement source `d5e21df`), the trigger persists normalized drag/corner placement alongside display settings, with pointer-cancellation/activation guards and keyboard/click alternatives. Fixed header/footer controls and a keyboard action jump keep reset available without scrolling. Resetting display settings preserves placement; position reset is separate. Local validation: 66 unit tests and packed React18/React19/Next consumers passed; the final local browser matrix passed 46 tests with four intentional skips, including measured-size geometry, mouse/Chromium touch dragging, WebKit mobile taps, cancelled drags, 320px/short-screen fit, persistence and fixed-action checks. Hosted movement validation is tracked by PR #17 checks; it is separate from the earlier merged-main results. Human touch, screen-reader and actual zoom acceptance remains pending.
+
+## Release tracking
+
+[Project #18](https://github.com/users/prabothcharith/projects/18) and [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) hold the first stable release gates. Documentation correction [#9](https://github.com/prabothcharith/accessibility-react/issues/9) is addressed in PR #17. Owner licensing/identity decisions (#4/#5), human acceptance (#6–#8), final candidate checks (#10) and explicitly authorized publication/registry verification (#11) remain required. Build artifacts and merged implementation do not establish registry availability.

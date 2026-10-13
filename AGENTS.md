@@ -2,7 +2,7 @@
 
 Build a composable React display-preference library. Read [status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [architecture](docs/ARCHITECTURE.md) and [API](docs/API.md) before changing behavior. They supersede historical root specification/commit-summary claims.
 
-- Foundation: `new-development` at 6dfbd44; stabilization merged into `main` at 2893b6c. Clean light design work uses `codex/clean-light-design`. Preserve unrelated work. Use focused branches/PRs; no force push, publish, tags or default-branch merge without owner authorization.
+- Foundation: `new-development` at 6dfbd44; stabilization merged into `main` at 2893b6c. Clean light merged into `main` through PR #16 at 15e9465. Movement/fixed actions are in PR #17 on `codex/movable-quick-actions`. Preserve unrelated work. Use focused branches/PRs; no force push, publish, tags or default-branch merge without owner authorization.
 - Core owns state, storage and persistent effects; controls only render/set state. Never restore controller-owned effect lifetimes. One provider per document; definitions persist through control unmount. Keep the widget outside host filters and application layout.
 - Public compound exports and two-argument hook are compatibility contracts. Justify behavior/API changes and update MIGRATION.md. Custom feature options require cleanup and validated persistence.
 - `src/core`: store/provider/effects/UI. `src/features`: controllers. `src/styles/tailwind.css`: plain scoped CSS despite its historical filename. `tests`: unit and packed browser fixtures. `scripts`: build/package/consumer validation. `examples`: built-package demos. `docs`: maintained guidance.
