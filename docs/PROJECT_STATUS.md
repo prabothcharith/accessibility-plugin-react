@@ -63,7 +63,7 @@ The local suite now passes 61 tests. Font enlargement scales fixed line heights 
 1. **Human accessibility testing pending:** VoiceOver/NVDA, physical touch devices, forced-colors visual review, browser zoom 200/400%. Automated axe and emulation do not establish WCAG conformance.
 2. **Local Firefox remains unavailable on this Mac.** The complete Firefox browser scenarios passed on Linux, so the local launch issue does not block automated release verification.
 3. **License resolved for this release:** on 2026-10-13 the owner confirmed authority to license all included code under ISC. LICENSE and package/lock metadata now agree on ISC. Historical GPL/ISC/MIT discrepancies remain recorded in baseline/migration evidence.
-4. **Beta identity and channel approved:** continue `accessibility-plugin-react@2.0.0-beta.1` under `beta`. npm authentication as maintainer `praboth` was verified on 2026-10-13. Latest remains 1.0.0; publication/registry verification is recorded separately in RELEASE.md.
+4. **Version 2 identity and channel approved:** the owner now selected `accessibility-plugin-react@2.0.0` under `latest`, superseding the unpublished beta candidate. npm maintainer authentication is verified. Registry latest remains 1.0.0 until a successful upload is independently confirmed; see RELEASE.md.
 5. One provider per document, no live cross-tab sync, immutable definitions/storage configuration. Routes should share the provider.
 6. Effects target current-document HTML only; no Shadow DOM, iframe interiors, pseudo-elements or SVG/canvas text. Color filters alter host containing blocks. Late fonts/attribute-only style changes need a preference refresh. Very large/changing DOMs need application-specific profiling.
 7. Media hiding retains layout and does not stop playback. CSP may restrict inline styles/data cursors. No universal host compatibility claim.
@@ -89,3 +89,7 @@ The owner requested that the new design update the existing `accessibility-plugi
 ## Final beta validation and upload status
 
 Owner-approved ISC beta source `cf4348b` passed [full hosted validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38356642128): 66 unit tests on Node22/24 and 55 full-matrix browser passes with five intentional skips, plus packed consumers and all build/package checks. npm accepted browser authentication but rejected the upload with a temporary account suspension (E403). Registry checks confirmed no 2.0.0-beta.1, no beta tag, and latest=1.0.0. Publication remains blocked by npm account state, not build failures. Issues #4/#5 are resolved by the owner’s decisions; #11 remains open. See RELEASE.md for the exact archive and retry procedure.
+
+## Version 2 channel selection
+
+The owner requested 2.0.0 without beta on 2026-10-13. Package/lock version and publishConfig now use 2.0.0/latest; README and migration instructions match. This is explicit publication authorization despite the remaining documented human acceptance checks. The earlier account suspension is a registry blocker independent of version choice. Publication results will be recorded after the retry.

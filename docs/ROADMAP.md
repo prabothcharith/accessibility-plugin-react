@@ -25,3 +25,5 @@ Release tasks are tracked in [Project #18](https://github.com/users/prabothchari
 The owner confirmed `accessibility-plugin-react` as the registry identity on 2026-10-13. The npm preparation branch prepares `2.0.0-beta.1`; the owner approved 2.0.0-beta.1 under beta and ISC, and npm maintainer authentication is verified. Stable human acceptance remains pending. See RELEASE.md.
 
 Final ISC beta source cf4348b passed the full hosted matrix. npm rejected the upload due to a temporary account suspension; 2.0.0-beta.1 is not published. Owner decision issues #4/#5 are closed; publication #11 and human stable-release acceptance remain open. See RELEASE.md.
+
+The owner subsequently chose 2.0.0 under latest instead of beta. Current release preparation follows that instruction; human accessibility acceptance remains documented as pending. Earlier beta preparation/hold notes above are historical; see RELEASE.md for the current version and publication result.

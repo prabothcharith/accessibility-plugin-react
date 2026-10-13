@@ -11,10 +11,12 @@ Build a composable React display-preference library. Read [status](docs/PROJECT_
 - Native named controls, pressed/disabled states, visible focus, non-modal semantics, safe areas and reduced motion are required. Automated audits do not establish WCAG compliance. Follow manual checks in DEVELOPMENT.md.
 - Built-in keys/defaults/bounds live in featureSchema.ts; effects belong in effects.ts. Preserve host property values/priorities. Include restore/reset/unmount/dynamic-content coverage. No global CSS preflight.
 - Update FEATURES/API/custom examples when contracts change, PROJECT_STATUS/ROADMAP when verified status changes, and CHANGELOG for user-visible work. Never invent test results, releases or percentages.
-- Owner confirmed ISC for all included code on 2026-10-13 and selected accessibility-plugin-react as the npm identity. Version 2.0.0-beta.1 under the beta tag is authorized; stable promotion, future publication and Git tags require their own authorization. Preserve historical licensing evidence.
+- Owner confirmed ISC for all included code on 2026-10-13 and selected accessibility-plugin-react as the npm identity. The owner subsequently authorized 2.0.0 under latest; future publication and Git tags require their own authorization. Preserve historical licensing evidence.
 
 - Base appearance follows the owner-selected Clean light principles in docs/DESIGN.md. Keep scoped palette variables, decorative icons, native controls, visible checked states and at least 44px button targets. Keep every existing mode; do not copy mockup omissions or add fake navigation.
 
 - Widget placement is reserved provider-owned state. Display reset preserves it; position reset removes it. Keep drag cancellation/activation guards, non-drag alternatives and resize clamping. Only the tools list scrolls; reset/footer actions stay fixed through the internal action portal.
 
-- npm preparation uses `codex/npm-v2-release`, based on PR #17. Owner approved version 2.0.0-beta.1 and the beta tag on 2026-10-13. Keep `react-accessibility-plugin:state` as the storage key across the package rename. See docs/RELEASE.md.
+- npm preparation uses `codex/npm-v2-release`, based on PR #17. Owner initially approved beta, then selected version 2.0.0 under latest on 2026-10-13. Keep `react-accessibility-plugin:state` as the storage key across the package rename. See docs/RELEASE.md.
+
+- Owner requested GitHub Actions publication for 2.0.0/latest. `publish.yml` is manual, defaults to dry-run, tests/preserves the exact archive and uses npm OIDC; no automatic PR/push publication. Configure the matching trusted publisher before real dispatch. Default-branch merge still needs owner authorization.

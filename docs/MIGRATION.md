@@ -19,7 +19,7 @@ Behavior changes with rationale:
 
 ## From older development (7aef17c / PR #1)
 
-The owner has selected the existing npm package `accessibility-plugin-react` for this update. The published 1.0.0 package uses the older integration; version 2.0.0-beta.1 uses with explicit compound composition. Its historical development name was `react-accessibility-plugin@0.1.0`, which is not the release identity. This is a breaking API upgrade, not an automatic visual-only replacement.
+The owner has selected the existing npm package `accessibility-plugin-react` for this update. The published 1.0.0 package uses the older integration; version 2.0.0 uses with explicit compound composition. Its historical development name was `react-accessibility-plugin@0.1.0`, which is not the release identity. This is a breaking API upgrade, not an automatic visual-only replacement.
 
 The inspected published 1.0.0 archive has an empty `dist/index.d.ts` (`export {}`), metadata declaring ISC and a README declaring MIT. The new archive ships usable ESM/CJS declarations and uses ISC following the owner’s explicit confirmation on 2026-10-13 that all included code may be licensed under ISC. Published README package/import names were inconsistent; use `accessibility-plugin-react` and `accessibility-plugin-react/style.css` for this release.
 

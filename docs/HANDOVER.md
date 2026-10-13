@@ -137,3 +137,7 @@ vitest.config.ts
 src/utils/dom.ts
 tailwind.config.ts
 ```
+
+## Version 2 release instruction
+
+The owner subsequently selected accessibility-plugin-react@2.0.0 under latest, superseding the unpublished beta candidate. ISC remains approved. Publication is authorized; manual accessibility acceptance remains pending. See RELEASE.md for final archive and registry status.

@@ -7,6 +7,12 @@ const run = (args, cwd) =>
     stdio: "inherit",
     env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
   });
+const registryVersion = process.env.ARAP_CONSUMER_VERSION;
+if (registryVersion && !/^\d+\.\d+\.\d+$/.test(registryVersion))
+  throw new Error("ARAP_CONSUMER_VERSION must be an exact stable version");
+const installSpec = registryVersion
+  ? `accessibility-plugin-react@${registryVersion}`
+  : "../package.tgz";
 const fixture = await readFile("tests/browser/Fixture.jsx", "utf8");
 for (const [name, react, next] of [
   ["react18", "18.3.1", false],
@@ -31,7 +37,8 @@ for (const [name, react, next] of [
         dependencies: {
           react,
           "react-dom": react,
-          "accessibility-plugin-react": "file:../package.tgz",
+          "accessibility-plugin-react":
+            registryVersion ?? "file:../package.tgz",
           ...(next ? { next: "16.2.10" } : { vite: "7.3.7" }),
         },
         devDependencies: {
@@ -46,11 +53,10 @@ for (const [name, react, next] of [
     ),
   );
   // Installing the archive explicitly refreshes the package on reruns.
-  execFileSync(
-    "npm",
-    ["install", "../package.tgz", "--no-audit", "--no-fund"],
-    { cwd: directory, stdio: "inherit" },
-  );
+  execFileSync("npm", ["install", installSpec, "--no-audit", "--no-fund"], {
+    cwd: directory,
+    stdio: "inherit",
+  });
   await writeFile(`${directory}/Fixture.jsx`, fixture);
   await copyFile("tests/browser/host.css", `${directory}/host.css`);
   await writeFile(

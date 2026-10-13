@@ -2,7 +2,7 @@
 
 Composable React controls for website display preferences: text sizing, color adjustments, reading aids, media visibility and consumer-defined features. Choose the controls in JSX; preferences continue working when the panel closes.
 
-**Version 2 beta; stable accessibility acceptance remains pending.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
+**Version 2; manual accessibility acceptance remains pending.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
 
 ![Clean light accessibility panel with remembered placement and fixed quick actions](https://raw.githubusercontent.com/prabothcharith/accessibility-react/d53b28a5b0a97cb9e88d55cda03dae5b03d2d13d/docs/assets/movable-desktop.png)
 
@@ -10,17 +10,17 @@ The new look uses white surfaces, blue accents, outline icons and responsive con
 
 ## Quick start
 
-This update continues the owner’s existing npm package, `accessibility-plugin-react`, as a new major version. The registry currently serves 1.0.0; version 2.0.0-beta.1 introduces the new design and compound API. See [migration guidance](docs/MIGRATION.md) before upgrading. To evaluate these changes, install the local tarball:
+This update continues the owner’s existing npm package, `accessibility-plugin-react`, as a new major version. The registry currently serves 1.0.0; version 2.0.0 introduces the new design and compound API. See [migration guidance](docs/MIGRATION.md) before upgrading. To evaluate these changes, install the local tarball:
 
 ```sh
 npm ci
 npm run build
 npm pack
 # In your React application, use the actual archive path:
-npm install /absolute/path/to/accessibility-plugin-react-2.0.0-beta.1.tgz
+npm install /absolute/path/to/accessibility-plugin-react-2.0.0.tgz
 ```
 
-Install the beta with `npm install accessibility-plugin-react@beta`. `npm install accessibility-plugin-react` continues to select the 1.0.0 latest tag. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
+Install version 2 with `npm install accessibility-plugin-react@2`. `npm install accessibility-plugin-react` selects the latest version after publication. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
 
 ```tsx
 import {
