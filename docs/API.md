@@ -1,6 +1,6 @@
 # Public API
 
-All exports are named from `react-accessibility-plugin`. JavaScript consumers receive compiled ESM/CJS; TypeScript consumers receive matching declarations. CSS is an explicit import from `react-accessibility-plugin/style.css` (historical `/dist/style.css` also works).
+All exports are named from `accessibility-plugin-react`. JavaScript consumers receive compiled ESM/CJS; TypeScript consumers receive matching declarations. CSS is an explicit import from `accessibility-plugin-react/style.css` (historical `/dist/style.css` also works).
 
 ## Components
 

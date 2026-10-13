@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased — stabilization based on 0.1.0
+## Unreleased — 2.0.0 candidate
 
+- Continue the owner-selected npm package `accessibility-plugin-react` with a breaking major API upgrade, corrected installation/import guidance and packed consumers. Preserve the internal persistence key through the rename. Owner selected 2.0.0 under latest after the unpublished beta attempt. Manual accessibility acceptance remains pending.
+- Align LICENSE and package/lock metadata with the owner’s explicit ISC licensing decision on 2026-10-13.
 - Movable trigger with persisted placement, drag activation/cancellation handling, Alt+arrow/click alternatives, corner picker and position reset.
 - Fixed header/action bar with pinned ResetController, keyboard jump to actions and optional footer slot; compact short-screen layout. Display reset preserves placement. Trigger/panel descriptions use distinct IDs.
 
@@ -14,7 +16,7 @@
 - Native named controls, non-modal panel, focus return, scoped responsive CSS and body portals.
 - Correct reading mask, dynamic content sizing, media visibility, large cursor and pointer/focus reading aids.
 - Optional custom apply/validate contract, optional trigger icon, labels/style customization and storage disable.
-- ESM/CJS client boundary and matching declarations; both CSS export paths; correct repository metadata; include existing GPL license text.
+- ESM/CJS client boundary and matching declarations; both CSS export paths; correct repository metadata; include the owner-approved ISC license text.
 - Regression, packed-consumer, browser/axe tests, CI and maintained integration/release documentation.
 - Upgrade vulnerable development tooling; no runtime dependencies beyond React peers.
 

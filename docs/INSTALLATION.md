@@ -4,17 +4,17 @@
 
 Development: Node.js 22.13 or newer, npm, Git. Library peers: React/React DOM 18.3.1 or 19.x. Keep React and React DOM on the same version. There are no application environment variables, API keys, backend services or mandatory network access at runtime. Storage is optional (`persist={false}`).
 
-The package name on this branch is `react-accessibility-plugin`, version metadata remains 0.1.0; the working changes are unreleased. Do not assume the registry currently contains this implementation. `npm install react-accessibility-plugin` is the registry command **after checking the owner-approved version**. For this checkout:
+The owner selected the existing registry identity `accessibility-plugin-react`. The registry currently has 1.0.0; the owner approved 2.0.0 under the latest tag. The API changes require migration (see MIGRATION.md). For version 2, use `npm install accessibility-plugin-react@2`; plain `npm install accessibility-plugin-react` selects the registry's latest tag. For this checkout:
 
 ```sh
 npm ci
 npm run build
 npm pack
 # From an independent application:
-npm install /absolute/path/to/react-accessibility-plugin-0.1.0.tgz
+npm install /absolute/path/to/accessibility-plugin-react-2.0.0.tgz
 ```
 
-Import `react-accessibility-plugin/style.css` once near the app entry. Do not add the library to a Tailwind content scan. No shadcn, icon or Motion dependency is needed. See README for complete React/Vite JSX.
+Import `accessibility-plugin-react/style.css` once near the app entry. Do not add the library to a Tailwind content scan. No shadcn, icon or Motion dependency is needed. See README for complete React/Vite JSX.
 
 ## Next.js App Router
 
@@ -30,7 +30,7 @@ import {
   FontSizeController,
   GrayscaleController,
   ResetController,
-} from "react-accessibility-plugin";
+} from "accessibility-plugin-react";
 export default function Preferences() {
   return (
     <AccessibilityPlugin>
@@ -48,7 +48,7 @@ export default function Preferences() {
 ```tsx
 // app/layout.tsx
 import type { ReactNode } from "react";
-import "react-accessibility-plugin/style.css";
+import "accessibility-plugin-react/style.css";
 import Preferences from "./preferences";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -69,7 +69,7 @@ Mount the widget in the persistent root layout, not each route. Do not place doc
 ```tsx
 // pages/_app.tsx
 import type { AppProps } from "next/app";
-import "react-accessibility-plugin/style.css";
+import "accessibility-plugin-react/style.css";
 import Preferences from "../components/preferences"; // same component as above
 export default function App({ Component, pageProps }: AppProps) {
   return (

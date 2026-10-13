@@ -20,7 +20,7 @@ Baseline defects included controller-owned lifetime, overwriting filters, fixed 
 
 ## Package and compatibility
 
-Retained tsup, ESM/CJS, React peers and named compound exports. Preserved use-client boundary in distribution; matched .d.mts/.d.ts conditional exports. Both CSS entry paths work. No runtime design-system dependencies. Replaced unnecessary Tailwind build/reset pipeline with copied authored CSS. Corrected repository URL, bounded React18/19 peers and included existing GPL text. Metadata version remains 0.1.0 with unreleased changelog; licensing/name conflict awaits owner resolution.
+Retained tsup, ESM/CJS, React peers and named compound exports. Preserved use-client boundary in distribution; matched .d.mts/.d.ts conditional exports. Both CSS entry paths work. No runtime design-system dependencies. Replaced unnecessary Tailwind build/reset pipeline with copied authored CSS. Corrected repository URL, bounded React18/19 peers and included existing GPL text. Historical stabilization metadata was 0.1.0. The owner has now selected the existing npm identity accessibility-plugin-react; codex/npm-v2-release prepares a proposed 2.0.0-beta.1 candidate with updated imports and packed consumers. The owner approved ISC for all included code and the 2.0.0-beta.1 beta channel; npm maintainer authentication is verified; see RELEASE.md.
 
 ## Verification and accessibility
 
@@ -38,7 +38,7 @@ Created AGENTS.md, LICENSE, CHANGELOG.md and maintained docs: ARCHITECTURE, FEAT
 
 ## Remaining work and authorization
 
-P1: review PR #17 and its hosted checks; complete human accessibility and host-integration acceptance; resolve package identity and GPL/ISC history with owner; run final candidate validation. Then choose an approved release version and obtain tag/npm publication authorization. Track the release in [Project #18](https://github.com/users/prabothcharith/projects/18) and [release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
+P1: review PR #17 and its hosted checks; complete human accessibility and host-integration acceptance; record the approved ISC/beta decision; run final candidate validation. Then choose an approved release version and obtain tag/npm publication authorization. Track the release in [Project #18](https://github.com/users/prabothcharith/projects/18) and [release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
 
 Current limits include one provider/document, host filter containing-block behavior, no Shadow DOM/iframe interior/pseudo-element effects, no auto-pause for hidden video and CSP considerations. These are documented implementation boundaries, not hidden workarounds.
 
@@ -137,3 +137,7 @@ vitest.config.ts
 src/utils/dom.ts
 tailwind.config.ts
 ```
+
+## Version 2 release instruction
+
+The owner subsequently selected accessibility-plugin-react@2.0.0 under latest, superseding the unpublished beta candidate. ISC remains approved. Publication is authorized; manual accessibility acceptance remains pending. See RELEASE.md for final archive and registry status.

@@ -1,22 +1,26 @@
-# React Accessibility Plugin
+# Accessibility Plugin React
 
 Composable React controls for website display preferences: text sizing, color adjustments, reading aids, media visibility and consumer-defined features. Choose the controls in JSX; preferences continue working when the panel closes.
 
-**Development build, not a published stable release.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
+**Version 2; manual accessibility acceptance remains pending.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
+
+![Clean light accessibility panel with remembered placement and fixed quick actions](https://raw.githubusercontent.com/prabothcharith/accessibility-react/d53b28a5b0a97cb9e88d55cda03dae5b03d2d13d/docs/assets/movable-desktop.png)
+
+The new look uses white surfaces, blue accents, outline icons and responsive controls. Move the trigger by dragging, Alt+arrow keys or the corner/movement controls. Settings and placement are remembered; reset stays in the fixed action bar while tools scroll. Display reset preserves the trigger position.
 
 ## Quick start
 
-The selected branch uses the package name `react-accessibility-plugin`. The npm registry version may differ from this checkout. To evaluate these changes, install the local tarball:
+This update continues the owner’s existing npm package, `accessibility-plugin-react`, as a new major version. The registry currently serves 1.0.0; version 2.0.0 introduces the new design and compound API. See [migration guidance](docs/MIGRATION.md) before upgrading. To evaluate these changes, install the local tarball:
 
 ```sh
 npm ci
 npm run build
 npm pack
 # In your React application, use the actual archive path:
-npm install /absolute/path/to/react-accessibility-plugin-0.1.0.tgz
+npm install /absolute/path/to/accessibility-plugin-react-2.0.0.tgz
 ```
 
-Once an owner-approved release is available, registry installation is `npm install react-accessibility-plugin`. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
+Install version 2 with `npm install accessibility-plugin-react@2`. `npm install accessibility-plugin-react` selects the latest version after publication. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
 
 ```tsx
 import {
@@ -27,8 +31,8 @@ import {
   ContrastController,
   GrayscaleController,
   ResetController,
-} from "react-accessibility-plugin";
-import "react-accessibility-plugin/style.css";
+} from "accessibility-plugin-react";
+import "accessibility-plugin-react/style.css";
 
 export default function App() {
   return (
@@ -58,7 +62,7 @@ Mount one provider above route changes. The panel is a non-modal region: Enter/S
 Keep custom side effects in the provider's lifecycle, not in click handlers:
 
 ```tsx
-import { useAccessibility } from "react-accessibility-plugin";
+import { useAccessibility } from "accessibility-plugin-react";
 
 export function OutlineFeature() {
   const { value, setValue } = useAccessibility("my-site:outline", false, {
@@ -89,9 +93,9 @@ Place `<OutlineFeature />` inside `<AccessibilityList>`. Its state restores from
 - [Architecture and decisions](docs/ARCHITECTURE.md)
 - [Development, testing and release procedure](docs/DEVELOPMENT.md)
 - [Troubleshooting and limitations](docs/TROUBLESHOOTING.md)
-- [Migration](docs/MIGRATION.md), [changelog](CHANGELOG.md)
+- [Migration](docs/MIGRATION.md), [changelog](CHANGELOG.md), [npm release candidate](docs/RELEASE.md)
 - [Status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [baseline](docs/BASELINE.md)
 
-The original [vanilla JavaScript project](https://github.com/prabothcharith/accessibility-plugin) remains a separate repository. This branch retains its existing GPL-3.0 declaration and includes [LICENSE](LICENSE). Historical ISC metadata conflicts are recorded in the status document; the owner must resolve release licensing and package identity before publication.
+The original [vanilla JavaScript project](https://github.com/prabothcharith/accessibility-plugin) remains a separate repository. This version uses the [ISC license](LICENSE). On 2026-10-13 the owner confirmed authority to license all included code under ISC, resolving the prior GPL/ISC/MIT metadata conflict for this release.
 
 The default visual foundation is [Clean light](docs/DESIGN.md): scoped plain CSS, reusable palette variables, outline icons and responsive control rows. See the design guide for actual desktop/mobile screenshots.

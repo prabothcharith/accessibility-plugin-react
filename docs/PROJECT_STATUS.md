@@ -11,7 +11,7 @@
 | Partially implemented      | Broad accessibility acceptance: automated keyboard/axe/reflow checks passed, real screen-reader/physical-device/actual zoom review remains. Host-wide integration: known filter/CSP/Shadow DOM/attribute-change limits remain.                                                                       |
 | In progress                | Movable trigger and fixed quick actions are implemented in PR #17; manual release acceptance remains pending.                                                                                                                                                                                        |
 | Planned                    | Large-DOM profiling, attribute/font-load refresh, explicit effect scopes and richer localization                                                                                                                                                                                                     |
-| Blocked                    | Local macOS Firefox launch only (Linux coverage passed); owner decision on conflicting historical license metadata and intended registry identity before release                                                                                                                                     |
+| Blocked                    | Local macOS Firefox launch only (Linux coverage passed); npm rejected beta publication due to a temporary maintainer account suspension; stable human acceptance remains pending                                                                                                                     |
 | Deferred                   | Multi-provider arbitration and live cross-tab sync                                                                                                                                                                                                                                                   |
 | Completed                  | Investigation/baseline, local P0 stabilization, feature regression suite, packed consumer/build verification, documentation, local example verification and full hosted CI meet their stated local acceptance criteria                                                                               |
 
@@ -62,8 +62,8 @@ The local suite now passes 61 tests. Font enlargement scales fixed line heights 
 
 1. **Human accessibility testing pending:** VoiceOver/NVDA, physical touch devices, forced-colors visual review, browser zoom 200/400%. Automated axe and emulation do not establish WCAG conformance.
 2. **Local Firefox remains unavailable on this Mac.** The complete Firefox browser scenarios passed on Linux, so the local launch issue does not block automated release verification.
-3. **License conflict:** selected branch/spec declare GPL-3.0; original LICENSE is GPLv3; original package.json and older React metadata declare ISC. The existing selected-branch declaration is retained, LICENSE included, no rights reinterpreted. Owner must resolve intended licensing before release.
-4. **Package identity:** current branch uses react-accessibility-plugin@0.1.0; older branch used accessibility-plugin-react@1.0.0. No registry ownership/publication status is inferred. Owner must confirm name/version/migration/release permissions.
+3. **License resolved for this release:** on 2026-10-13 the owner confirmed authority to license all included code under ISC. LICENSE and package/lock metadata now agree on ISC. Historical GPL/ISC/MIT discrepancies remain recorded in baseline/migration evidence.
+4. **Version 2 identity and channel approved:** the owner now selected `accessibility-plugin-react@2.0.0` under `latest`, superseding the unpublished beta candidate. npm maintainer authentication is verified. Registry latest remains 1.0.0 until a successful upload is independently confirmed; see RELEASE.md.
 5. One provider per document, no live cross-tab sync, immutable definitions/storage configuration. Routes should share the provider.
 6. Effects target current-document HTML only; no Shadow DOM, iframe interiors, pseudo-elements or SVG/canvas text. Color filters alter host containing blocks. Late fonts/attribute-only style changes need a preference refresh. Very large/changing DOMs need application-specific profiling.
 7. Media hiding retains layout and does not stop playback. CSP may restrict inline styles/data cursors. No universal host compatibility claim.
@@ -81,3 +81,15 @@ On PR #17 (movement source `d5e21df`), the trigger persists normalized drag/corn
 ## Release tracking
 
 [Project #18](https://github.com/users/prabothcharith/projects/18) and [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) hold the first stable release gates. Documentation correction [#9](https://github.com/prabothcharith/accessibility-react/issues/9) is addressed in PR #17. Owner licensing/identity decisions (#4/#5), human acceptance (#6–#8), final candidate checks (#10) and explicitly authorized publication/registry verification (#11) remain required. Build artifacts and merged implementation do not establish registry availability.
+
+## npm identity follow-up
+
+The owner requested that the new design update the existing `accessibility-plugin-react` package. The `codex/npm-v2-release` branch updates metadata, imports, documentation, examples and packed consumer fixtures to that name. It retains the previous internal storage key to preserve preferences. This branch includes PR #17's movement source and is based on that review head. The inspected 1.0.0 archive has empty declaration exports and conflicting ISC/MIT metadata; migration guidance records the new major API and the owner’s ISC decision. Candidate validation is recorded in RELEASE.md; no registry publication is implied.
+
+## Final beta validation and upload status
+
+Owner-approved ISC beta source `cf4348b` passed [full hosted validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38356642128): 66 unit tests on Node22/24 and 55 full-matrix browser passes with five intentional skips, plus packed consumers and all build/package checks. npm accepted browser authentication but rejected the upload with a temporary account suspension (E403). Registry checks confirmed no 2.0.0-beta.1, no beta tag, and latest=1.0.0. Publication remains blocked by npm account state, not build failures. Issues #4/#5 are resolved by the owner’s decisions; #11 remains open. See RELEASE.md for the exact archive and retry procedure.
+
+## Version 2 channel selection
+
+The owner requested 2.0.0 without beta on 2026-10-13. Package/lock version and publishConfig now use 2.0.0/latest; README and migration instructions match. This is explicit publication authorization despite the remaining documented human acceptance checks. The earlier account suspension is a registry blocker independent of version choice. Publication results will be recorded after the retry.

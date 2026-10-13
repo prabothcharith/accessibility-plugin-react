@@ -54,7 +54,7 @@ examples/                    basic and custom feature demos
 .github/workflows/ci.yml      unit/build/package and browser integration jobs
 docs/                        maintained architecture/API/status/guides
 AGENTS.md                    future-agent entry point
-LICENSE                      retained GPL license text
+LICENSE                      owner-approved ISC license text
 COMMIT_SUMMARY.md             historical claims; not present verification
 react-accessibility-plugin-spec.md historical requirements
 ```
@@ -63,7 +63,7 @@ react-accessibility-plugin-spec.md historical requirements
 
 Write a reproducer before/alongside a lifecycle fix. Verify reset, restore, disable, provider unmount, repeated mount and Strict Mode. Check interactions with other active preferences and pre-existing host styles. Keep fake timers in storage tests; do not put unawaited assertions in timeout callbacks. Browser CSS numeric comparisons should tolerate subpixel serialization differences, not weaken functional bounds.
 
-CI has read-only repository permissions. It runs validation on Node 22 and 24 and packed/browser consumers on Ubuntu 24.04 using Node24-based action releases. No publishing secrets, release tags, npm tokens or publishing job exist. A workflow file is implemented but not “CI passing” until a real hosted run succeeds.
+CI has read-only repository permissions. It runs validation on Node 22 and 24 and packed/browser consumers on Ubuntu 24.04 using Node24-based action releases. Validation CI has no publishing privileges. A separate manually dispatched publish.yml validates and publishes an owner-selected version through npm OIDC; it defaults to dry-run, uses no npm token, and verifies registry consumers. See RELEASE.md for trusted-publisher setup and the required main-branch workflow. A workflow file is implemented but not “CI passing” until a real hosted run succeeds.
 
 ## Manual accessibility acceptance checklist
 
