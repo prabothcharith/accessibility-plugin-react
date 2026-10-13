@@ -54,7 +54,7 @@ examples/                    basic and custom feature demos
 .github/workflows/ci.yml      unit/build/package and browser integration jobs
 docs/                        maintained architecture/API/status/guides
 AGENTS.md                    future-agent entry point
-LICENSE                      retained GPL license text
+LICENSE                      owner-approved ISC license text
 COMMIT_SUMMARY.md             historical claims; not present verification
 react-accessibility-plugin-spec.md historical requirements
 ```

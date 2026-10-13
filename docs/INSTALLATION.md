@@ -4,7 +4,7 @@
 
 Development: Node.js 22.13 or newer, npm, Git. Library peers: React/React DOM 18.3.1 or 19.x. Keep React and React DOM on the same version. There are no application environment variables, API keys, backend services or mandatory network access at runtime. Storage is optional (`persist={false}`).
 
-The owner selected the existing registry identity `accessibility-plugin-react`. The registry currently has 1.0.0; this checkout prepares an unreleased 2.0.0-beta.1 candidate. The API changes require migration (see MIGRATION.md). After beta publication, use `npm install accessibility-plugin-react@beta`; plain `npm install accessibility-plugin-react` continues to select the registry's latest tag. For this checkout:
+The owner selected the existing registry identity `accessibility-plugin-react`. The registry currently has 1.0.0; the owner approved 2.0.0-beta.1 under the beta tag. The API changes require migration (see MIGRATION.md). For this beta, use `npm install accessibility-plugin-react@beta`; plain `npm install accessibility-plugin-react` continues to select the registry's latest tag. For this checkout:
 
 ```sh
 npm ci

@@ -78,7 +78,7 @@
     "invert-colors"
   ],
   "author": "Praboth Charith",
-  "license": "GPL-3.0",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/prabothcharith/accessibility-react.git"
