@@ -1,6 +1,6 @@
 # Project status — 2026-10-13
 
-**Local stabilization implemented and automatically verified; stable release not yet approved.** No npm publication, release tag or default-branch merge. Working branch: `codex/stabilize-accessibility`, based on `new-development` at `6dfbd44`.
+**Local stabilization implemented and automatically verified; stable release not yet approved.** Stabilization was merged into `main` through PR #3 at `2893b6c`. No npm publication or release tag. The original stabilization foundation was `new-development` at `6dfbd44`; Clean light design work is on `codex/clean-light-design`.
 
 ## Status categories
 
@@ -9,7 +9,7 @@
 | Implemented and verified   | Provider-owned built-in/custom effects; reset cancellation; validated restoration; all fifteen controllers; combined filters; host style cleanup; dynamic child content; non-modal focus; portal layout; scoped CSS; React18/19 packed consumers; Next App/Pages and direct Server Component imports |
 | Implemented but unverified | Broader React19 patch versions, physical devices, assistive technologies and browser versions outside the executed matrix                                                                                                                                                                            |
 | Partially implemented      | Broad accessibility acceptance: automated keyboard/axe/reflow checks passed, real screen-reader/physical-device/actual zoom review remains. Host-wide integration: known filter/CSP/Shadow DOM/attribute-change limits remain.                                                                       |
-| In progress                | No active implementation work remains. Draft PR #2 is ready for owner review; manual release acceptance remains pending.                                                                                                                                                                             |
+| In progress                | No active implementation work remains. Clean light design changes are implemented on a review branch; manual release acceptance remains pending.                                                                                                                                                     |
 | Planned                    | Large-DOM profiling, attribute/font-load refresh, explicit effect scopes and richer localization                                                                                                                                                                                                     |
 | Blocked                    | Local macOS Firefox launch only (Linux coverage passed); owner decision on conflicting historical license metadata and intended registry identity before release                                                                                                                                     |
 | Deferred                   | Draggable trigger, built-in persisted position picker, multi-provider arbitration and live cross-tab sync                                                                                                                                                                                            |
@@ -44,7 +44,7 @@ Expected error-path unit tests deliberately trigger missing-provider and duplica
 
 ## Review branch
 
-[Draft PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) targets `new-development`. Implementation, integration tests, documentation and CI corrections are committed and pushed. No merge, release tag or npm publication has occurred.
+[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged stabilization into `new-development`; [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged the complete implementation into `main`. [Merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38345207412) passed all jobs. No release tag or npm publication has occurred.
 
 ## Hosted validation
 
@@ -69,3 +69,7 @@ The local suite now passes 61 tests. Font enlargement scales fixed line heights 
 7. Media hiding retains layout and does not stop playback. CSP may restrict inline styles/data cursors. No universal host compatibility claim.
 
 **Release readiness:** not yet stable-release-ready. Local implementation and integration evidence are substantially stronger than baseline; the gates above remain explicit. See ROADMAP.md for priorities and DEVELOPMENT.md for the manual procedure.
+
+## Clean light design follow-up
+
+The selected Clean light foundation adds scoped palette variables, decorative icons, compact steppers, responsive spacing, checked selected states, 44px toggle targets and an optional panel description. Local validation: 61 unit tests, type/lint/build/archive checks and all packed consumers passed; Chromium/desktop and mobile WebKit matrix passed 31 tests with four intentional skips. Narrow viewport checks also verify horizontal fit and 44px button dimensions. Runtime screenshots were visually inspected. Full hosted results are available through the design PR checks once executed. See DESIGN.md.

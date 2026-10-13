@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "contrast";
@@ -23,7 +24,10 @@ export function ContrastController() {
 
   return (
     <div className="arap-feature" role="group" aria-label="Contrast">
-      <span className="arap-label">Contrast</span>
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Contrast</span>
+      </span>
       <div className="arap-segmented">
         {LEVELS.map((level) => (
           <button
@@ -33,6 +37,11 @@ export function ContrastController() {
             aria-pressed={value === level.value}
             type="button"
           >
+            {value === level.value && (
+              <span className="arap-check" aria-hidden="true">
+                ✓
+              </span>
+            )}
             {level.label}
           </button>
         ))}

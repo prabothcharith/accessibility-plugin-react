@@ -26,15 +26,10 @@ function App() {
   return (
     <AccessibilityPlugin position="right">
       <AccessibilityButton
-        icon={
-          <span role="img" aria-label="Accessibility">
-            ⚙️
-          </span>
-        }
         title="Accessibility"
         description="Adjust display settings"
       />
-      <AccessibilityList>
+      <AccessibilityList title="Accessibility">
         <FontSizeController />
         <LineHeightController />
         <LetterSpacingController />

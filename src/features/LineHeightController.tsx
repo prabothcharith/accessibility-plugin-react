@@ -1,5 +1,6 @@
 "use client";
 
+import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
 
 const FEATURE_KEY = "lineHeight";
@@ -15,8 +16,15 @@ export function LineHeightController() {
   );
 
   return (
-    <div className="arap-feature" role="group" aria-label="Line Height">
-      <span className="arap-label">Line Height</span>
+    <div
+      className="arap-feature arap-feature-stepper"
+      role="group"
+      aria-label="Line Height"
+    >
+      <span className="arap-label">
+        <FeatureIcon name={FEATURE_KEY} />
+        <span>Line Height</span>
+      </span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"

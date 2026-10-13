@@ -4,12 +4,12 @@ All exports are named from `react-accessibility-plugin`. JavaScript consumers re
 
 ## Components
 
-| Component                                     | Props                                                                                                                                                                                                                       |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AccessibilityPlugin                           | `children: ReactNode` required; `position?: 'left' \| 'right' \| 'top' \| 'bottom'` default right; `persistenceKey?: string` default `react-accessibility-plugin:state`; `persist?: boolean` default true                   |
-| AccessibilityButton                           | `icon?: ReactNode` default inline accessibility SVG; `title?: string` accessible name, default Accessibility; `description?: string` supplementary accessible description; `className?: string`; `style?: CSSProperties`    |
-| AccessibilityList                             | `children: ReactNode` required; `title?: string` visible heading and region name, default Accessibility settings; `closeLabel?: string` default Close accessibility settings; `className?: string`; `style?: CSSProperties` |
-| All fifteen controllers listed in FEATURES.md | No props. Pick/omit in JSX. For custom labels or behavior, compose a control with useAccessibility.                                                                                                                         |
+| Component                                     | Props                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AccessibilityPlugin                           | `children: ReactNode` required; `position?: 'left' \| 'right' \| 'top' \| 'bottom'` default right; `persistenceKey?: string` default `react-accessibility-plugin:state`; `persist?: boolean` default true                                                                                                          |
+| AccessibilityButton                           | `icon?: ReactNode` default inline accessibility SVG; `title?: string` accessible name, default Accessibility; `description?: string` supplementary accessible description; `className?: string`; `style?: CSSProperties`                                                                                           |
+| AccessibilityList                             | `children: ReactNode` required; `title?: string` visible heading and region name, default Accessibility settings; `description?: string` default Adjust your reading experience (empty string omits it); `closeLabel?: string` default Close accessibility settings; `className?: string`; `style?: CSSProperties` |
+| All fifteen controllers listed in FEATURES.md | No props. Pick/omit in JSX. For custom labels or behavior, compose a control with useAccessibility.                                                                                                                                                                                                                |
 
 Use one button/list pair per provider and one provider per document. UI IDs use React `useId`; do not target the old fixed `arap-panel` ID. Plugin children can include ordinary app content, but mounting the widget as a sibling makes intent clearer. Persistence configuration is fixed at mount; use `<AccessibilityPlugin key={newKey} persistenceKey={newKey}>` when switching storage identity.
 
@@ -61,3 +61,17 @@ Import library CSS once, then load your overrides. It does not require Tailwind 
 ```
 
 Host theme classes on an application root do not enclose body portals. Use global `.arap-root` overrides for custom widget themes, and preserve contrast, focus and pressed states. Consumer CSS containing broad `!important` rules can still interfere. Native buttons have explicit type and are safe within application forms.
+
+### Clean light design foundation
+
+The default widget uses white surfaces, ink labels, blue selected controls, outline icons, subtle dividers and a compact stepper layout. Steppers stack below their labels at narrow widths. All existing modes remain available; the reference mockup is a direction, not a reduced feature set. Icons are decorative, selected segmented controls include a checkmark, and switches retain 44px button targets.
+
+Override the scoped CSS variables on `.arap-root` to adapt the palette. Defaults include `--arap-surface`, `--arap-text`, `--arap-muted`, `--arap-border`, `--arap-divider`, `--arap-accent`, `--arap-accent-hover`, `--arap-selected` and `--arap-control`. Supply compatible contrast for every state and test custom palettes. Consumer styles may also set these variables on their panel/trigger class. These variables are not applied to the host document.
+
+```css
+.arap-root {
+  --arap-accent: #1e40af;
+  --arap-accent-hover: #1e3a8a;
+  --arap-selected: #eff6ff;
+}
+```
