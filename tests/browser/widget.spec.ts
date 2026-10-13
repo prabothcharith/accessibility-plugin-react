@@ -38,13 +38,16 @@ test("combined effects survive closure, navigation, reload and reset", async ({
     .click();
   await page.getByRole("button", { name: "Grayscale", exact: true }).click();
   await page.getByLabel("Close accessibility settings").click();
+  // Engines quantize font sizes; still require the rendered value within 1/32 CSS px.
   await expect
-    .poll(() =>
-      page
-        .locator("#sample")
-        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+    .poll(async () =>
+      Math.abs(
+        (await page
+          .locator("#sample")
+          .evaluate((el) => parseFloat(getComputedStyle(el).fontSize))) - 19.8,
+      ),
     )
-    .toBeCloseTo(19.8, 3);
+    .toBeLessThan(1 / 32);
   await page.getByRole("button", { name: "Navigate", exact: true }).click();
   await expect(page.locator("#route")).toHaveCSS("font-size", "33px");
   await page.waitForFunction(() =>
@@ -53,13 +56,16 @@ test("combined effects survive closure, navigation, reload and reset", async ({
       ?.includes("grayscale"),
   );
   await page.reload();
+  // Engines quantize font sizes; still require the rendered value within 1/32 CSS px.
   await expect
-    .poll(() =>
-      page
-        .locator("#sample")
-        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+    .poll(async () =>
+      Math.abs(
+        (await page
+          .locator("#sample")
+          .evaluate((el) => parseFloat(getComputedStyle(el).fontSize))) - 19.8,
+      ),
     )
-    .toBeCloseTo(19.8, 3);
+    .toBeLessThan(1 / 32);
   await expect(page.getByRole("region")).not.toBeVisible();
   await page.getByLabel("Accessibility", { exact: true }).click();
   await expect(

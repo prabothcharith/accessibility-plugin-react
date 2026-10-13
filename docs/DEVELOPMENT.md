@@ -55,7 +55,7 @@ react-accessibility-plugin-spec.md historical requirements
 
 Write a reproducer before/alongside a lifecycle fix. Verify reset, restore, disable, provider unmount, repeated mount and Strict Mode. Check interactions with other active preferences and pre-existing host styles. Keep fake timers in storage tests; do not put unawaited assertions in timeout callbacks. Browser CSS numeric comparisons should tolerate subpixel serialization differences, not weaken functional bounds.
 
-CI has read-only repository permissions. It runs validation on Node 22 and 24 and packed/browser consumers on Linux. No publishing secrets, release tags, npm tokens or publishing job exist. A workflow file is implemented but not “CI passing” until a real hosted run succeeds.
+CI has read-only repository permissions. It runs validation on Node 22 and 24 and packed/browser consumers on Ubuntu 24.04 using Node24-based action releases. No publishing secrets, release tags, npm tokens or publishing job exist. A workflow file is implemented but not “CI passing” until a real hosted run succeeds.
 
 ## Manual accessibility acceptance checklist
 

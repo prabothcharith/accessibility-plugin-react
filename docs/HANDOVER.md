@@ -26,7 +26,7 @@ Retained tsup, ESM/CJS, React peers and named compound exports. Preserved use-cl
 
 See PROJECT_STATUS.md for the exact current matrix. Source/test/config typecheck, zero-warning lint, 59 unit regressions, build, package inspection and audit passed. Independent packed React18.3.1 and React19.2.0/Tailwind consumers passed ESM/CJS/declarations/SSR/build. Next16.2.10 App/Pages/direct server imports passed production build and runtime checks. Corrected non-Firefox browser suite: 31 passed, four intentional Next-only skips. Axe found zero violations in tested widget scopes; real keyboard interaction and geometry were exercised. Both built examples ran with zero page errors and desktop/mobile screenshots were visually inspected.
 
-Firefox's profile-folder launch failure is an environment blocker, not a passing check. Human screen-reader, physical-device, actual zoom and forced-colors acceptance remains pending. GitHub Actions is configured but remote results must be recorded when executed. No WCAG compliance or universal host compatibility is claimed.
+Firefox's profile-folder launch failure is an environment blocker, not a passing check. Human screen-reader, physical-device, actual zoom and forced-colors acceptance remains pending. Hosted Node22/24 checks and packed consumer builds passed. The first full browser run had 36 passes, five intentional skips and one Firefox rounding assertion failure; the assertion is corrected and the full rerun is pending. No WCAG compliance or universal host compatibility is claimed.
 
 ## Change inventory
 
