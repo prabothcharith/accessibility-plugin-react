@@ -2,7 +2,7 @@
 
 Build a composable React display-preference library. Read [status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [architecture](docs/ARCHITECTURE.md) and [API](docs/API.md) before changing behavior. They supersede historical root specification/commit-summary claims.
 
-- Foundation: `new-development` at 6dfbd44; stabilization merged into `main` at 2893b6c. Clean light merged into `main` through PR #16 at 15e9465. Movement/fixed actions are in PR #17 on `codex/movable-quick-actions`. Preserve unrelated work. Use focused branches/PRs; no force push, publish, tags or default-branch merge without owner authorization.
+- Foundation: `new-development` at 6dfbd44; stabilization merged into `main` at 2893b6c. Clean light merged into `main` through PR #16 at 15e9465. Movement/fixed actions merged through PR #17 at aa72aa5; ISC/version 2/publishing workflow merged through PR #18 at 1d4ab1c. Preserve unrelated work. Use focused branches/PRs; no force push, publish, tags or default-branch merge without owner authorization.
 - Core owns state, storage and persistent effects; controls only render/set state. Never restore controller-owned effect lifetimes. One provider per document; definitions persist through control unmount. Keep the widget outside host filters and application layout.
 - Public compound exports and two-argument hook are compatibility contracts. Justify behavior/API changes and update MIGRATION.md. Custom feature options require cleanup and validated persistence.
 - `src/core`: store/provider/effects/UI. `src/features`: controllers. `src/styles/tailwind.css`: plain scoped CSS despite its historical filename. `tests`: unit and packed browser fixtures. `scripts`: build/package/consumer validation. `examples`: built-package demos. `docs`: maintained guidance.
@@ -19,4 +19,4 @@ Build a composable React display-preference library. Read [status](docs/PROJECT_
 
 - npm preparation uses `codex/npm-v2-release`, based on PR #17. Owner initially approved beta, then selected version 2.0.0 under latest on 2026-10-13. Keep `react-accessibility-plugin:state` as the storage key across the package rename. See docs/RELEASE.md.
 
-- Owner requested GitHub Actions publication for 2.0.0/latest. `publish.yml` is manual, defaults to dry-run, tests/preserves the exact archive and uses npm OIDC; no automatic PR/push publication. Configure the matching trusted publisher before real dispatch. Default-branch merge still needs owner authorization.
+- Owner requested GitHub Actions publication for 2.0.0/latest. `publish.yml` is manual, defaults to dry-run, tests/preserves the exact archive and uses npm OIDC; no automatic PR/push publication. Configure the matching trusted publisher before real dispatch. The owner authorized the merges of PR #17 and #18; future default-branch merges need their own authorization.

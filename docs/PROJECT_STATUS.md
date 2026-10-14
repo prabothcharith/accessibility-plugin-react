@@ -1,6 +1,6 @@
 # Project status — 2026-10-13
 
-**Local stabilization implemented and automatically verified; stable release not yet approved.** Stabilization was merged into `main` through PR #3 at `2893b6c`. No npm publication or release tag. The original stabilization foundation was `new-development` at `6dfbd44`; Clean light merged through [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) at `15e9465`. Movement and fixed actions are in [PR #17](https://github.com/prabothcharith/accessibility-react/pull/17) on `codex/movable-quick-actions`, not yet merged.
+**Local stabilization implemented and automatically verified; stable release not yet approved.** Stabilization was merged into `main` through PR #3 at `2893b6c`. No npm publication or release tag. The original stabilization foundation was `new-development` at `6dfbd44`; Clean light merged through [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) at `15e9465`. Movement/fixed actions merged through [PR #17](https://github.com/prabothcharith/accessibility-react/pull/17) at `aa72aa5`; version 2/ISC and the publishing workflow merged through [PR #18](https://github.com/prabothcharith/accessibility-react/pull/18) at `1d4ab1c`. Registry publication is still pending.
 
 ## Status categories
 
@@ -9,7 +9,7 @@
 | Implemented and verified   | Provider-owned built-in/custom effects; reset cancellation; validated restoration; all fifteen controllers; combined filters; host style cleanup; dynamic child content; non-modal focus; portal layout; scoped CSS; React18/19 packed consumers; Next App/Pages and direct Server Component imports |
 | Implemented but unverified | Broader React19 patch versions, physical devices, assistive technologies and browser versions outside the executed matrix                                                                                                                                                                            |
 | Partially implemented      | Broad accessibility acceptance: automated keyboard/axe/reflow checks passed, real screen-reader/physical-device/actual zoom review remains. Host-wide integration: known filter/CSP/Shadow DOM/attribute-change limits remain.                                                                       |
-| In progress                | Movable trigger and fixed quick actions are implemented in PR #17; manual release acceptance remains pending.                                                                                                                                                                                        |
+| In progress                | npm publication is blocked by the maintainer account hold; manual accessibility acceptance remains pending.                                                                                                                                                                                          |
 | Planned                    | Large-DOM profiling, attribute/font-load refresh, explicit effect scopes and richer localization                                                                                                                                                                                                     |
 | Blocked                    | Local macOS Firefox launch only (Linux coverage passed); npm rejected beta publication due to a temporary maintainer account suspension; stable human acceptance remains pending                                                                                                                     |
 | Deferred                   | Multi-provider arbitration and live cross-tab sync                                                                                                                                                                                                                                                   |
@@ -44,7 +44,7 @@ Expected error-path unit tests deliberately trigger missing-provider and duplica
 
 ## Merge and review state
 
-[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged stabilization into `new-development`; [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged the complete implementation into `main`. [Merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38345207412) passed all jobs. PR #16 merged Clean light into main at `15e9465`; [that main run](https://github.com/prabothcharith/accessibility-react/actions/runs/38353340223) also passed all jobs. PR #17 is the movement follow-up awaiting review. No release tag or npm publication has occurred.
+[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged stabilization into `new-development`; [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged the complete implementation into `main`. [Merged-main validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38345207412) passed all jobs. PR #16 merged Clean light into main at `15e9465`; [that main run](https://github.com/prabothcharith/accessibility-react/actions/runs/38353340223) also passed all jobs. PR #17 and PR #18 are now merged; GitHub Actions publication is tracked separately from validation. No release tag or npm publication has occurred.
 
 ## Hosted validation
 
@@ -76,7 +76,7 @@ The selected Clean light foundation adds scoped palette variables, decorative ic
 
 ## Movement and quick-action follow-up
 
-On PR #17 (movement source `d5e21df`), the trigger persists normalized drag/corner placement alongside display settings, with pointer-cancellation/activation guards and keyboard/click alternatives. Fixed header/footer controls and a keyboard action jump keep reset available without scrolling. Resetting display settings preserves placement; position reset is separate. Local validation: 66 unit tests and packed React18/React19/Next consumers passed; the final local browser matrix passed 46 tests with four intentional skips, including measured-size geometry, mouse/Chromium touch dragging, WebKit mobile taps, cancelled drags, 320px/short-screen fit, persistence and fixed-action checks. Hosted movement validation is tracked by PR #17 checks; it is separate from the earlier merged-main results. Human touch, screen-reader and actual zoom acceptance remains pending.
+Merged through PR #17 (movement source `d5e21df`), the trigger persists normalized drag/corner placement alongside display settings, with pointer-cancellation/activation guards and keyboard/click alternatives. Fixed header/footer controls and a keyboard action jump keep reset available without scrolling. Resetting display settings preserves placement; position reset is separate. Local validation: 66 unit tests and packed React18/React19/Next consumers passed; the final local browser matrix passed 46 tests with four intentional skips, including measured-size geometry, mouse/Chromium touch dragging, WebKit mobile taps, cancelled drags, 320px/short-screen fit, persistence and fixed-action checks. Hosted movement validation is tracked by PR #17 checks; it is separate from the earlier merged-main results. Human touch, screen-reader and actual zoom acceptance remains pending.
 
 ## Release tracking
 
@@ -93,3 +93,9 @@ Owner-approved ISC beta source `cf4348b` passed [full hosted validation](https:/
 ## Version 2 channel selection
 
 The owner requested 2.0.0 without beta on 2026-10-13. Package/lock version and publishConfig now use 2.0.0/latest; README and migration instructions match. This is explicit publication authorization despite the remaining documented human acceptance checks. The earlier account suspension is a registry blocker independent of version choice. Publication results will be recorded after the retry.
+
+## Merged publication workflow
+
+The owner authorized merging PR #17 and PR #18 and dispatching publication. Main is now 1d4ab1c with package version 2.0.0, ISC and latest publishConfig. [Pre-merge final validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38359055736) passed all jobs. The manual [publication Action](https://github.com/prabothcharith/accessibility-react/actions/runs/38359604307) was dispatched with version=2.0.0 and dry_run=false. npm trusted-publisher setup failed through both authenticated CLI (403) and browser settings, where the temporary account-suspension notice appeared. No GitHub trusted connection was saved; Action outcome and registry verification are recorded in RELEASE.md.
+
+The publication Action's validation and checksum checks succeeded, but upload failed with npm E404/permission denial because trusted-publisher setup remained unsaved. Registry still contains only 1.0.0/latest. The owner-requested fresh connection form is filled and awaits browser authorization; 2.0.0 remains unpublished. See RELEASE.md for the failed-job retry command.

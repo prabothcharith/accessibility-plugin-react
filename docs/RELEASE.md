@@ -105,3 +105,15 @@ gh workflow run publish.yml --ref main -f version=2.0.0 -f dry_run=false
 References: [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/), [npm trust CLI](https://docs.npmjs.com/cli/v11/commands/npm-trust/), [GitHub manual workflow requirements](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow). Do not report successful publication until the registry and consumer steps succeed.
 
 Local version 2 preparation checks passed: 66 unit tests, type/lint/format/build/archive validation, and packed React18/React19/Next consumer builds. The publication workflow passed actionlint 1.7.12; malformed registry-consumer versions are rejected before installation. The workflow itself has not been dispatched; main-branch availability and npm trusted-publisher setup are still required.
+
+## GitHub Actions attempt — 2026-10-13
+
+PR #17 and PR #18 were merged with owner authorization; main is 1d4ab1c. [Publication Action 38359604307](https://github.com/prabothcharith/accessibility-react/actions/runs/38359604307) ran with version=2.0.0 and dry_run=false. Its validate job passed, preserved the tested archive, and the publishing job verified the archive checksum. Upload then failed with npm E404/permission denial. The trusted-publisher connection had not been saved: both CLI and browser setup were rejected, with the browser explicitly showing the temporary account-suspension notice. Registry checks still found only 1.0.0/latest; version 2.0.0 is not published.
+
+At the owner's request, a fresh GitHub trusted-publisher form was filled in Chrome with user prabothcharith, repository accessibility-react, workflow publish.yml, no environment and Allow npm publish enabled. It is awaiting the owner's Set up connection/security-key authorization. A filled form is not a saved trusted connection. Once the connection is successfully saved and npm permits publication, rerun the failed publishing job to reuse the validated artifact:
+
+```sh
+gh run rerun 38359604307 --failed
+```
+
+Verify registry metadata/integrity/latest and registry consumers before reporting success. No further retry is automatic.
