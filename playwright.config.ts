@@ -9,45 +9,45 @@ export default defineConfig({
   webServer: [
     {
       command: "npm run dev --prefix .consumers/react18",
-      url: "http://127.0.0.1:4311",
+      url: "http://127.0.0.1:7311",
       reuseExistingServer: !process.env.CI,
     },
     {
       command: "npm run dev --prefix .consumers/react19",
-      url: "http://127.0.0.1:4312",
+      url: "http://127.0.0.1:7312",
       reuseExistingServer: !process.env.CI,
     },
     {
       command:
-        "npm exec --prefix .consumers/next -- next start .consumers/next -p 4313",
-      url: "http://127.0.0.1:4313",
+        "npm exec --prefix .consumers/next -- next start .consumers/next -p 7313",
+      url: "http://127.0.0.1:7313",
       reuseExistingServer: !process.env.CI,
     },
   ],
   projects: [
     {
       name: "react18-chromium",
-      use: { browserName: "chromium", baseURL: "http://127.0.0.1:4311" },
+      use: { browserName: "chromium", baseURL: "http://127.0.0.1:7311" },
     },
     {
       name: "react19-tailwind",
-      use: { browserName: "chromium", baseURL: "http://127.0.0.1:4312" },
+      use: { browserName: "chromium", baseURL: "http://127.0.0.1:7312" },
     },
     {
       name: "next-app",
-      use: { browserName: "chromium", baseURL: "http://127.0.0.1:4313" },
+      use: { browserName: "chromium", baseURL: "http://127.0.0.1:7313" },
     },
     {
       name: "firefox",
-      use: { browserName: "firefox", baseURL: "http://127.0.0.1:4311" },
+      use: { browserName: "firefox", baseURL: "http://127.0.0.1:7311" },
     },
     {
       name: "webkit",
-      use: { browserName: "webkit", baseURL: "http://127.0.0.1:4311" },
+      use: { browserName: "webkit", baseURL: "http://127.0.0.1:7311" },
     },
     {
       name: "mobile",
-      use: { ...devices["iPhone 13"], baseURL: "http://127.0.0.1:4311" },
+      use: { ...devices["iPhone 13"], baseURL: "http://127.0.0.1:7311" },
     },
   ],
 });

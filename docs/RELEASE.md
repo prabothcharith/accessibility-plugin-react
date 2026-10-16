@@ -1,11 +1,11 @@
-# npm release candidate — 2026-10-13
+# npm release and verification — updated 2026-10-16
 
 ## Identity and current state
 
 - Owner-selected package: `accessibility-plugin-react` (same existing npm package).
-- Registry snapshot: `latest=1.0.0`; sole published version 1.0.0; maintainer `praboth`.
+- Registry state: `latest=2.0.0`; published versions 1.0.0 and 2.0.0; maintainer `praboth`.
 - Owner-approved candidate: `2.0.0`, npm tag `latest`. The owner explicitly selected publication without beta.
-- Source branch: `codex/npm-v2-release`, based on the movement/fixed-actions PR #17 head. No publication, release tag or main merge performed by this preparation.
+- Published source: main commit `1d4ab1c`, containing the merged movement/fixed-actions and version 2 release work. No Git release tag was created.
 - ISC is owner-approved for all included code as of 2026-10-13; LICENSE and package/lock metadata agree. Published 1.0.0 metadata says ISC and its README says MIT; historical inconsistency is retained in migration evidence.
 - npm CLI authentication as package maintainer `praboth` is verified. Credentials/2FA remain outside repository files and chat.
 
@@ -117,3 +117,11 @@ gh run rerun 38359604307 --failed
 ```
 
 Verify registry metadata/integrity/latest and registry consumers before reporting success. No further retry is automatic.
+
+## Successful version 2 publication — 2026-10-16
+
+The owner saved the npm trusted-publisher connection for `prabothcharith/accessibility-react` and `publish.yml`, then authorized the publication retry. The failed publish job in [Action 38359604307](https://github.com/prabothcharith/accessibility-react/actions/runs/38359604307) reused the archive previously validated from main commit `1d4ab1c`. Its SHA512 checksum check passed and npm accepted `accessibility-plugin-react@2.0.0` through OIDC under `latest`.
+
+The workflow queried the registry immediately and received a temporary 404 while npm's publish-time malware scan was still processing the tarball. After the scan completed, independent checks confirmed version/latest/ISC metadata and integrity `sha512-CQFzF0pNl/bb+YVauI35+GNK2PIgk4qoh8+PnEkj1HAeW2lLMM/LTV5fq0tigNRnmPVX0M7rpYR4XPo820CQWw==`. Clean installs from the public registry passed React18, React19/Tailwind and Next16 declaration checks, ESM/CommonJS loading, SSR and production builds. The installed-package browser matrix passed 55 tests with five intentional Next-only skips across Chromium, Firefox, desktop WebKit and mobile WebKit.
+
+The workflow follow-up retries registry verification for the expected npm scan delay and supports Windows validation. Human screen-reader, physical-device, actual-zoom, forced-colors and representative host acceptance remain pending. Publication did not authorize or create a Git tag/GitHub release.

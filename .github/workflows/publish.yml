@@ -62,7 +62,7 @@ jobs:
   publish:
     needs: validate
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -96,7 +96,22 @@ jobs:
           import { createHash } from 'node:crypto';
           import { readFileSync } from 'node:fs';
           const view = (...args) => JSON.parse(execFileSync('npm', ['view', ...args, '--json'], { encoding: 'utf8' }));
-          const pkg = view(`accessibility-plugin-react@${process.env.EXPECTED_VERSION}`, 'name', 'version', 'license', 'dist.integrity');
+          const wait = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
+          const viewPublishedPackage = async () => {
+            let lastError;
+            const spec = `accessibility-plugin-react@${process.env.EXPECTED_VERSION}`;
+            for (let attempt = 1; attempt <= 90; attempt += 1) {
+              try {
+                execFileSync('npm', ['pack', spec, '--dry-run', '--json'], { stdio: 'ignore' });
+                return view(spec, 'name', 'version', 'license', 'dist.integrity');
+              } catch (error) {
+                lastError = error;
+                if (attempt < 90) await wait(10000);
+              }
+            }
+            throw lastError;
+          };
+          const pkg = await viewPublishedPackage();
           const integrity = 'sha512-' + createHash('sha512').update(readFileSync('release/accessibility-plugin-react.tgz')).digest('base64');
           assert.equal(pkg.name, 'accessibility-plugin-react');
           assert.equal(pkg.version, process.env.EXPECTED_VERSION);

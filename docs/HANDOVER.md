@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-Stabilized the existing compound-component library rather than rebuilding from the empty default branch. All fifteen built-ins and the generic custom-feature hook remain. Effects now belong to the provider and survive closing/unmounting controls; reset/cleanup/persistence are coordinated. Built distribution has been exercised in independent React and Next applications. Stabilization and the Clean light design are merged into main. Remembered movement/fixed actions and the version 2 release workflow are merged through PR #17 and PR #18. Local and hosted validation are recorded for their respective snapshots; no stable release has been published or certified.
+Stabilized the existing compound-component library rather than rebuilding from the empty default branch. All fifteen built-ins and the generic custom-feature hook remain. Effects now belong to the provider and survive closing/unmounting controls; reset/cleanup/persistence are coordinated. Built distribution has been exercised in independent React and Next applications. Stabilization, Clean light, remembered movement/fixed actions and the version 2 release workflow are merged into main. `accessibility-plugin-react@2.0.0` is published under `latest`; automated and registry-consumer checks do not constitute accessibility certification.
 
 ## Repository and baseline
 
@@ -38,11 +38,11 @@ Created AGENTS.md, LICENSE, CHANGELOG.md and maintained docs: ARCHITECTURE, FEAT
 
 ## Remaining work and authorization
 
-P1: resolve npm account suspension and complete publication; complete human accessibility and host-integration acceptance; record the approved ISC/beta decision; run final candidate validation. Then choose an approved release version and obtain tag/npm publication authorization. Track the release in [Project #18](https://github.com/users/prabothcharith/projects/18) and [release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
+P1: complete human accessibility and representative host-integration acceptance, then decide separately whether to create a Git tag/GitHub release. npm publication and clean registry-consumer verification are complete. Track the remaining release work in [Project #18](https://github.com/users/prabothcharith/projects/18) and [release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
 
 Current limits include one provider/document, host filter containing-block behavior, no Shadow DOM/iframe interior/pseudo-element effects, no auto-pause for hidden video and CSP considerations. These are documented implementation boundaries, not hidden workarounds.
 
-[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged into new-development and [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged stabilization into main. [Final stabilization validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38328538388) on a020352 passed hosted Node22/24 with 61 unit tests, all packed consumers and the full browser matrix (37 passed, five intentional skips). [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) subsequently merged the Clean light foundation. PR #17 merged movement and fixed actions; PR #18 merged npm version 2 and the publishing workflow. Stable release acceptance remains open. No npm publication or release tag has occurred.
+[PR #2](https://github.com/prabothcharith/accessibility-react/pull/2) merged into new-development and [PR #3](https://github.com/prabothcharith/accessibility-react/pull/3) merged stabilization into main. [Final stabilization validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38328538388) on a020352 passed hosted Node22/24 with 61 unit tests, all packed consumers and the full browser matrix (37 passed, five intentional skips). [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) merged the Clean light foundation. PR #17 merged movement and fixed actions; PR #18 merged npm version 2 and the publishing workflow. Version 2 is published; human acceptance and any Git release/tag remain open.
 
 ## Historical stabilization file inventory
 

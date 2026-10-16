@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — 2.0.0 candidate
+## 2.0.0 — 2026-10-16
 
 - Continue the owner-selected npm package `accessibility-plugin-react` with a breaking major API upgrade, corrected installation/import guidance and packed consumers. Preserve the internal persistence key through the rename. Owner selected 2.0.0 under latest after the unpublished beta attempt. Manual accessibility acceptance remains pending.
 - Align LICENSE and package/lock metadata with the owner’s explicit ISC licensing decision on 2026-10-13.
@@ -20,7 +20,7 @@
 - Regression, packed-consumer, browser/axe tests, CI and maintained integration/release documentation.
 - Upgrade vulnerable development tooling; no runtime dependencies beyond React peers.
 
-Stabilization merged into main through PR #3; the Clean light foundation merged through PR #16. Movement/fixed actions and corrected release-status documentation merged through PR #17; ISC, npm identity, version 2 metadata and the manual OIDC publishing workflow merged through PR #18. No version bump, npm publication or release tag has occurred. See PROJECT_STATUS.md for limitations and release gates.
+Stabilization merged into main through PR #3; the Clean light foundation merged through PR #16. Movement/fixed actions and corrected release-status documentation merged through PR #17; ISC, npm identity, version 2 metadata and the manual OIDC publishing workflow merged through PR #18. The tested archive from main commit `1d4ab1c` was published as `accessibility-plugin-react@2.0.0` under `latest` through npm trusted publishing. No Git release tag was created. See PROJECT_STATUS.md for remaining human-acceptance gates and limitations.
 
 ## Historical 0.1.0 branch
 
