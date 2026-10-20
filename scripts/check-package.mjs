@@ -3,12 +3,23 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
+const npmCli = process.env.npm_execpath;
+assert(
+  npmCli,
+  "Run package validation through npm so npm_execpath is available",
+);
 const destination = await mkdtemp(join(tmpdir(), "arap-pack-"));
-const result = JSON.parse(
-  execFileSync("npm", ["pack", "--json", "--pack-destination", destination], {
-    encoding: "utf8",
-  }),
-)[0];
+const packOutput = JSON.parse(
+  execFileSync(
+    process.execPath,
+    [npmCli, "pack", "--json", "--pack-destination", destination],
+    { encoding: "utf8" },
+  ),
+);
+const result = Array.isArray(packOutput)
+  ? packOutput[0]
+  : Object.values(packOutput)[0];
+assert(result, "npm pack did not return package metadata");
 const names = result.files.map((file) => file.path);
 for (const file of [
   "dist/index.mjs",

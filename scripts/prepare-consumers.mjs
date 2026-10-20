@@ -1,8 +1,18 @@
 import { mkdir, writeFile, copyFile, readFile, rm } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
+const npmCli = process.env.npm_execpath;
+const runNodeCli = (entrypoint, args, options) =>
+  execFileSync(process.execPath, [entrypoint, ...args], options);
+const runNpm = (args, options) =>
+  npmCli
+    ? runNodeCli(npmCli, args, options)
+    : execFileSync("npm", args, {
+        ...options,
+        shell: process.platform === "win32",
+      });
 const run = (args, cwd) =>
-  execFileSync("npm", args, {
+  runNpm(args, {
     cwd,
     stdio: "inherit",
     env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
@@ -31,8 +41,8 @@ for (const [name, react, next] of [
         scripts: {
           build: next ? "next build --webpack" : "vite build",
           dev: next
-            ? "next dev --webpack -p 4313"
-            : `vite --host 127.0.0.1 --port ${name === "react18" ? 4311 : 4312}`,
+            ? "next dev --webpack -p 7313"
+            : `vite --host 127.0.0.1 --port ${name === "react18" ? 7311 : 7312}`,
         },
         dependencies: {
           react,
@@ -53,7 +63,7 @@ for (const [name, react, next] of [
     ),
   );
   // Installing the archive explicitly refreshes the package on reruns.
-  execFileSync("npm", ["install", installSpec, "--no-audit", "--no-fund"], {
+  runNpm(["install", installSpec, "--no-audit", "--no-fund"], {
     cwd: directory,
     stdio: "inherit",
   });
@@ -72,8 +82,8 @@ export const widget = <AccessibilityPlugin persist={false} position="left"><Acce
 export const invalid = <AccessibilityPlugin position="middle">content</AccessibilityPlugin>;
 `,
   );
-  execFileSync(
-    resolve("node_modules/.bin/tsc"),
+  runNodeCli(
+    resolve("node_modules/typescript/bin/tsc"),
     [
       "--noEmit",
       "--skipLibCheck",
@@ -150,8 +160,8 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
         `${directory}/tailwind.css`,
         "@tailwind base; @tailwind components; @tailwind utilities;",
       );
-      execFileSync(
-        `${directory}/node_modules/.bin/tailwindcss`,
+      runNodeCli(
+        resolve(directory, "node_modules/tailwindcss/lib/cli.js"),
         ["-i", "tailwind.css", "-o", "tailwind-built.css"],
         { cwd: directory, stdio: "inherit" },
       );
