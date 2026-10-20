@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.1 — 2026-10-20
+
+- Replace the incomplete README with current installation, composition, feature,
+  persistence, movement, styling, framework, limitation, and documentation
+  guidance for the published package.
+- Align installation and troubleshooting guidance with the published v2
+  package and the `2.0.1` patch release.
+
 ## 2.0.0 — 2026-10-16
 
 - Continue the owner-selected npm package `accessibility-plugin-react` with a breaking major API upgrade, corrected installation/import guidance and packed consumers. Preserve the internal persistence key through the rename. Owner selected 2.0.0 under latest after the unpublished beta attempt. Manual accessibility acceptance remains pending.

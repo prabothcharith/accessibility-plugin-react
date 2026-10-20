@@ -1,6 +1,11 @@
-# Project status — 2026-10-16
+# Project status — 2026-10-20
 
-**Version 2 is published; human accessibility acceptance remains pending.** Stabilization was merged into `main` through PR #3 at `2893b6c`. Clean light merged through [PR #16](https://github.com/prabothcharith/accessibility-react/pull/16) at `15e9465`; movement/fixed actions merged through [PR #17](https://github.com/prabothcharith/accessibility-react/pull/17) at `aa72aa5`; version 2/ISC and the publishing workflow merged through [PR #18](https://github.com/prabothcharith/accessibility-react/pull/18) at `1d4ab1c`. The tested archive from `1d4ab1c` is published as `accessibility-plugin-react@2.0.0` under `latest`. No Git release tag has been created.
+**Version 2 is published; human accessibility acceptance remains pending.** The
+tested archive from `1d4ab1c` is published as `accessibility-plugin-react@2.0.0`
+under `latest`. The repository now prepares `2.0.1` as a documentation-only
+patch; npm publication remains pending registry authentication and the exact
+release workflow run. The v2.0.0 Git tag exists; no GitHub release has been
+created.
 
 ## Status categories
 

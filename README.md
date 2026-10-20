@@ -1,26 +1,36 @@
-# Accessibility Plugin React
+# accessibility-plugin-react
 
-Composable React controls for website display preferences: text sizing, color adjustments, reading aids, media visibility and consumer-defined features. Choose the controls in JSX; preferences continue working when the panel closes.
+Composable React controls for display preferences and reading assistance. Choose
+the controls in JSX, keep the widget outside your application layout, and let
+the provider own state, persistence, effects, focus behavior, and cleanup.
 
-**Version 2; manual accessibility acceptance remains pending.** See [project status](docs/PROJECT_STATUS.md) for executed checks and release gates. An accessibility widget cannot repair inaccessible application markup or establish WCAG compliance.
+The `2.0.1` patch release updates the published v2 documentation without
+changing the runtime API. It supports React 18.3.1 and React 19.x, ships ESM,
+CommonJS, TypeScript declarations, and scoped plain CSS, and has no runtime
+dependency other than React and React DOM.
 
-![Clean light accessibility panel with remembered placement and fixed quick actions](https://raw.githubusercontent.com/prabothcharith/accessibility-react/d53b28a5b0a97cb9e88d55cda03dae5b03d2d13d/docs/assets/movable-desktop.png)
+> This library improves the presentation of your content. It cannot repair
+> inaccessible application markup or certify WCAG conformance. Human
+> screen-reader, physical-device, actual-zoom, forced-colors, and host
+> integration checks remain part of your application's accessibility process.
 
-The new look uses white surfaces, blue accents, outline icons and responsive controls. Move the trigger by dragging, Alt+arrow keys or the corner/movement controls. Settings and placement are remembered; reset stays in the fixed action bar while tools scroll. Display reset preserves the trigger position.
+![Clean light accessibility panel with remembered placement and fixed quick actions](https://raw.githubusercontent.com/prabothcharith/accessibility-react/main/docs/assets/movable-desktop.png)
+
+## Installation
+
+```sh
+npm install accessibility-plugin-react
+```
+
+React and React DOM are peer dependencies and must use the same major/minor
+line. The package requires Node.js 22.13 or newer for development and builds.
+The widget itself does not require an API key, backend, environment variable,
+Tailwind, Motion, or an icon library.
 
 ## Quick start
 
-This update continues the owner’s existing npm package, `accessibility-plugin-react`, as a new major version. The registry currently serves 1.0.0; version 2.0.0 introduces the new design and compound API. See [migration guidance](docs/MIGRATION.md) before upgrading. To evaluate these changes, install the local tarball:
-
-```sh
-npm ci
-npm run build
-npm pack
-# In your React application, use the actual archive path:
-npm install /absolute/path/to/accessibility-plugin-react-2.0.0.tgz
-```
-
-Install version 2 with `npm install accessibility-plugin-react@2`. `npm install accessibility-plugin-react` selects the latest version after publication. React and React DOM are peers; no Tailwind, Motion, icon library or design system is required.
+Import the stylesheet once and mount one provider per document, preferably
+above route changes or in the persistent application layout:
 
 ```tsx
 import {
@@ -34,68 +44,238 @@ import {
 } from "accessibility-plugin-react";
 import "accessibility-plugin-react/style.css";
 
-export default function App() {
+export function AccessibilitySettings() {
+  return (
+    <AccessibilityPlugin position="right">
+      <AccessibilityButton description="Adjust display preferences" />
+      <AccessibilityList>
+        <FontSizeController />
+        <ContrastController />
+        <GrayscaleController />
+        <ResetController />
+      </AccessibilityList>
+    </AccessibilityPlugin>
+  );
+}
+```
+
+The button and panel are non-modal body portals. The application remains
+interactive while the panel is open. Opening moves focus to the named region;
+Escape and Close return focus to the trigger. Focus is not trapped.
+
+`AccessibilityPlugin` can be rendered next to application content:
+
+```tsx
+export function App() {
   return (
     <>
-      <main>
-        <h1>My website</h1>
-        <p>Your application goes here.</p>
-      </main>
-      <AccessibilityPlugin position="right">
-        <AccessibilityButton description="Adjust display preferences" />
-        <AccessibilityList>
-          <FontSizeController />
-          <ContrastController />
-          <GrayscaleController />
-          <ResetController />
-        </AccessibilityList>
-      </AccessibilityPlugin>
+      <main>{/* application routes and content */}</main>
+      <AccessibilitySettings />
     </>
   );
 }
 ```
 
-Mount one provider above route changes. The panel is a non-modal region: Enter/Space activates native controls, opening focuses the panel, Tab follows ordinary document order, and Escape or Close returns focus to the opener. The host page remains interactive.
+## Built-in controllers
+
+Every controller is opt-in. Add only the controls that make sense for your
+site, and choose their order in JSX.
+
+| Controller                | Effect                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------- |
+| `FontSizeController`      | Scales eligible HTML text from 50% to 200%.                                       |
+| `LineHeightController`    | Scales computed line height from 50% to 200%.                                     |
+| `LetterSpacingController` | Applies 0–10px letter spacing.                                                    |
+| `ContrastController`      | Turns contrast off, reduces it, increases it, or selects a named palette.         |
+| `SaturationController`    | Reduces or increases saturation.                                                  |
+| `InvertColorsController`  | Inverts eligible page content.                                                    |
+| `GrayscaleController`     | Removes color while preserving the selected saturation value for later.           |
+| `LinkHighlightController` | Highlights links or selects a link palette.                                       |
+| `TextAlignController`     | Restores the host alignment or forces left, center, right, or justified text.     |
+| `HideImagesController`    | Hides images and CSS background images while retaining layout.                    |
+| `HideVideosController`    | Hides video elements and recognized YouTube/Vimeo embeds visually.                |
+| `BigCursorController`     | Applies a larger high-contrast cursor where supported.                            |
+| `ReadingMaskController`   | Dims the page around a transparent reading window.                                |
+| `ReadingGuideController`  | Follows pointer/focus with a reading guide line.                                  |
+| `ResetController`         | Resets display features and custom registered features without moving the widget. |
+
+Effects compose where appropriate. For example, contrast, saturation, invert,
+and grayscale are applied in a deterministic order. Defaults leave host styles
+unchanged, and the provider restores host inline values and priorities when an
+effect is disabled or the provider is removed.
 
 ## Custom features
 
-Keep custom side effects in the provider's lifecycle, not in click handlers:
+Use the two-argument hook for simple state, or provide validation and a
+provider-owned effect for a feature that changes the page:
 
 ```tsx
 import { useAccessibility } from "accessibility-plugin-react";
 
 export function OutlineFeature() {
-  const { value, setValue } = useAccessibility("my-site:outline", false, {
+  const { value, setValue } = useAccessibility("site:outline", false, {
     apply(enabled) {
       if (!enabled) return;
+
       const previous = document.body.style.outline;
-      document.body.style.outline = "3px solid blue";
+      document.body.style.outline = "3px solid #1e40af";
       return () => {
         document.body.style.outline = previous;
       };
     },
   });
+
   return (
     <button type="button" aria-pressed={value} onClick={() => setValue(!value)}>
-      Page outline
+      Outline page
     </button>
   );
 }
 ```
 
-Place `<OutlineFeature />` inside `<AccessibilityList>`. Its state restores from localStorage, global reset returns it to `false`, and cleanup runs before reapplication and on provider removal. Definitions are immutable for a provider lifetime. [Full custom feature contract](docs/CUSTOM_FEATURES.md).
+Place the feature inside `AccessibilityList`:
 
-## Documentation
+```tsx
+<AccessibilityList>
+  <FontSizeController />
+  <OutlineFeature />
+  <ResetController />
+</AccessibilityList>
+```
 
+The provider owns the effect lifetime, so it continues when the panel closes or
+the control temporarily unmounts. Cleanup runs before reapplication and when
+the provider unmounts. Custom state is JSON-compatible; supply `validate` for
+arrays and objects. Feature keys must be stable and cannot use reserved
+prototype names or built-in keys. See [custom feature details](docs/CUSTOM_FEATURES.md).
+
+## Persistence and movement
+
+Preferences are stored in a versioned local-storage record under
+`react-accessibility-plugin:state` by default. Writes are debounced and flushed
+when the page is hidden or the provider is removed. Invalid saved values fall
+back to defaults; storage failures do not make the widget unusable.
+
+```tsx
+<AccessibilityPlugin
+  persistenceKey="my-site:accessibility"
+  persist={true}
+  position="left"
+>
+  {/* button, list, and selected controllers */}
+</AccessibilityPlugin>
+```
+
+Persistence options are fixed for the provider lifetime. Remount with a React
+`key` when changing the storage identity. Use one provider per document.
+
+The trigger is draggable by default. Movement also works with Alt+Arrow keys
+and the panel's explicit corner and arrow controls. Drag activation has an
+8px threshold, cancelled drags do not open the panel, and placement is clamped
+on resize. `ResetController` preserves placement; the panel's separate
+position reset removes it. Set `draggable={false}` when only the non-drag
+controls should be available.
+
+## Styling and framework integration
+
+The stylesheet is scoped to `.arap-root` and does not add a global reset,
+Tailwind preflight, or host theme variables. Load it once, then put consumer
+overrides after it:
+
+```css
+.arap-root {
+  --arap-accent: #1e40af;
+  --arap-accent-hover: #1e3a8a;
+  --arap-selected: #eff6ff;
+}
+
+.arap-root .my-trigger {
+  border-radius: 999px;
+}
+```
+
+Use `className`, `style`, `title`, `description`, and `closeLabel` to adapt
+the widget to your product language and layout. Preserve visible focus,
+pressed states, contrast, and the library's 44px minimum interactive targets
+when overriding styles.
+
+For Next.js App Router, put the provider and custom controls in a Client
+Component, import the CSS from the root layout, and render the provider in the
+persistent layout rather than once per route:
+
+```tsx
+// app/accessibility-settings.tsx
+"use client";
+
+import {
+  AccessibilityPlugin,
+  AccessibilityButton,
+  AccessibilityList,
+  FontSizeController,
+  ResetController,
+} from "accessibility-plugin-react";
+
+export function AccessibilitySettings() {
+  return (
+    <AccessibilityPlugin>
+      <AccessibilityButton />
+      <AccessibilityList>
+        <FontSizeController />
+        <ResetController />
+      </AccessibilityList>
+    </AccessibilityPlugin>
+  );
+}
+```
+
+See [installation and Next.js](docs/INSTALLATION.md) for App Router and Pages
+Router examples.
+
+## API and limitations
+
+- Public components, props, exported types, placement, persistence, custom
+  features, and CSS variables are documented in [API.md](docs/API.md).
+- Detailed per-feature defaults, bounds, and host behavior are in
+  [FEATURES.md](docs/FEATURES.md).
+- Filters can create stacking contexts and containing blocks for fixed host
+  descendants. Test sticky headers, overlays, and third-party widgets in the
+  real application.
+- Text measurement covers the current document's eligible HTML elements.
+  Shadow DOM, iframe interiors, SVG/canvas text, pseudo-elements, and raw text
+  nodes directly under `body` are outside scope.
+- Image/video hiding is visual; video playback is not paused or muted.
+- Reading aids are pointer-transparent overlays and do not replace semantic
+  reading structure.
+- There is no live cross-tab synchronization or server-side preference sync.
+- `persist={false}` disables both display and placement persistence.
+
+See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
+
+## Documentation and examples
+
+- [API reference](docs/API.md)
+- [Feature behavior and bounds](docs/FEATURES.md)
 - [Installation and Next.js](docs/INSTALLATION.md)
-- [Feature behavior and original parity](docs/FEATURES.md)
-- [Public API and customization](docs/API.md)
-- [Architecture and decisions](docs/ARCHITECTURE.md)
-- [Development, testing and release procedure](docs/DEVELOPMENT.md)
-- [Troubleshooting and limitations](docs/TROUBLESHOOTING.md)
-- [Migration](docs/MIGRATION.md), [changelog](CHANGELOG.md), [npm release candidate](docs/RELEASE.md)
-- [Status](docs/PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), [baseline](docs/BASELINE.md)
+- [Custom features](docs/CUSTOM_FEATURES.md)
+- [Migration from v1 and development baselines](docs/MIGRATION.md)
+- [Architecture and lifecycle decisions](docs/ARCHITECTURE.md)
+- [Development and testing](docs/DEVELOPMENT.md)
+- [Design foundation](docs/DESIGN.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Project status and verification evidence](docs/PROJECT_STATUS.md)
+- [Release procedure](docs/RELEASE.md)
+- [Changelog](CHANGELOG.md)
 
-The original [vanilla JavaScript project](https://github.com/prabothcharith/accessibility-plugin) remains a separate repository. This version uses the [ISC license](LICENSE). On 2026-10-13 the owner confirmed authority to license all included code under ISC, resolving the prior GPL/ISC/MIT metadata conflict for this release.
+Runnable package-consumer examples are in [`examples/`](examples/):
 
-The default visual foundation is [Clean light](docs/DESIGN.md): scoped plain CSS, reusable palette variables, outline icons and responsive control rows. See the design guide for actual desktop/mobile screenshots.
+```sh
+npm ci
+npm run build
+npm run example
+```
+
+## License
+
+This package is available under the [ISC license](LICENSE). The original
+vanilla JavaScript project is maintained separately at
+[prabothcharith/accessibility-plugin](https://github.com/prabothcharith/accessibility-plugin).

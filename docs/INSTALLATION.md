@@ -4,14 +4,18 @@
 
 Development: Node.js 22.13 or newer, npm, Git. Library peers: React/React DOM 18.3.1 or 19.x. Keep React and React DOM on the same version. There are no application environment variables, API keys, backend services or mandatory network access at runtime. Storage is optional (`persist={false}`).
 
-The owner selected the existing registry identity `accessibility-plugin-react`. The registry currently has 1.0.0; the owner approved 2.0.0 under the latest tag. The API changes require migration (see MIGRATION.md). For version 2, use `npm install accessibility-plugin-react@2`; plain `npm install accessibility-plugin-react` selects the registry's latest tag. For this checkout:
+The package identity is `accessibility-plugin-react`. Version 2 is the current
+major line and `latest` is the stable distribution tag. The API changes from
+the historical 1.x package require migration (see MIGRATION.md). Install the
+current release with `npm install accessibility-plugin-react`, or pin the
+major line with `npm install accessibility-plugin-react@2`. For this checkout:
 
 ```sh
 npm ci
 npm run build
 npm pack
 # From an independent application:
-npm install /absolute/path/to/accessibility-plugin-react-2.0.0.tgz
+npm install /absolute/path/to/accessibility-plugin-react-2.0.1.tgz
 ```
 
 Import `accessibility-plugin-react/style.css` once near the app entry. Do not add the library to a Tailwind content scan. No shadcn, icon or Motion dependency is needed. See README for complete React/Vite JSX.
