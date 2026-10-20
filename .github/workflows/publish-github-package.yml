@@ -30,6 +30,8 @@ jobs:
       - uses: actions/setup-node@v7.1.0
         with:
           node-version: "24"
+          registry-url: https://npm.pkg.github.com
+          scope: "@prabothcharith"
           package-manager-cache: false
       - run: npm install --global npm@11.21.0
       - run: npm ci
