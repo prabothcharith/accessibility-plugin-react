@@ -72,7 +72,8 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm publish "$(find release -maxdepth 1 -name 'prabothcharith-accessibility-react-*.tgz' -print -quit)" \
+          archive="$(find release -maxdepth 1 -name 'prabothcharith-accessibility-react-*.tgz' -print -quit)"
+          npm publish "./$archive" \
             --registry "$REGISTRY"
       - name: Verify package
         run: |
