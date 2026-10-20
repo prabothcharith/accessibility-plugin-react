@@ -1,6 +1,6 @@
 # Public API
 
-All exports are named from `accessibility-plugin-react`. JavaScript consumers receive compiled ESM/CJS; TypeScript consumers receive matching declarations. CSS is an explicit import from `accessibility-plugin-react/style.css` (historical `/dist/style.css` also works).
+All exports are named from `accessibility-plugin-react`. JavaScript consumers receive compiled ESM/CJS; TypeScript consumers receive matching declarations. Importing the package automatically injects its scoped CSS in browser environments. The standalone `accessibility-plugin-react/style.css` export (historical `/dist/style.css` also works) remains available for applications that require an explicit stylesheet pipeline.
 
 ## Components
 
@@ -41,7 +41,7 @@ Exported types: `AccessibilityPluginProps`, `AccessibilityButtonProps`, `Accessi
 
 ## Styling and labels
 
-Import library CSS once, then load your overrides. It does not require Tailwind or set host `html`, `body`, universal resets, theme variables or heading defaults. `arap-` classes are the customization convention. Scope overrides to your panel class or `.arap-root` so they do not affect host controls:
+The package automatically injects its library CSS once when imported in a browser. The standalone stylesheet export is available when your application uses an explicit CSS pipeline. Load your overrides after the library CSS. It does not require Tailwind or set host `html`, `body`, universal resets, theme variables or heading defaults. `arap-` classes are the customization convention. Scope overrides to your panel class or `.arap-root` so they do not affect host controls:
 
 ```css
 .arap-root .my-panel {

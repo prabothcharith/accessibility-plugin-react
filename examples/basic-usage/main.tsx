@@ -20,7 +20,6 @@ import {
   ReadingGuideController,
   ResetController,
 } from "accessibility-plugin-react";
-import "accessibility-plugin-react/style.css";
 
 function App() {
   return (

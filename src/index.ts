@@ -1,5 +1,7 @@
 "use client";
 
+import "./styles/tailwind.css";
+
 // Core
 export { AccessibilityPlugin } from "./core/AccessibilityPlugin";
 export { AccessibilityButton } from "./core/AccessibilityButton";
