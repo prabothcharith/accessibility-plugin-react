@@ -125,3 +125,15 @@ The owner saved the npm trusted-publisher connection for `prabothcharith/accessi
 The workflow queried the registry immediately and received a temporary 404 while npm's publish-time malware scan was still processing the tarball. After the scan completed, independent checks confirmed version/latest/ISC metadata and integrity `sha512-CQFzF0pNl/bb+YVauI35+GNK2PIgk4qoh8+PnEkj1HAeW2lLMM/LTV5fq0tigNRnmPVX0M7rpYR4XPo820CQWw==`. Clean installs from the public registry passed React18, React19/Tailwind and Next16 declaration checks, ESM/CommonJS loading, SSR and production builds. The installed-package browser matrix passed 55 tests with five intentional Next-only skips across Chromium, Firefox, desktop WebKit and mobile WebKit.
 
 The workflow follow-up retries registry verification for the expected npm scan delay and supports Windows validation. Human screen-reader, physical-device, actual-zoom, forced-colors and representative host acceptance remain pending. Publication did not authorize or create a Git tag/GitHub release.
+
+## GitHub Packages and GitHub release
+
+The public npm package remains `accessibility-plugin-react`. The same 2.0.0
+archive is also published to GitHub Packages under the required scoped name
+`@prabothcharith/accessibility-react` through
+`.github/workflows/publish-github-package.yml`. The workflow creates a scoped
+manifest only in its release staging directory, so the repository package name
+and public npm package are unchanged.
+
+The GitHub release is tagged `v2.0.0` from the validated `main` commit after
+the GitHub Packages verification succeeds.

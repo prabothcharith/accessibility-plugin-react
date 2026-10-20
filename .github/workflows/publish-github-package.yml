@@ -1,0 +1,85 @@
+name: Publish GitHub Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact version already committed in package.json
+        required: true
+        default: "2.0.0"
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: github-package-accessibility-react
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_VERSION: ${{ inputs.version }}
+      PACKAGE_NAME: "@prabothcharith/accessibility-react"
+      REGISTRY: https://npm.pkg.github.com
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - run: npm install --global npm@11.21.0
+      - run: npm ci
+      - name: Verify source package
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          assert.match(process.env.EXPECTED_VERSION, /^\d+\.\d+\.\d+$/);
+          assert.equal(pkg.name, 'accessibility-plugin-react');
+          assert.equal(pkg.version, process.env.EXPECTED_VERSION);
+          assert.equal(pkg.license, 'ISC');
+          JS
+      - run: npm run validate
+      - run: npm run format:check
+      - name: Build scoped GitHub Package archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf github-package release
+          mkdir github-package release
+          npm pack --pack-destination release
+          source_archive="$(find release -maxdepth 1 -name 'accessibility-plugin-react-*.tgz' -print -quit)"
+          tar -xzf "$source_archive" -C github-package --strip-components=1
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const path = 'github-package/package.json';
+          const pkg = JSON.parse(readFileSync(path, 'utf8'));
+          pkg.name = process.env.PACKAGE_NAME;
+          pkg.publishConfig = {
+            registry: process.env.REGISTRY,
+            access: 'restricted',
+          };
+          writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`);
+          JS
+          (cd github-package && npm pack --pack-destination ../release)
+          rm "$source_archive"
+      - name: Publish package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm publish "$(find release -maxdepth 1 -name 'prabothcharith-accessibility-react-*.tgz' -print -quit)" \
+            --registry "$REGISTRY"
+      - name: Verify package
+        run: |
+          for attempt in {1..12}; do
+            if npm view "$PACKAGE_NAME@$EXPECTED_VERSION" version --registry "$REGISTRY"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
