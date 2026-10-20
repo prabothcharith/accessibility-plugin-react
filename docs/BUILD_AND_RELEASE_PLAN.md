@@ -44,6 +44,101 @@ Each milestone contains the numbered A11Y child issues. Work must be tracked in
 those issues rather than in an unbounded feature branch or a single large
 change.
 
+## Issue execution checklist
+
+Use this checklist together with the nested issue view in
+[issue #21](https://github.com/prabothcharith/accessibility-react/issues/21).
+Check an item only after its issue acceptance criteria and evidence have been
+completed. Closing a child issue does not replace the milestone exit review.
+
+### Program and milestones
+
+- [ ] [Master feature-release program #21](https://github.com/prabothcharith/accessibility-react/issues/21)
+- [ ] [M0 — Repository audit and compatibility safety net #22](https://github.com/prabothcharith/accessibility-react/issues/22)
+- [ ] [M1 — Safe core, accessible widget UI and stable state #23](https://github.com/prabothcharith/accessibility-react/issues/23)
+- [ ] [M2 — Core visual and typographic adjustments #24](https://github.com/prabothcharith/accessibility-react/issues/24)
+- [ ] [M3 — Reading support, profiles and localization #25](https://github.com/prabothcharith/accessibility-react/issues/25)
+- [ ] [M4 — Opt-in advanced and browser-dependent controls #26](https://github.com/prabothcharith/accessibility-react/issues/26)
+- [ ] [M5 — Launch readiness and package hardening #27](https://github.com/prabothcharith/accessibility-react/issues/27)
+
+### M0 — Audit and compatibility safety net
+
+- [ ] [A11Y-000 — Repository, published package, API and license audit #28](https://github.com/prabothcharith/accessibility-react/issues/28)
+- [ ] [A11Y-001 — Current consumer fixture and baseline screenshots #29](https://github.com/prabothcharith/accessibility-react/issues/29)
+- [ ] [A11Y-002 — Regression tests for existing public behavior #30](https://github.com/prabothcharith/accessibility-react/issues/30)
+- [ ] [A11Y-003 — Technical design decision record and migration plan #31](https://github.com/prabothcharith/accessibility-react/issues/31)
+
+### M1 — Safe core and accessible widget
+
+- [ ] [A11Y-101 — Typed preferences registry and state reducer #32](https://github.com/prabothcharith/accessibility-react/issues/32)
+- [ ] [A11Y-102 — Scoped effect manager and cleanup lifecycle #33](https://github.com/prabothcharith/accessibility-react/issues/33)
+- [ ] [A11Y-103 — Versioned storage, reset, migration and no-storage fallback #34](https://github.com/prabothcharith/accessibility-react/issues/34)
+- [ ] [A11Y-104 — Accessible launcher and non-modal widget panel #35](https://github.com/prabothcharith/accessibility-react/issues/35)
+- [ ] [A11Y-105 — Feature cards and state/value UI #36](https://github.com/prabothcharith/accessibility-react/issues/36)
+- [ ] [A11Y-106 — Position, oversized controls, statement link and help #37](https://github.com/prabothcharith/accessibility-react/issues/37)
+- [ ] [A11Y-107 — Base locale infrastructure and English strings #38](https://github.com/prabothcharith/accessibility-react/issues/38)
+- [ ] [A11Y-108 — Vite and Next.js App Router consumer integrations #39](https://github.com/prabothcharith/accessibility-react/issues/39)
+- [ ] [A11Y-109 — CI for typecheck, lint, unit, axe and browser smoke #40](https://github.com/prabothcharith/accessibility-react/issues/40)
+
+### M2 — Stable visual and typographic features
+
+- [ ] [A11Y-201 — Bigger text and reflow-safe scaling #41](https://github.com/prabothcharith/accessibility-react/issues/41)
+- [ ] [A11Y-202 — Letter, word, paragraph spacing and line height #42](https://github.com/prabothcharith/accessibility-react/issues/42)
+- [ ] [A11Y-203 — Text alignment, legible fonts and language fallback #43](https://github.com/prabothcharith/accessibility-react/issues/43)
+- [ ] [A11Y-204 — Contrast modes and native forced-color protection #44](https://github.com/prabothcharith/accessibility-react/issues/44)
+- [ ] [A11Y-205 — Link highlighting and focus visibility #45](https://github.com/prabothcharith/accessibility-react/issues/45)
+- [ ] [A11Y-206 — Reduce motion and best-effort media controls #46](https://github.com/prabothcharith/accessibility-react/issues/46)
+- [ ] [A11Y-207 — Decorative image handling #47](https://github.com/prabothcharith/accessibility-react/issues/47)
+- [ ] [A11Y-208 — Visual regression and performance sweep #48](https://github.com/prabothcharith/accessibility-react/issues/48)
+
+### M3 — Reading support, profiles and localization
+
+- [ ] [A11Y-301 — Cursor enlargement, reading mask and reading guide #49](https://github.com/prabothcharith/accessibility-react/issues/49)
+- [ ] [A11Y-302 — Accessible tooltips from authored descriptions #50](https://github.com/prabothcharith/accessibility-react/issues/50)
+- [ ] [A11Y-303 — Page headings and landmarks navigator #51](https://github.com/prabothcharith/accessibility-react/issues/51)
+- [ ] [A11Y-304 — Eight profiles and deterministic override model #52](https://github.com/prabothcharith/accessibility-react/issues/52)
+- [ ] [A11Y-305 — Custom saved presets and settings import/export #53](https://github.com/prabothcharith/accessibility-react/issues/53)
+- [ ] [A11Y-306 — Sinhala and Tamil locale packs with accessibility review #54](https://github.com/prabothcharith/accessibility-react/issues/54)
+- [ ] [A11Y-307 — Non-destructive reading mode proof of concept #55](https://github.com/prabothcharith/accessibility-react/issues/55)
+- [ ] [A11Y-308 — Keyboard shortcut help, remapping and link explorer #56](https://github.com/prabothcharith/accessibility-react/issues/56)
+
+### M4 — Advanced and experimental controls
+
+- [ ] [A11Y-401 — Read-aloud TTS with voice, rate and stop controls #57](https://github.com/prabothcharith/accessibility-react/issues/57)
+- [ ] [A11Y-402 — Saturation and grayscale modes #58](https://github.com/prabothcharith/accessibility-react/issues/58)
+- [ ] [A11Y-403 — Dictionary provider interface and local fallback #59](https://github.com/prabothcharith/accessibility-react/issues/59)
+- [ ] [A11Y-404 — Per-site feature-menu customization and reorder #60](https://github.com/prabothcharith/accessibility-react/issues/60)
+- [ ] [A11Y-405 — Development-only integration diagnostics and harness #61](https://github.com/prabothcharith/accessibility-react/issues/61)
+- [ ] [A11Y-406 — Optional privacy-safe feature event callbacks #62](https://github.com/prabothcharith/accessibility-react/issues/62)
+- [ ] [A11Y-407 — Smart contrast research prototype #63](https://github.com/prabothcharith/accessibility-react/issues/63)
+- [ ] [A11Y-408 — Voice navigation research prototype #64](https://github.com/prabothcharith/accessibility-react/issues/64)
+- [ ] [A11Y-409 — Host-content translation adapter architecture #65](https://github.com/prabothcharith/accessibility-react/issues/65)
+
+### M5 — Launch readiness and package hardening
+
+- [ ] [A11Y-501 — Full supported-browser, device and assistive-technology matrix #66](https://github.com/prabothcharith/accessibility-react/issues/66)
+- [ ] [A11Y-502 — Performance, bundle, listener and leak profiling #67](https://github.com/prabothcharith/accessibility-react/issues/67)
+- [ ] [A11Y-503 — Documentation website and interactive examples #68](https://github.com/prabothcharith/accessibility-react/issues/68)
+- [ ] [A11Y-504 — Dependency, license and security audit #69](https://github.com/prabothcharith/accessibility-react/issues/69)
+- [ ] [A11Y-505 — Packed publish rehearsal and clean consumer smoke test #70](https://github.com/prabothcharith/accessibility-react/issues/70)
+- [ ] [A11Y-506 — Version recommendation, changelog and owner-approved release proposal #71](https://github.com/prabothcharith/accessibility-react/issues/71)
+
+### Existing release and follow-up trackers
+
+These issues predate the feature-release hierarchy and remain linked evidence
+trackers. Their completion should be reflected in the milestone checklist
+without duplicating their work:
+
+- [ ] [Screen-reader accessibility acceptance #6](https://github.com/prabothcharith/accessibility-react/issues/6)
+- [ ] [Physical devices, actual zoom and visual accessibility #7](https://github.com/prabothcharith/accessibility-react/issues/7)
+- [ ] [Representative host-application acceptance #8](https://github.com/prabothcharith/accessibility-react/issues/8)
+- [ ] [Final release candidate validation #10](https://github.com/prabothcharith/accessibility-react/issues/10)
+- [ ] [Approved package publication and registry verification #11](https://github.com/prabothcharith/accessibility-react/issues/11)
+- [ ] [Large-document profiling and late font/style refresh #12](https://github.com/prabothcharith/accessibility-react/issues/12)
+- [ ] [Scoped effects and stronger host compatibility #13](https://github.com/prabothcharith/accessibility-react/issues/13)
+- [ ] [Localization and widget positioning controls #14](https://github.com/prabothcharith/accessibility-react/issues/14)
+- [ ] [First stable release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15)
+
 ## Operating rules
 
 ### Before changing code
