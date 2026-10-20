@@ -25,6 +25,7 @@ jobs:
       EXPECTED_VERSION: ${{ inputs.version }}
       PACKAGE_NAME: "@prabothcharith/accessibility-react"
       REGISTRY: https://npm.pkg.github.com
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -71,12 +72,13 @@ jobs:
           (cd github-package && npm pack --pack-destination ../release)
           rm "$source_archive"
       - name: Publish package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           archive="$(find release -maxdepth 1 -name 'prabothcharith-accessibility-react-*.tgz' -print -quit)"
-          npm publish "./$archive" \
-            --registry "$REGISTRY"
+          if npm view "$PACKAGE_NAME@$EXPECTED_VERSION" version --registry "$REGISTRY" >/dev/null 2>&1; then
+            echo "$PACKAGE_NAME@$EXPECTED_VERSION is already published"
+          else
+            npm publish "./$archive" --registry "$REGISTRY"
+          fi
       - name: Verify package
         run: |
           for attempt in {1..12}; do
