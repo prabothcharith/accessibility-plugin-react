@@ -2,10 +2,9 @@
 
 **Version 2 is published; human accessibility acceptance remains pending.** The
 tested archive from `1d4ab1c` is published as `accessibility-plugin-react@2.0.0`
-under `latest`. The repository now prepares `2.0.1` as a documentation-only
-patch; npm publication remains pending registry authentication and the exact
-release workflow run. The v2.0.0 Git tag exists; no GitHub release has been
-created.
+and documentation patch `2.0.1` is published under `latest`. The repository now
+prepares `2.0.2` as a patch release with automatic stylesheet injection and automated
+npm release workflows.
 
 ## Status categories
 

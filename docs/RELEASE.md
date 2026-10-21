@@ -1,17 +1,16 @@
-# npm release and verification — updated 2026-10-20
+# npm release and verification — updated 2026-10-21
 
-## 2.0.1 documentation patch
+## 2.0.2 patch release
 
-Version `2.0.1` is a patch release containing the completed consumer README,
-installation guidance, troubleshooting correction, and synchronized release
-metadata. It does not change the runtime API or implementation. The exact
-archive must still pass the release workflow before it is published.
+Version `2.0.2` is a patch release containing automatic widget stylesheet injection,
+workflow automation for npm publication on pull request merges to `main`, and
+synchronized release metadata.
 
 ## Identity and current state
 
 - Owner-selected package: `accessibility-plugin-react` (same existing npm package).
-- Registry state before this release: `latest=2.0.0`; published versions 1.0.0 and 2.0.0; maintainer `praboth`.
-- Current candidate: `2.0.1`, npm tag `latest`. This is a documentation-only patch over the published v2 implementation.
+- Registry state before this release: `latest=2.0.1`; published versions 1.0.0, 2.0.0 and 2.0.1; maintainer `praboth`.
+- Current candidate: `2.0.2`, npm tag `latest`.
 - Published source for 2.0.0: main commit `1d4ab1c`, containing the merged movement/fixed-actions and version 2 release work. The v2.0.0 Git tag now exists; no GitHub release was created.
 - ISC is owner-approved for all included code as of 2026-10-13; LICENSE and package/lock metadata agree. Published 1.0.0 metadata says ISC and its README says MIT; historical inconsistency is retained in migration evidence.
 - npm CLI authentication as package maintainer `praboth` is verified. Credentials/2FA remain outside repository files and chat.
@@ -39,7 +38,7 @@ Build and inspect a reviewable archive outside the checkout:
 ```sh
 npm run build
 npm pack --pack-destination /tmp
-npm publish /tmp/accessibility-plugin-react-2.0.1.tgz --dry-run --tag latest --access public
+npm publish /tmp/accessibility-plugin-react-2.0.2.tgz --dry-run --tag latest --access public
 ```
 
 ## Executed candidate checks
@@ -60,11 +59,11 @@ npm whoami
 The owner selected the candidate version/channel, resolved licensing and authorized version 2 publication on 2026-10-13. Upload the exact verified archive using:
 
 ```sh
-npm publish /tmp/accessibility-plugin-react-2.0.1.tgz --tag latest --access public
+npm publish /tmp/accessibility-plugin-react-2.0.2.tgz --tag latest --access public
 ```
 
 The package's approved publishConfig uses latest. Successful publication makes
-2.0.1 the default npm install target. Verify the registry package and clean
+2.0.2 the default npm install target. Verify the registry package and clean
 consumer installs before creating an authorized release tag.
 
 After upload, verify registry name/version/license and latest tag, archive integrity, and clean registry installations in the React/Next consumers. Record the published version and source commit only after those checks succeed.
@@ -112,9 +111,9 @@ Browser/2FA authorization may be required. Trusted publishing requires compatibl
 GitHub requires workflow_dispatch workflows to exist on the default branch. PR #17 supplies movement and PR #18 supplies the npm identity/release workflow; merge #17, retarget #18 to main, and merge it after owner authorization. Then run:
 
 ```sh
-gh workflow run publish.yml --ref main -f version=2.0.1 -f dry_run=true
+gh workflow run publish.yml --ref main -f version=2.0.2 -f dry_run=true
 # Authorized real publication:
-gh workflow run publish.yml --ref main -f version=2.0.1 -f dry_run=false
+gh workflow run publish.yml --ref main -f version=2.0.2 -f dry_run=false
 ```
 
 References: [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/), [npm trust CLI](https://docs.npmjs.com/cli/v11/commands/npm-trust/), [GitHub manual workflow requirements](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow). Do not report successful publication until the registry and consumer steps succeed.

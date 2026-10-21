@@ -4,10 +4,10 @@ Composable React controls for display preferences and reading assistance. Choose
 the controls in JSX, keep the widget outside your application layout, and let
 the provider own state, persistence, effects, focus behavior, and cleanup.
 
-The `2.0.1` patch release updates the published v2 documentation without
-changing the runtime API. It supports React 18.3.1 and React 19.x, ships ESM,
-CommonJS, TypeScript declarations, and scoped plain CSS, and has no runtime
-dependency other than React and React DOM.
+The `2.0.2` patch release adds automatic widget stylesheet injection on package
+import while retaining the standalone stylesheet export for explicit pipelines.
+It supports React 18.3.1 and React 19.x, ships ESM, CommonJS, TypeScript declarations,
+and scoped plain CSS, and has no runtime dependency other than React and React DOM.
 
 > This library improves the presentation of your content. It cannot repair
 > inaccessible application markup or certify WCAG conformance. Human

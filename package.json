@@ -1,6 +1,6 @@
 {
   "name": "accessibility-plugin-react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A composable React display-preference widget with a clean light design, persistent settings and movable accessible controls.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
