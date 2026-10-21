@@ -85,7 +85,13 @@ The owner requested export/publication as 2.0.0 without beta on 2026-10-13. Pack
 
 ## GitHub Actions publication
 
-The owner requested a GitHub Actions publishing route for 2.0.1/latest. `.github/workflows/publish.yml` is manually dispatched, defaults to dry-run, validates the exact committed name/version/ISC/latest metadata, runs source/packed-consumer/full Linux browser/audit checks, and uploads the tested archive with its SHA512 checksum. The publishing job downloads that archive and uses npm trusted publishing (OIDC), then verifies registry integrity/latest and clean React18/React19/Next registry consumers. No npm token or automatic push/tag publication is configured.
+`.github/workflows/publish.yml` publishes releases through npm trusted publishing (OIDC). It is triggered automatically when commits are pushed to `main` (such as when a pull request is merged) or manually via `workflow_dispatch`.
+
+When triggered on `main`, the workflow inspects the committed `package.json` version:
+
+- If the version is already published on npm, publishing is safely skipped without failing the run.
+- If the version is new, it validates the exact committed metadata, executes source/packed-consumer/Linux browser/audit checks, packages and signs the archive with SHA512 checksums, publishes via npm OIDC, and verifies registry integrity and clean React18/React19/Next registry consumers.
+- Manual dispatches remain available with optional `dry_run` inspection.
 
 Configure npm’s trusted publisher for package accessibility-plugin-react:
 
