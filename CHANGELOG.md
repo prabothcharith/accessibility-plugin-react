@@ -7,6 +7,8 @@
   guidance for the published package.
 - Align installation and troubleshooting guidance with the published v2
   package and the `2.0.1` patch release.
+- Automatically inject the scoped widget stylesheet when importing the package;
+  retain the standalone stylesheet export for explicit CSS pipelines.
 
 ## 2.0.0 — 2026-10-16
 

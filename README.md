@@ -29,8 +29,9 @@ Tailwind, Motion, or an icon library.
 
 ## Quick start
 
-Import the stylesheet once and mount one provider per document, preferably
-above route changes or in the persistent application layout:
+Import the package and mount one provider per document, preferably above route
+changes or in the persistent application layout. The package automatically
+injects its scoped CSS in browser environments:
 
 ```tsx
 import {
@@ -42,7 +43,6 @@ import {
   GrayscaleController,
   ResetController,
 } from "accessibility-plugin-react";
-import "accessibility-plugin-react/style.css";
 
 export function AccessibilitySettings() {
   return (

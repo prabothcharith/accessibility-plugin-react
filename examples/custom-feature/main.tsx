@@ -8,7 +8,6 @@ import {
   ResetController,
   useAccessibility,
 } from "accessibility-plugin-react";
-import "accessibility-plugin-react/style.css";
 
 function OutlineFeature() {
   const { value, setValue } = useAccessibility("example:outline", false, {

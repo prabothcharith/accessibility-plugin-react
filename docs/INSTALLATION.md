@@ -18,7 +18,7 @@ npm pack
 npm install /absolute/path/to/accessibility-plugin-react-2.0.1.tgz
 ```
 
-Import `accessibility-plugin-react/style.css` once near the app entry. Do not add the library to a Tailwind content scan. No shadcn, icon or Motion dependency is needed. See README for complete React/Vite JSX.
+Importing `accessibility-plugin-react` automatically injects its scoped CSS in browser environments. The standalone `accessibility-plugin-react/style.css` export remains available for explicit stylesheet pipelines. Do not add the library to a Tailwind content scan. No shadcn, icon or Motion dependency is needed. See README for complete React/Vite JSX.
 
 ## Next.js App Router
 
@@ -52,7 +52,6 @@ export default function Preferences() {
 ```tsx
 // app/layout.tsx
 import type { ReactNode } from "react";
-import "accessibility-plugin-react/style.css";
 import Preferences from "./preferences";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -73,7 +72,6 @@ Mount the widget in the persistent root layout, not each route. Do not place doc
 ```tsx
 // pages/_app.tsx
 import type { AppProps } from "next/app";
-import "accessibility-plugin-react/style.css";
 import Preferences from "../components/preferences"; // same component as above
 export default function App({ Component, pageProps }: AppProps) {
   return (

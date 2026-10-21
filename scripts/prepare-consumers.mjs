@@ -126,7 +126,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     await mkdir(`${directory}/pages`, { recursive: true });
     await writeFile(
       `${directory}/app/layout.jsx`,
-      `import 'accessibility-plugin-react/style.css'; import '../host.css'; export const metadata={title:'Accessibility consumer'}; export default function Layout({children}) {return <html lang="en"><body>{children}</body></html>}`,
+      `import '../host.css'; export const metadata={title:'Accessibility consumer'}; export default function Layout({children}) {return <html lang="en"><body>{children}</body></html>}`,
     );
     await writeFile(
       `${directory}/app/page.jsx`,
@@ -134,7 +134,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     );
     await writeFile(
       `${directory}/pages/_app.jsx`,
-      `import 'accessibility-plugin-react/style.css'; import '../host.css'; export default function App({Component,pageProps}) {return <Component {...pageProps}/>}`,
+      `import '../host.css'; export default function App({Component,pageProps}) {return <Component {...pageProps}/>} `,
     );
     await writeFile(
       `${directory}/pages/legacy.jsx`,
@@ -168,7 +168,7 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     }
     await writeFile(
       `${directory}/main.jsx`,
-      `import React from 'react'; import {createRoot} from 'react-dom/client'; ${name === "react19" ? "import './tailwind-built.css';" : ""} import 'accessibility-plugin-react/style.css'; import './host.css'; import Fixture from './Fixture'; createRoot(document.getElementById('root')).render(<React.StrictMode><Fixture/></React.StrictMode>);`,
+      `import React from 'react'; import {createRoot} from 'react-dom/client'; ${name === "react19" ? "import './tailwind-built.css';" : ""} import './host.css'; import Fixture from './Fixture'; createRoot(document.getElementById('root')).render(<React.StrictMode><Fixture/></React.StrictMode>);`,
     );
   }
   // Repacking the same unreleased version can retain archive timestamps.

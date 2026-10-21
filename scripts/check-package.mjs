@@ -35,6 +35,14 @@ for (const file of ["dist/index.mjs", "dist/index.js"])
     (await readFile(file, "utf8")).startsWith('"use client";'),
     `Missing client directive: ${file}`,
   );
+for (const file of ["dist/index.mjs", "dist/index.js"]) {
+  const bundle = await readFile(file, "utf8");
+  assert(
+    bundle.includes("styleInject"),
+    `Missing automatic CSS injection: ${file}`,
+  );
+  assert(bundle.includes(".arap-root"), `Missing bundled widget CSS: ${file}`);
+}
 const css = await readFile("dist/style.css", "utf8");
 assert(
   !/(^|\})\s*(html|body|:root|\*)\s*\{/.test(css),

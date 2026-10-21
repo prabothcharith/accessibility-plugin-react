@@ -1,6 +1,6 @@
 > Historical document. Current architecture, tested status and examples are maintained in [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/CUSTOM_FEATURES.md](docs/CUSTOM_FEATURES.md). Claims below describe the earlier branch and are not current verification.
 
-# React Accessibility Plugin — Full Build Specification (for Antigravity)
+# React Accessibility Plugin — Full Build Specification
 
 ## 0. Context & Goal
 
@@ -49,7 +49,7 @@ function App() {
 
 - **Language:** TypeScript (source). Compiled output is plain JS + `.d.ts` files — consumers never need TypeScript installed, and can write their own custom features in plain `.jsx`/`.js` with zero friction.
 - **Styling:** Tailwind CSS internally, but **compiled to a single static CSS file** at build time (`dist/style.css`) that consumers import once. Do NOT rely on the consumer's own Tailwind config to pick up your classes — most won't, and the widget will silently render unstyled. This is a shipped, pre-built stylesheet, same approach used by mature component libraries.
-- **Bundler:** `tsup` (simplest, zero-config-friendly for React component libraries; produces ESM + CJS + `.d.ts` in one pass) — Antigravity may use Vite Library Mode instead if it's already the team's default, but tsup is the recommended starting point for a first library.
+- **Bundler:** `tsup` (simplest, zero-config-friendly for React component libraries; produces ESM + CJS + `.d.ts` in one pass) —  may use Vite Library Mode instead if it's already the team's default, but tsup is the recommended starting point for a first library.
 - **React support:** `react` and `react-dom` as `peerDependencies` (>=18), never bundled — prevents duplicate React instances in the consumer's app.
 - **Package manager:** npm (matches the old plugin's publishing setup).
 - **Testing:** Vitest + React Testing Library.
@@ -191,7 +191,7 @@ Each prebuilt feature (e.g. `FontSizeController`) is a **self-contained componen
 2. Renders its own UI (e.g. a −/+ stepper for font size, a slider for contrast).
 3. Applies the actual DOM effect as a side effect (`useEffect`) — e.g. `document.documentElement.style.fontSize = ...`, or toggling a class on `<body>` for grayscale/invert/high-contrast (keep the DOM mutation logic in `utils/dom.ts`, shared and unit-testable, not copy-pasted per component).
 
-Enabling/disabling a prebuilt feature is purely: **is `<FontSizeController />` present in the JSX tree, or not.** No separate "enable/disable" config API is needed given the requirement — this composition-based on/off switch is simpler and matches the target usage exactly. (If Antigravity or Praboth later wants a config-object alternative like `<AccessibilityPlugin features={{ fontSize: true }}>`, that can be a v2 addition — but it should NOT replace the JSX composition API, since the brief explicitly wants that pattern.)
+Enabling/disabling a prebuilt feature is purely: **is `<FontSizeController />` present in the JSX tree, or not.** No separate "enable/disable" config API is needed given the requirement — this composition-based on/off switch is simpler and matches the target usage exactly. (If later wants a config-object alternative like `<AccessibilityPlugin features={{ fontSize: true }}>`, that can be a v2 addition — but it should NOT replace the JSX composition API, since the brief explicitly wants that pattern.)
 
 Full prebuilt feature list to port from the old plugin (map 1:1 where sensible):
 
@@ -269,7 +269,7 @@ Since Praboth builds Next.js apps regularly (per his other projects), this must 
 
 ---
 
-## 6. Build & Publish Steps (for Antigravity to execute in order)
+## 6. Build & Publish Steps (execute in order)
 
 1. **Scaffold**: `npm init`, install `react`, `react-dom` as devDependencies + peerDependencies, install `typescript`, `tsup`, `tailwindcss`, `vitest`, `@testing-library/react`.
 2. **Configure `tsup.config.ts`**: entry `src/index.ts`, format `["esm", "cjs"]`, `dts: true`, `external: ["react", "react-dom"]`.
