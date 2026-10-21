@@ -19,4 +19,4 @@ Build a composable React display-preference library. Read [status](docs/PROJECT_
 
 - npm preparation uses `codex/npm-v2-release`, based on PR #17. Owner initially approved beta, then selected version 2.0.0 under latest on 2026-10-13. Keep `react-accessibility-plugin:state` as the storage key across the package rename. See docs/RELEASE.md.
 
-- Owner requested GitHub Actions publication for 2.0.0/latest. `publish.yml` is manual, defaults to dry-run, tests/preserves the exact archive and uses npm OIDC; no automatic PR/push publication. Configure the matching trusted publisher before real dispatch. The owner authorized the merges of PR #17 and #18; future default-branch merges need their own authorization.
+- Owner requested automated GitHub Actions publication for releases on main. `publish.yml` triggers on push to `main` (when PRs merge) and checks if the version in `package.json` is new, publishing via npm OIDC or skipping safely if already published. Manual dispatch with dry-run support remains available. Future default-branch merges need their own authorization.

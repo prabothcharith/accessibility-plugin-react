@@ -1,16 +1,19 @@
 name: Publish npm package
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       version:
-        description: Exact version already committed in package.json
-        required: true
-        default: "2.0.1"
+        description: Exact version already committed in package.json (leave empty to use package.json)
+        required: false
+        default: ""
         type: string
       dry_run:
         description: Validate and inspect without uploading to npm
         required: true
-        default: true
+        default: false
         type: boolean
 permissions:
   contents: read
@@ -18,11 +21,99 @@ concurrency:
   group: npm-publish-accessibility-plugin-react
   cancel-in-progress: false
 jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      should_publish: ${{ steps.check_version.outputs.should_publish }}
+      version: ${{ steps.check_version.outputs.version }}
+      dry_run: ${{ steps.check_version.outputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - id: check_version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { execSync } from 'node:child_process';
+          import { readFileSync, appendFileSync } from 'node:fs';
+
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          const eventName = process.env.EVENT_NAME;
+          const inputVersion = process.env.INPUT_VERSION?.trim();
+          const inputDryRun = process.env.INPUT_DRY_RUN === 'true';
+
+          const targetVersion = inputVersion || pkg.version;
+          assert.match(targetVersion, /^\d+\.\d+\.\d+$/, `Invalid semver format: ${targetVersion}`);
+          assert.equal(pkg.name, 'accessibility-plugin-react');
+          assert.equal(pkg.license, 'ISC');
+          assert.equal(pkg.publishConfig?.tag, 'latest');
+
+          if (inputVersion) {
+            assert.equal(pkg.version, inputVersion, `package.json version (${pkg.version}) does not match input version (${inputVersion})`);
+          }
+
+          let publishedVersions = [];
+          try {
+            const raw = execSync('npm view accessibility-plugin-react versions --json', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+            const parsed = JSON.parse(raw);
+            publishedVersions = Array.isArray(parsed) ? parsed : [parsed];
+          } catch (err) {
+            const stderr = err.stderr ? err.stderr.toString() : '';
+            if (stderr.includes('E404') || err.status === 1) {
+              console.log('No existing versions found on npm registry (or 404).');
+              publishedVersions = [];
+            } else {
+              throw err;
+            }
+          }
+
+          const isPublished = publishedVersions.includes(targetVersion);
+          const isDryRun = eventName === 'workflow_dispatch' ? inputDryRun : false;
+
+          let shouldPublish = false;
+          if (eventName === 'push') {
+            if (isPublished) {
+              console.log(`Version ${targetVersion} is already published on npm. Skipping publication.`);
+              shouldPublish = false;
+            } else {
+              console.log(`Version ${targetVersion} is new. Proceeding with publication.`);
+              shouldPublish = true;
+            }
+          } else {
+            if (isDryRun) {
+              console.log(`Workflow dispatched in dry-run mode for version ${targetVersion}. Proceeding with validation.`);
+              shouldPublish = true;
+            } else if (isPublished) {
+              console.log(`Version ${targetVersion} is already published on npm. Skipping publication.`);
+              shouldPublish = false;
+            } else {
+              console.log(`Workflow dispatched for version ${targetVersion}. Proceeding with publication.`);
+              shouldPublish = true;
+            }
+          }
+
+          const outputFile = process.env.GITHUB_OUTPUT;
+          if (outputFile) {
+            appendFileSync(outputFile, `should_publish=${shouldPublish}\n`);
+            appendFileSync(outputFile, `version=${targetVersion}\n`);
+            appendFileSync(outputFile, `dry_run=${isDryRun}\n`);
+          }
+          JS
   validate:
+    needs: check
+    if: needs.check.outputs.should_publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      EXPECTED_VERSION: ${{ inputs.version }}
+      EXPECTED_VERSION: ${{ needs.check.outputs.version }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -60,14 +151,15 @@ jobs:
           path: release/
           if-no-files-found: error
   publish:
-    needs: validate
+    needs: [check, validate]
+    if: needs.check.outputs.should_publish == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
     env:
-      EXPECTED_VERSION: ${{ inputs.version }}
+      EXPECTED_VERSION: ${{ needs.check.outputs.version }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -82,13 +174,13 @@ jobs:
           path: release/
       - run: sha512sum --check release/SHA512SUMS
       - name: Inspect publication
-        if: inputs.dry_run
+        if: ${{ needs.check.outputs.dry_run == 'true' }}
         run: npm publish ./release/accessibility-plugin-react.tgz --dry-run --tag latest --access public
       - name: Publish the tested archive with OIDC
-        if: ${{ !inputs.dry_run }}
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
         run: npm publish ./release/accessibility-plugin-react.tgz --tag latest --access public
       - name: Verify registry integrity and latest tag
-        if: ${{ !inputs.dry_run }}
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
         run: |
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
@@ -120,9 +212,9 @@ jobs:
           assert.equal(view('accessibility-plugin-react', 'dist-tags').latest, process.env.EXPECTED_VERSION);
           JS
       - run: npm ci
-        if: ${{ !inputs.dry_run }}
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
       - name: Verify clean registry React and Next consumers
-        if: ${{ !inputs.dry_run }}
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
         env:
-          ARAP_CONSUMER_VERSION: ${{ inputs.version }}
+          ARAP_CONSUMER_VERSION: ${{ needs.check.outputs.version }}
         run: node scripts/prepare-consumers.mjs
