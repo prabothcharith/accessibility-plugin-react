@@ -31,14 +31,14 @@ The master tracker is
 [issue #21](https://github.com/prabothcharith/accessibility-react/issues/21).
 Its milestone issues are:
 
-| Milestone | Parent issue | Purpose |
-| --- | --- | --- |
-| M0 | [#22](https://github.com/prabothcharith/accessibility-react/issues/22) | Establish repository, package and compatibility reality |
-| M1 | [#23](https://github.com/prabothcharith/accessibility-react/issues/23) | Build safe core state, effects and accessible widget UI |
-| M2 | [#24](https://github.com/prabothcharith/accessibility-react/issues/24) | Add stable visual and typographic preferences |
-| M3 | [#25](https://github.com/prabothcharith/accessibility-react/issues/25) | Add reading support, profiles and localization |
-| M4 | [#26](https://github.com/prabothcharith/accessibility-react/issues/26) | Isolate advanced, browser-dependent and experimental controls |
-| M5 | [#27](https://github.com/prabothcharith/accessibility-react/issues/27) | Complete launch evidence and prepare a release proposal |
+| Milestone | Parent issue                                                           | Purpose                                                       |
+| --------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| M0        | [#22](https://github.com/prabothcharith/accessibility-react/issues/22) | Establish repository, package and compatibility reality       |
+| M1        | [#23](https://github.com/prabothcharith/accessibility-react/issues/23) | Build safe core state, effects and accessible widget UI       |
+| M2        | [#24](https://github.com/prabothcharith/accessibility-react/issues/24) | Add stable visual and typographic preferences                 |
+| M3        | [#25](https://github.com/prabothcharith/accessibility-react/issues/25) | Add reading support, profiles and localization                |
+| M4        | [#26](https://github.com/prabothcharith/accessibility-react/issues/26) | Isolate advanced, browser-dependent and experimental controls |
+| M5        | [#27](https://github.com/prabothcharith/accessibility-react/issues/27) | Complete launch evidence and prepare a release proposal       |
 
 Each milestone contains the numbered A11Y child issues. Work must be tracked in
 those issues rather than in an unbounded feature branch or a single large

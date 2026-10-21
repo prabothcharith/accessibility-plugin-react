@@ -37,7 +37,10 @@ for (const file of ["dist/index.mjs", "dist/index.js"])
   );
 for (const file of ["dist/index.mjs", "dist/index.js"]) {
   const bundle = await readFile(file, "utf8");
-  assert(bundle.includes("styleInject"), `Missing automatic CSS injection: ${file}`);
+  assert(
+    bundle.includes("styleInject"),
+    `Missing automatic CSS injection: ${file}`,
+  );
   assert(bundle.includes(".arap-root"), `Missing bundled widget CSS: ${file}`);
 }
 const css = await readFile("dist/style.css", "utf8");
