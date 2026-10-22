@@ -86,17 +86,25 @@ jobs:
             releaseExists = false;
           }
 
+          let ghPackageExists = false;
+          try {
+            const raw = execSync(`gh api /users/prabothcharith/packages/npm/accessibility-plugin-react/versions --jq '.[].name' 2>/dev/null`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+            ghPackageExists = raw.split('\n').map(v => v.trim()).includes(targetVersion);
+          } catch {
+            ghPackageExists = false;
+          }
+
           const isDryRun = eventName === 'workflow_dispatch' ? inputDryRun : false;
 
           let shouldPublish = false;
           if (isDryRun) {
             console.log(`Workflow dispatched in dry-run mode for version ${targetVersion}. Proceeding with validation.`);
             shouldPublish = true;
-          } else if (isPublished && releaseExists) {
-            console.log(`Version ${targetVersion} is already published on npm and has a GitHub release. Skipping.`);
+          } else if (isPublished && releaseExists && ghPackageExists) {
+            console.log(`Version ${targetVersion} is already published on npm, GitHub Releases, and GitHub Packages. Skipping.`);
             shouldPublish = false;
           } else {
-            console.log(`Version ${targetVersion} has pending npm publication or GitHub release. Proceeding.`);
+            console.log(`Version ${targetVersion} has pending npm publication, GitHub release, or GitHub package. Proceeding.`);
             shouldPublish = true;
           }
 
@@ -251,7 +259,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ -n "${NPM_CONFIG_USERCONFIG:-}" ]; then
+            echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> "${NPM_CONFIG_USERCONFIG}"
+            echo "@prabothcharith:registry=https://npm.pkg.github.com" >> "${NPM_CONFIG_USERCONFIG}"
+          fi
           echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          echo "@prabothcharith:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          npm config set //npm.pkg.github.com/:_authToken "${NODE_AUTH_TOKEN}"
+          npm config set @prabothcharith:registry "https://npm.pkg.github.com"
           archive="$(find release-ghp -maxdepth 1 -name '*.tgz' -print -quit)"
           if npm view "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION" version --registry "https://npm.pkg.github.com" >/dev/null 2>&1; then
             echo "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION is already published on GitHub Packages."
