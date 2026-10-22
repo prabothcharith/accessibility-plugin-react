@@ -10,20 +10,25 @@ import {
 } from "./widgetPlacement";
 import type { WidgetPlacement } from "./types";
 import { WidgetPortal } from "./WidgetPortal";
+import { resolveLocaleStrings } from "./i18n";
 import type { AccessibilityButtonProps } from "./types";
 export function AccessibilityButton({
   icon,
   draggable = true,
-  title = "Accessibility",
+  title,
   description,
   className = "",
   style,
+  largeControls,
 }: AccessibilityButtonProps) {
   const ctx = useContext(AccessibilityContext);
   if (!ctx)
     throw new Error(
       "AccessibilityButton must be used within an <AccessibilityPlugin> provider.",
     );
+  const strings = resolveLocaleStrings(ctx.locale);
+  const buttonTitle = title ?? strings.buttonTitle;
+  const isLarge = largeControls ?? ctx.largeControls ?? false;
   const viewport = useViewport();
   const triggerSize = useTriggerSize(`${ctx.panelId}-trigger`);
   const [preview, setPreview] = useState<WidgetPlacement | null>(null);
@@ -56,6 +61,7 @@ export function AccessibilityButton({
         data-dragging={!!preview}
         data-open={ctx.isOpen}
         data-position={ctx.position}
+        data-large-controls={isLarge}
         onPointerDown={(event) => {
           suppressClick.current = false;
           if (!draggable || !event.isPrimary || event.button !== 0) return;
@@ -151,7 +157,7 @@ export function AccessibilityButton({
             );
           }
         }}
-        aria-label={title}
+        aria-label={buttonTitle}
         aria-keyshortcuts={
           draggable
             ? "Alt+ArrowUp Alt+ArrowDown Alt+ArrowLeft Alt+ArrowRight"
@@ -182,16 +188,22 @@ export function AccessibilityButton({
         </span>
         {(description || draggable) && (
           <span id={`${ctx.panelId}-trigger-description`} hidden>
-            {description}{" "}
-            {draggable &&
-              "Drag to move, or use Alt and arrow keys. The Move button menu offers click and keyboard controls."}
+            {description ? `${description} ` : ""}
+            {draggable && strings.dragHelp}
           </span>
         )}
       </button>
       <span className="arap-sr-only" role="status">
         {ctx.widgetPlacement?.kind === "point"
-          ? `Button position: ${Math.round(ctx.widgetPlacement.x * 100)}% horizontally, ${Math.round(ctx.widgetPlacement.y * 100)}% vertically.`
-          : `Button position: ${corner.split("-").join(" ")}.`}
+          ? strings.formatPointPosition
+            ? strings.formatPointPosition(
+                ctx.widgetPlacement.x,
+                ctx.widgetPlacement.y,
+              )
+            : `Button position: ${Math.round(ctx.widgetPlacement.x * 100)}% horizontally, ${Math.round(ctx.widgetPlacement.y * 100)}% vertically.`
+          : strings.formatCornerPosition
+            ? strings.formatCornerPosition(corner)
+            : `Button position: ${corner.split("-").join(" ")}.`}
       </span>
     </WidgetPortal>
   );

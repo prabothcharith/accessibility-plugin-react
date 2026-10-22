@@ -1,9 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { AccessibilityContext } from "./AccessibilityContext";
 import { corners, defaultCorner, pointFromPixels } from "./widgetPlacement";
+import { resolveLocaleStrings } from "./i18n";
 
 export function PositionControls() {
   const ctx = useContext(AccessibilityContext)!;
+  const strings = resolveLocaleStrings(ctx.locale);
   const [open, setOpen] = useState(false);
   const select = useRef<HTMLSelectElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
@@ -35,14 +37,14 @@ export function PositionControls() {
           setOpen(!open);
         }}
       >
-        Move button
+        {strings.moveButton}
       </button>
       <div
         id={`${ctx.panelId}-position`}
         className="arap-position-popover"
         hidden={!open}
         role="group"
-        aria-label="Move accessibility button"
+        aria-label={strings.moveButtonLabel}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             event.stopPropagation();
@@ -54,12 +56,12 @@ export function PositionControls() {
           className="arap-position-label"
           htmlFor={`${ctx.panelId}-corner`}
         >
-          Button position
+          {strings.positionLabel}
         </label>
         <select
           ref={select}
           id={`${ctx.panelId}-corner`}
-          aria-label="Accessibility button position"
+          aria-label={strings.buttonPositionSelectLabel}
           value={
             ctx.widgetPlacement?.kind === "point"
               ? "custom"
@@ -73,7 +75,7 @@ export function PositionControls() {
           }
         >
           <option value="custom" disabled>
-            Custom position
+            {strings.customPosition}
           </option>
           {corners.map((corner) => (
             <option key={corner} value={corner}>
@@ -84,22 +86,22 @@ export function PositionControls() {
         <div className="arap-position-arrows">
           {(
             [
-              ["left", -20, 0, "←"],
-              ["up", 0, -20, "↑"],
-              ["down", 0, 20, "↓"],
-              ["right", 20, 0, "→"],
+              ["left", -20, 0, "←", strings.moveLeft],
+              ["up", 0, -20, "↑", strings.moveUp],
+              ["down", 0, 20, "↓", strings.moveDown],
+              ["right", 20, 0, "→", strings.moveRight],
             ] as const
-          ).map(([direction, dx, dy, label]) => (
+          ).map(([direction, dx, dy, arrowChar, label]) => (
             <button
               type="button"
               key={direction}
-              aria-label={`Move accessibility button ${direction}`}
+              aria-label={label}
               onClick={(event) => {
                 event.currentTarget.focus();
                 move(dx, dy);
               }}
             >
-              {label}
+              {arrowChar}
             </button>
           ))}
         </div>
@@ -111,10 +113,10 @@ export function PositionControls() {
             ctx.setWidgetPlacement(null);
           }}
         >
-          Reset button position
+          {strings.resetPosition}
         </button>
         <button className="arap-position-default" type="button" onClick={close}>
-          Done moving
+          {strings.doneMoving}
         </button>
       </div>
     </div>

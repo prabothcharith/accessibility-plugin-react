@@ -25,6 +25,9 @@ export function AccessibilityPlugin({
   persistenceKey,
   persist = true,
   storage,
+  locale,
+  statementUrl,
+  largeControls,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [store] = useState(() =>
@@ -162,6 +165,9 @@ export function AccessibilityPlugin({
       resetAll,
       registerReset,
       unregisterReset,
+      locale,
+      statementUrl,
+      largeControls,
     }),
     [
       isOpen,
@@ -178,6 +184,9 @@ export function AccessibilityPlugin({
       resetAll,
       registerReset,
       unregisterReset,
+      locale,
+      statementUrl,
+      largeControls,
     ],
   );
   return (
