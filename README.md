@@ -4,8 +4,7 @@ Composable React controls for display preferences and reading assistance. Choose
 the controls in JSX, keep the widget outside your application layout, and let
 the provider own state, persistence, effects, focus behavior, and cleanup.
 
-The `2.0.2` patch release adds automatic widget stylesheet injection on package
-import while retaining the standalone stylesheet export for explicit pipelines.
+The `2.3.0` minor release introduces modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), state UI (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), locale and oversized control modes (`largeControls`), and automated releases across npm, GitHub Releases, and GitHub Packages.
 It supports React 18.3.1 and React 19.x, ships ESM, CommonJS, TypeScript declarations,
 and scoped plain CSS, and has no runtime dependency other than React and React DOM.
 
@@ -18,8 +17,16 @@ and scoped plain CSS, and has no runtime dependency other than React and React D
 
 ## Installation
 
+### From npm (recommended)
+
 ```sh
 npm install accessibility-plugin-react
+```
+
+### From GitHub Packages
+
+```sh
+npm install @prabothcharith/accessibility-plugin-react --registry=https://npm.pkg.github.com
 ```
 
 React and React DOM are peer dependencies and must use the same major/minor
@@ -103,6 +110,17 @@ Effects compose where appropriate. For example, contrast, saturation, invert,
 and grayscale are applied in a deterministic order. Defaults leave host styles
 unchanged, and the provider restores host inline values and priorities when an
 effect is disabled or the provider is removed.
+
+## Control primitives and profiles
+
+Build custom accessible panels or custom features with modular primitives that include ARIA semantics, keyboard navigation, and Clean light styling:
+
+- **`FeatureCard`**: Accessible container with header, icon, description, status badge, and alert states (`idle`, `active`, `error`, `unavailable`, `permission-required`).
+- **`ToggleControl`**: Native switch button with `role="switch"`, `aria-checked`, and >=44px touch targets.
+- **`ChoiceControl`**: Segmented or grouped choices with `role="radiogroup"`, Arrow key navigation (Left/Right/Up/Down/Home/End), and visual check indicators.
+- **`StepperControl`**: Bounded decrement/increment buttons, `<output aria-live="polite">`, and optional range slider.
+- **`SearchCount` & `EmptyState`**: Polite live announcements for feature filtering and search zero-results states.
+- **`ProfilePreviewCard`**: Previews affected accessibility profile settings (e.g. low-vision, dyslexia, cognitive) and provides one-click reversal back to custom settings.
 
 ## Custom features
 
