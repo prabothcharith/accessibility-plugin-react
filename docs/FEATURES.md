@@ -20,6 +20,20 @@ All features are opt-in via controllers, use native buttons, support Enter/Space
 | ReadingGuideController / readingGuide   | false; boolean                                                       | 4px blue line with white border follows pointer or host focus. Can coexist with mask.                                                                                |
 | ResetController                         | No feature state                                                     | Clears display settings including custom/unmounted controls, preserves widget placement; runs legacy reset callbacks; keeps panel open.                              |
 
+## Accessible control primitives and UI states
+
+The library exports modular UI primitives conforming to WCAG 2.2 criteria:
+
+| Primitive                   | Accessible Role & State                             | Key Capabilities                                                                                                                                |
+| --------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ToggleControl`             | `role="switch"`, `aria-checked`                     | Keyboard Space/Enter toggle, disabled/unavailable states, >=44px touch targets (>=48px in largeControls mode).                                  |
+| `ChoiceControl`             | `role="radiogroup"`, `role="radio"`, `aria-checked` | Arrow key (Left/Right/Up/Down/Home/End) cycling, check indicators, multi-level/category grouping.                                               |
+| `StepperControl`            | `role="group"` with `<output aria-live="polite">`   | Accessible increment/decrement buttons, boundary clamping, optional `role="slider"` range input.                                                |
+| `FeatureCard`               | `role="group"`, `aria-label`                        | Card container with title, icon, description, status badge, and alert states (`idle`, `active`, `error`, `unavailable`, `permission-required`). |
+| `SearchCount`               | `role="status"`, `aria-live="polite"`               | Live status announcement of matched and total features for search filtering.                                                                    |
+| `EmptyState` / `ErrorState` | `role="status"` / `role="alert"`                    | Clear messaging with action button for empty results and error recovery.                                                                        |
+| `ProfilePreviewCard`        | `role="group"`                                      | Previews affected settings for accessibility profiles (low-vision, dyslexia, etc.) and provides one-click reversal back to custom settings.     |
+
 ## Original JavaScript and branch comparison
 
 Reference: vanilla `47f44c5` (`accessibility-menu.js`, package 1.2.2); older React `7aef17c`; newer baseline `6dfbd44`. “Present” is source evidence, not proof of correctness. See baseline for defects.
