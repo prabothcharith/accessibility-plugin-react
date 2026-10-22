@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.1 — 2026-10-22
+
+- Harden scoped effect manager and cleanup lifecycle (closes #33).
+- Exclude `template` and `noscript` elements from host style mutations and limit processing on massive DOM trees.
+- Debounce dynamic content mutations and resize observer updates to prevent thread thrashing.
+- Ensure idempotent overlay mount/unmount and cleanup for reading aids.
+- Add comprehensive lifecycle test coverage for enable -> update -> disable -> unmount -> remount cycles.
+
 ## 2.2.0 — 2026-10-22
 
 - Add base locale infrastructure and typed English strings (`LocaleStrings`, `enLocale`), fallback resolution, custom locale registration (`registerLocale`), and RTL detection (`isRtlLocale`) (closes #38).
