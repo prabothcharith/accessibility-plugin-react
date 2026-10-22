@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.0 — 2026-10-22
+
+- Add base locale infrastructure and typed English strings (`LocaleStrings`, `enLocale`), fallback resolution, custom locale registration (`registerLocale`), and RTL detection (`isRtlLocale`) (closes #38).
+- Add oversized widget controls mode (`largeControls`) scaling touch targets to >=48px for motor/vision accommodations (closes #37, W-21).
+- Add configurable accessibility statement link (`statementUrl`) rendered in the panel footer with accessible new-tab notices (closes #37, W-22).
+- Add non-drag keyboard movement alternatives and localized position controls (reconciles #14).
+
 ## 2.1.0 — 2026-10-22
 
 - Introduce typed preferences registry, state reducer, and default configuration (`AccessibilityPreferences`).
