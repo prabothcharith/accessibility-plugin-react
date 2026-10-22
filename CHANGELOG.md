@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.2 — 2026-10-22
+
+- Verify native-control launcher and non-modal widget panel keyboard/AT integration (closes #35).
+- Ensure focus restoration on Escape or close button, route change resilience, non-modal disclosure semantics, and independent tool list scrolling.
+
 ## 2.2.1 — 2026-10-22
 
 - Harden scoped effect manager and cleanup lifecycle (closes #33).

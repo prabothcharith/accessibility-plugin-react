@@ -156,10 +156,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
-      contents: read
+      contents: write
+      packages: write
       id-token: write
     env:
       EXPECTED_VERSION: ${{ needs.check.outputs.version }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -218,3 +220,59 @@ jobs:
         env:
           ARAP_CONSUMER_VERSION: ${{ needs.check.outputs.version }}
         run: node scripts/prepare-consumers.mjs
+      - name: Build scoped GitHub Package archive
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf github-package release-ghp
+          mkdir github-package release-ghp
+          tar -xzf release/accessibility-plugin-react.tgz -C github-package --strip-components=1
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const path = 'github-package/package.json';
+          const pkg = JSON.parse(readFileSync(path, 'utf8'));
+          pkg.name = '@prabothcharith/accessibility-plugin-react';
+          pkg.publishConfig = {
+            registry: 'https://npm.pkg.github.com',
+          };
+          writeFileSync(path, `${JSON.stringify(pkg, null, 2)}\n`);
+          JS
+          (cd github-package && npm pack --pack-destination ../release-ghp)
+      - name: Publish to GitHub Packages
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$(find release-ghp -maxdepth 1 -name '*.tgz' -print -quit)"
+          if npm view "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION" version --registry "https://npm.pkg.github.com" >/dev/null 2>&1; then
+            echo "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION is already published on GitHub Packages."
+          else
+            npm publish "$archive" --registry "https://npm.pkg.github.com"
+          fi
+      - name: Create GitHub Release
+        if: ${{ needs.check.outputs.dry_run != 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const version = process.env.EXPECTED_VERSION;
+          const changelog = readFileSync('CHANGELOG.md', 'utf8');
+          const sectionRegex = new RegExp(`## ${version.replace(/\\./g, '\\\\.')}[^\\n]*\\n([\\s\\S]*?)(?=\\n## |$)`);
+          const match = changelog.match(sectionRegex);
+          const notes = match ? match[1].trim() : `Release v${version}`;
+          writeFileSync('release-notes.md', notes + '\n');
+          JS
+          if gh release view "v$EXPECTED_VERSION" >/dev/null 2>&1; then
+            echo "Release v$EXPECTED_VERSION already exists."
+          else
+            gh release create "v$EXPECTED_VERSION" \
+              release/accessibility-plugin-react.tgz \
+              --title "v$EXPECTED_VERSION" \
+              --notes-file release-notes.md
+          fi
