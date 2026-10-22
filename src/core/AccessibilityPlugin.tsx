@@ -24,10 +24,11 @@ export function AccessibilityPlugin({
   position = "right",
   persistenceKey,
   persist = true,
+  storage,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [store] = useState(() =>
-    createPreferenceStore(persistenceKey, persist),
+    createPreferenceStore(persistenceKey, persist, storage),
   );
   const features = useSyncExternalStore(
     store.subscribe,
