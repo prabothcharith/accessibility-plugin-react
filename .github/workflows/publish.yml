@@ -39,6 +39,7 @@ jobs:
           INPUT_VERSION: ${{ inputs.version }}
           INPUT_DRY_RUN: ${{ inputs.dry_run }}
           EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node --input-type=module <<'JS'
           import assert from 'node:assert/strict';
@@ -76,28 +77,27 @@ jobs:
           }
 
           const isPublished = publishedVersions.includes(targetVersion);
+
+          let releaseExists = false;
+          try {
+            execSync(`gh release view v${targetVersion}`, { stdio: ['ignore', 'pipe', 'pipe'] });
+            releaseExists = true;
+          } catch {
+            releaseExists = false;
+          }
+
           const isDryRun = eventName === 'workflow_dispatch' ? inputDryRun : false;
 
           let shouldPublish = false;
-          if (eventName === 'push') {
-            if (isPublished) {
-              console.log(`Version ${targetVersion} is already published on npm. Skipping publication.`);
-              shouldPublish = false;
-            } else {
-              console.log(`Version ${targetVersion} is new. Proceeding with publication.`);
-              shouldPublish = true;
-            }
+          if (isDryRun) {
+            console.log(`Workflow dispatched in dry-run mode for version ${targetVersion}. Proceeding with validation.`);
+            shouldPublish = true;
+          } else if (isPublished && releaseExists) {
+            console.log(`Version ${targetVersion} is already published on npm and has a GitHub release. Skipping.`);
+            shouldPublish = false;
           } else {
-            if (isDryRun) {
-              console.log(`Workflow dispatched in dry-run mode for version ${targetVersion}. Proceeding with validation.`);
-              shouldPublish = true;
-            } else if (isPublished) {
-              console.log(`Version ${targetVersion} is already published on npm. Skipping publication.`);
-              shouldPublish = false;
-            } else {
-              console.log(`Workflow dispatched for version ${targetVersion}. Proceeding with publication.`);
-              shouldPublish = true;
-            }
+            console.log(`Version ${targetVersion} has pending npm publication or GitHub release. Proceeding.`);
+            shouldPublish = true;
           }
 
           const outputFile = process.env.GITHUB_OUTPUT;
@@ -180,7 +180,12 @@ jobs:
         run: npm publish ./release/accessibility-plugin-react.tgz --dry-run --tag latest --access public
       - name: Publish the tested archive with OIDC
         if: ${{ needs.check.outputs.dry_run != 'true' }}
-        run: npm publish ./release/accessibility-plugin-react.tgz --tag latest --access public
+        run: |
+          if npm view "accessibility-plugin-react@$EXPECTED_VERSION" version --registry "https://registry.npmjs.org/" >/dev/null 2>&1; then
+            echo "accessibility-plugin-react@$EXPECTED_VERSION is already published on npm. Skipping upload."
+          else
+            npm publish ./release/accessibility-plugin-react.tgz --tag latest --access public
+          fi
       - name: Verify registry integrity and latest tag
         if: ${{ needs.check.outputs.dry_run != 'true' }}
         run: |
@@ -246,11 +251,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
           archive="$(find release-ghp -maxdepth 1 -name '*.tgz' -print -quit)"
           if npm view "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION" version --registry "https://npm.pkg.github.com" >/dev/null 2>&1; then
             echo "@prabothcharith/accessibility-plugin-react@$EXPECTED_VERSION is already published on GitHub Packages."
           else
-            npm publish "$archive" --registry "https://npm.pkg.github.com"
+            npm publish "./$archive" --registry "https://npm.pkg.github.com"
           fi
       - name: Create GitHub Release
         if: ${{ needs.check.outputs.dry_run != 'true' }}
