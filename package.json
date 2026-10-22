@@ -81,7 +81,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/prabothcharith/accessibility-react.git"
+    "url": "git+https://github.com/prabothcharith/accessibility-plugin-react.git"
   },
   "sideEffects": [
     "**/*.css"
@@ -89,9 +89,9 @@
   "engines": {
     "node": ">=22.13"
   },
-  "homepage": "https://github.com/prabothcharith/accessibility-react#readme",
+  "homepage": "https://github.com/prabothcharith/accessibility-plugin-react#readme",
   "bugs": {
-    "url": "https://github.com/prabothcharith/accessibility-react/issues"
+    "url": "https://github.com/prabothcharith/accessibility-plugin-react/issues"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",

@@ -95,7 +95,7 @@ When triggered on `main`, the workflow inspects the committed `package.json` ver
 Configure npm’s trusted publisher for package accessibility-plugin-react:
 
 - GitHub organization/user: `prabothcharith`
-- Repository: `accessibility-react`
+- Repository: `accessibility-plugin-react`
 - Workflow filename: `publish.yml` (without the directory)
 - Environment: leave blank; this workflow does not use a named environment
 - Allowed action: direct `npm publish`
@@ -103,7 +103,7 @@ Configure npm’s trusted publisher for package accessibility-plugin-react:
 Authenticated maintainers can configure it through npm package settings or:
 
 ```sh
-npm trust github accessibility-plugin-react --file publish.yml --repo prabothcharith/accessibility-react --allow-publish --yes
+npm trust github accessibility-plugin-react --file publish.yml --repo prabothcharith/accessibility-plugin-react --allow-publish --yes
 ```
 
 Browser/2FA authorization may be required. Trusted publishing requires compatible npm/Node; the workflow uses Node24 and npm11.21.0. The prior npm account hold may still reject setup or publishing; OIDC is not evidence that it is cleared.
