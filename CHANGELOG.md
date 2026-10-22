@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0 — 2026-10-22
+
+- Introduce typed preferences registry, state reducer, and default configuration (`AccessibilityPreferences`).
+- Add 8 standardized accessibility profile definitions (`PROFILE_DEFINITIONS`) with deterministic user override layers (closes #32).
+- Add configurable storage modes (`none`, `session`, `local`) to `AccessibilityPlugin` and storage engine (closes #34).
+- Add preference normalization and resolution helpers (`normalizePreferences`, `normalizePreferenceValue`, `resolveEffectivePreferences`).
+
 ## 2.0.2 — 2026-10-21
 
 - Automatically inject the scoped widget stylesheet on package import; retain the standalone stylesheet export for explicit CSS pipelines.
