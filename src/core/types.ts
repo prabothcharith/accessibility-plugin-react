@@ -28,6 +28,9 @@ export interface AccessibilityContextValue {
   resetAll: () => void;
   registerReset: (key: string, resetFn: () => void) => void;
   unregisterReset: (key: string) => void;
+  locale?: string;
+  statementUrl?: string;
+  largeControls?: boolean;
 }
 export type WidgetPlacement =
   | {
@@ -47,6 +50,7 @@ import type {
   StorageMode,
   TextAlignPreference,
 } from "./preferences";
+import type { LocaleStrings } from "./i18n";
 
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
@@ -57,6 +61,12 @@ export interface AccessibilityPluginProps {
   persist?: boolean;
   /** Storage mode: 'none' | 'session' | 'local'. Defaults to 'local'. */
   storage?: StorageMode;
+  /** Preferred UI language locale (defaults to html lang or 'en'). */
+  locale?: string;
+  /** Real URL to site owner's accessibility statement (W-22). */
+  statementUrl?: string;
+  /** Oversized widget controls mode (>=48px touch targets, W-21). */
+  largeControls?: boolean;
 }
 export interface AccessibilityButtonProps {
   /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
@@ -66,6 +76,7 @@ export interface AccessibilityButtonProps {
   description?: string;
   className?: string;
   style?: CSSProperties;
+  largeControls?: boolean;
 }
 export interface AccessibilityListProps {
   /** Additional always-visible actions next to ResetController. */
@@ -77,6 +88,12 @@ export interface AccessibilityListProps {
   style?: CSSProperties;
   title?: string;
   closeLabel?: string;
+  /** Real URL to site owner's accessibility statement (W-22). */
+  statementUrl?: string;
+  /** Oversized widget controls mode (>=48px touch targets, W-21). */
+  largeControls?: boolean;
+  /** Preferred UI language locale. */
+  locale?: string;
 }
 
 export type {
@@ -84,6 +101,7 @@ export type {
   ContrastMode,
   CursorSizePreference,
   FontFamilyPreference,
+  LocaleStrings,
   ProfileDefinition,
   ProfilePresetId,
   ReaderMode,

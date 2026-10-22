@@ -30,7 +30,17 @@ export type {
   SaturationPreference,
   StorageMode,
   TextAlignPreference,
+  LocaleStrings,
 } from "./core/types";
+
+// Internationalization (i18n)
+export {
+  enLocale,
+  registerLocale,
+  resolveLocaleStrings,
+  isRtlLocale,
+} from "./core/i18n";
+export type { SupportedLocale } from "./core/i18n";
 
 // Preferences & Profiles
 export {

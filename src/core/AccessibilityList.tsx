@@ -10,17 +10,32 @@ import {
   useTriggerSize,
 } from "./widgetPlacement";
 import { WidgetPortal } from "./WidgetPortal";
+import { resolveLocaleStrings, isRtlLocale } from "./i18n";
 import type { AccessibilityListProps } from "./types";
+
 function Panel({
   children,
   footer,
   className = "",
   style,
-  title = "Accessibility settings",
-  description = "Adjust your reading experience",
-  closeLabel = "Close accessibility settings",
+  title,
+  description,
+  closeLabel,
+  statementUrl,
+  largeControls,
+  locale,
 }: AccessibilityListProps) {
   const ctx = useContext(AccessibilityContext)!;
+  const effectiveLocale = locale ?? ctx.locale;
+  const strings = resolveLocaleStrings(effectiveLocale);
+  const panelTitle = title ?? strings.title;
+  const panelDescription =
+    description === undefined ? strings.description : description;
+  const panelCloseLabel = closeLabel ?? strings.closeLabel;
+  const effectiveStatementUrl = statementUrl ?? ctx.statementUrl;
+  const isLarge = largeControls ?? ctx.largeControls ?? false;
+  const isRtl = isRtlLocale(effectiveLocale);
+
   const panel = useRef<HTMLDivElement>(null);
   const [actions, setActions] = useState<HTMLDivElement | null>(null);
   const viewport = useViewport();
@@ -59,10 +74,16 @@ function Panel({
       }}
       data-corner={corner}
       data-position={ctx.position}
+      data-large-controls={isLarge}
+      lang={effectiveLocale ?? "en"}
+      dir={isRtl ? "rtl" : "ltr"}
+      translate="no"
       hidden={!ctx.isOpen}
       role="region"
-      aria-label={title}
-      aria-describedby={description ? `${ctx.panelId}-description` : undefined}
+      aria-label={panelTitle}
+      aria-describedby={
+        panelDescription ? `${ctx.panelId}-description` : undefined
+      }
       tabIndex={-1}
       onKeyDown={(event) => {
         if (event.key === "Escape" && !event.defaultPrevented) {
@@ -73,14 +94,18 @@ function Panel({
     >
       <div className="arap-heading">
         <div className="arap-heading-copy">
-          <h2>{title}</h2>
-          {description && (
+          <h2>{panelTitle}</h2>
+          {panelDescription && (
             <p id={`${ctx.panelId}-description`} className="arap-description">
-              {description}
+              {panelDescription}
             </p>
           )}
         </div>
-        <button type="button" aria-label={closeLabel} onClick={ctx.closeMenu}>
+        <button
+          type="button"
+          aria-label={panelCloseLabel}
+          onClick={ctx.closeMenu}
+        >
           ×
         </button>
       </div>
@@ -96,14 +121,14 @@ function Panel({
           target?.focus();
         }}
       >
-        Jump to quick actions
+        {strings.skipToActions}
       </button>
       <PanelActionsContext.Provider value={actions}>
         <div
           className="arap-tools"
           role="group"
           tabIndex={0}
-          aria-label="Accessibility tools"
+          aria-label={strings.toolsLabel}
         >
           {children}
         </div>
@@ -111,13 +136,26 @@ function Panel({
       <div
         className="arap-quick-actions"
         role="group"
-        aria-label="Quick actions"
+        aria-label={strings.quickActionsLabel}
       >
         <PositionControls key={ctx.isOpen ? "open" : "closed"} />
         <div className="arap-actions" ref={setActions}>
           {footer}
         </div>
       </div>
+      {effectiveStatementUrl && (
+        <div className="arap-statement">
+          <a
+            href={effectiveStatementUrl}
+            className="arap-statement-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {strings.statementLink}
+            <span className="arap-sr-only"> ({strings.openInNewTab})</span>
+          </a>
+        </div>
+      )}
     </div>
   );
 }
