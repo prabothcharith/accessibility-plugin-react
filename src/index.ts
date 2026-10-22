@@ -69,3 +69,28 @@ export { BigCursorController } from "./features/BigCursorController";
 export { ReadingMaskController } from "./features/ReadingMaskController";
 export { ReadingGuideController } from "./features/ReadingGuideController";
 export { ResetController } from "./features/ResetController";
+
+// Control Primitives & State UI
+export {
+  ToggleControl,
+  ChoiceControl,
+  StepperControl,
+  FeatureCard,
+  SearchCount,
+  EmptyState,
+  ErrorState,
+  ProfilePreviewCard,
+} from "./core/controls";
+export type {
+  ToggleControlProps,
+  ChoiceControlProps,
+  ChoiceOption,
+  ChoiceGroup,
+  StepperControlProps,
+  FeatureCardProps,
+  FeatureStatus,
+  SearchCountProps,
+  EmptyStateProps,
+  ErrorStateProps,
+  ProfilePreviewCardProps,
+} from "./core/controls";
