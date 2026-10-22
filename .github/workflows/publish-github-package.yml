@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 15
     env:
       EXPECTED_VERSION: ${{ inputs.version }}
-      PACKAGE_NAME: "@prabothcharith/accessibility-react"
+      PACKAGE_NAME: "@prabothcharith/accessibility-plugin-react"
       REGISTRY: https://npm.pkg.github.com
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -73,7 +73,7 @@ jobs:
           rm "$source_archive"
       - name: Publish package
         run: |
-          archive="$(find release -maxdepth 1 -name 'prabothcharith-accessibility-react-*.tgz' -print -quit)"
+          archive="$(find release -maxdepth 1 -name '*.tgz' -print -quit)"
           if npm view "$PACKAGE_NAME@$EXPECTED_VERSION" version --registry "$REGISTRY" >/dev/null 2>&1; then
             echo "$PACKAGE_NAME@$EXPECTED_VERSION is already published"
           else
