@@ -1,3 +1,5 @@
+import type { StorageMode } from "./preferences/types";
+
 export const DEFAULT_STORAGE_KEY = "react-accessibility-plugin:state";
 const forbidden = new Set(["__proto__", "constructor", "prototype"]);
 export function validKey(key: string): boolean {
@@ -6,11 +8,24 @@ export function validKey(key: string): boolean {
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
+
+function getStorage(mode: StorageMode = "local"): Storage | null {
+  if (mode === "none" || typeof window === "undefined") return null;
+  try {
+    return mode === "session" ? window.sessionStorage : window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
 export function loadState(
   key = DEFAULT_STORAGE_KEY,
+  mode: StorageMode = "local",
 ): Record<string, unknown> | null {
+  const storage = getStorage(mode);
+  if (!storage) return null;
   try {
-    const raw: unknown = JSON.parse(localStorage.getItem(key) || "null");
+    const raw: unknown = JSON.parse(storage.getItem(key) || "null");
     if (!isRecord(raw)) return null;
     // Accept the unversioned 0.1.0 format, reject unknown future envelopes.
     const features =
@@ -26,22 +41,33 @@ export function loadState(
 export function saveState(
   state: Record<string, unknown>,
   key = DEFAULT_STORAGE_KEY,
+  mode: StorageMode = "local",
 ): void {
+  const storage = getStorage(mode);
+  if (!storage) return;
   try {
-    localStorage.setItem(key, JSON.stringify({ version: 1, features: state }));
+    storage.setItem(key, JSON.stringify({ version: 1, features: state }));
   } catch {
     /* Storage is optional. */
   }
 }
-export function clearState(key = DEFAULT_STORAGE_KEY): void {
+export function clearState(
+  key = DEFAULT_STORAGE_KEY,
+  mode: StorageMode = "local",
+): void {
+  const storage = getStorage(mode);
+  if (!storage) return;
   try {
-    localStorage.removeItem(key);
+    storage.removeItem(key);
   } catch {
     /* Storage is optional. */
   }
 }
 /** Every provider owns a writer. Reset cancels pending work; teardown flushes it. */
-export function createStorageWriter(key = DEFAULT_STORAGE_KEY) {
+export function createStorageWriter(
+  key = DEFAULT_STORAGE_KEY,
+  mode: StorageMode = "local",
+) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let pending: Record<string, unknown> | undefined;
   const cancel = () => {
@@ -52,7 +78,7 @@ export function createStorageWriter(key = DEFAULT_STORAGE_KEY) {
   const flush = () => {
     const next = pending;
     cancel();
-    if (next) saveState(next, key);
+    if (next) saveState(next, key, mode);
   };
   return {
     schedule(state: Record<string, unknown>) {
@@ -62,7 +88,7 @@ export function createStorageWriter(key = DEFAULT_STORAGE_KEY) {
     },
     clear() {
       cancel();
-      clearState(key);
+      clearState(key, mode);
     },
     cancel,
     flush,

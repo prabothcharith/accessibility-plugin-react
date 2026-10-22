@@ -20,7 +20,28 @@ export type {
   WidgetPlacement,
   FeatureOptions,
   FeatureRegistration,
+  AccessibilityPreferences,
+  ContrastMode,
+  CursorSizePreference,
+  FontFamilyPreference,
+  ProfileDefinition,
+  ProfilePresetId,
+  ReaderMode,
+  SaturationPreference,
+  StorageMode,
+  TextAlignPreference,
 } from "./core/types";
+
+// Preferences & Profiles
+export {
+  DEFAULT_PREFERENCES,
+  PROFILE_DEFINITIONS,
+  normalizePreferences,
+  normalizePreferenceValue,
+  resolveEffectivePreferences,
+  preferencesReducer,
+  createInitialPreferencesState,
+} from "./core/preferences";
 
 // Prebuilt Features
 export { FontSizeController } from "./features/FontSizeController";

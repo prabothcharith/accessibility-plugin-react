@@ -35,13 +35,28 @@ export type WidgetPlacement =
       corner: "bottom-right" | "bottom-left" | "top-right" | "top-left";
     }
   | { kind: "point"; x: number; y: number };
+import type {
+  AccessibilityPreferences,
+  ContrastMode,
+  CursorSizePreference,
+  FontFamilyPreference,
+  ProfileDefinition,
+  ProfilePresetId,
+  ReaderMode,
+  SaturationPreference,
+  StorageMode,
+  TextAlignPreference,
+} from "./preferences";
+
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
   children: ReactNode;
   position?: PluginPosition;
   persistenceKey?: string;
-  /** Disable storage completely. */
+  /** Disable storage completely (backward-compatible alias for storage="none"). */
   persist?: boolean;
+  /** Storage mode: 'none' | 'session' | 'local'. Defaults to 'local'. */
+  storage?: StorageMode;
 }
 export interface AccessibilityButtonProps {
   /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
@@ -63,3 +78,16 @@ export interface AccessibilityListProps {
   title?: string;
   closeLabel?: string;
 }
+
+export type {
+  AccessibilityPreferences,
+  ContrastMode,
+  CursorSizePreference,
+  FontFamilyPreference,
+  ProfileDefinition,
+  ProfilePresetId,
+  ReaderMode,
+  SaturationPreference,
+  StorageMode,
+  TextAlignPreference,
+};
