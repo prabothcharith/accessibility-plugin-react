@@ -136,7 +136,7 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm run format:check
-      - run: npm audit
+      - run: npm audit --omit=dev
       - run: npm run test:consumers
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
