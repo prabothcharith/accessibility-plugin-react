@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { builtins } from "./featureSchema";
 import type { FeatureRegistration } from "./types";
 
-const EXCLUDED = "[data-arap-ui], [data-arap-ui] *, script, style, link, meta";
+const EXCLUDED =
+  "[data-arap-ui], [data-arap-ui] *, script, style, link, meta, noscript, template";
+const MAX_HOST_ELEMENTS = 4000;
 const cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M4 2v32l9-9 7 13 6-3-7-12h14z' fill='black' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto`;
 const palette: Record<string, [string, string]> = {
   "yellow-on-black": ["#ffff00", "#000000"],
@@ -46,9 +48,14 @@ function applyPage(values: Record<string, unknown>): () => void {
       else element.style.removeProperty(property);
     });
   }
-  const elements = Array.from(
+  const allElements = Array.from(
     document.body.querySelectorAll<HTMLElement>("*"),
   ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
+  // Limit total elements to prevent main thread starvation in massive host DOMs
+  const elements =
+    allElements.length > MAX_HOST_ELEMENTS
+      ? allElements.slice(0, MAX_HOST_ELEMENTS)
+      : allElements;
   const font = Number(values.fontSize ?? 100) / 100;
   const line = Number(values.lineHeight ?? 100) / 100;
   // Measure all baselines before writing, so nested elements never compound scaling.
@@ -133,6 +140,12 @@ function applyPage(values: Record<string, unknown>): () => void {
 }
 
 function readingAid(mask: boolean) {
+  // Ensure any existing reading aid element of this type is cleaned up first
+  const existing = document.body.querySelectorAll(
+    mask ? ".arap-reading-mask" : ".arap-reading-guide",
+  );
+  existing.forEach((node) => node.remove());
+
   const el = document.createElement("div");
   el.dataset.arapUi = "";
   el.className = mask ? "arap-reading-mask" : "arap-reading-guide";
@@ -171,6 +184,9 @@ export function useBuiltinEffects(values: Record<string, unknown>) {
     )
       return;
     let undo = applyPage(values);
+    let mutationTimer: ReturnType<typeof setTimeout> | null = null;
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+
     const observer = new MutationObserver((records) => {
       if (
         !records.some(
@@ -184,16 +200,25 @@ export function useBuiltinEffects(values: Record<string, unknown>) {
         )
       )
         return;
-      undo();
-      undo = applyPage(values);
+      if (mutationTimer) clearTimeout(mutationTimer);
+      mutationTimer = setTimeout(() => {
+        undo();
+        undo = applyPage(values);
+      }, 16);
     });
     observer.observe(document.body, { childList: true, subtree: true });
+
     const resize = () => {
-      undo();
-      undo = applyPage(values);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        undo();
+        undo = applyPage(values);
+      }, 50);
     };
     window.addEventListener("resize", resize);
     return () => {
+      if (mutationTimer) clearTimeout(mutationTimer);
+      if (resizeTimer) clearTimeout(resizeTimer);
       observer.disconnect();
       window.removeEventListener("resize", resize);
       undo();
@@ -216,6 +241,9 @@ export function CustomEffect({
   definition: FeatureRegistration;
   value: unknown;
 }) {
-  useEffect(() => definition.apply?.(value), [definition, value]);
+  useEffect(() => {
+    const cleanup = definition.apply?.(value);
+    return typeof cleanup === "function" ? cleanup : undefined;
+  }, [definition, value]);
   return null;
 }
