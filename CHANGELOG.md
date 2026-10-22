@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.0 — 2026-10-22
+
+- Introduce accessible feature card and control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`) (closes #36).
+- Add support for keyboard Arrow navigation across choice options, bounded live outputs, and slider range inputs with full ARIA semantics.
+- Add standard empty, error, unavailable, and permission status states (`SearchCount`, `EmptyState`, `ErrorState`).
+- Add accessibility profile preview card (`ProfilePreviewCard`) with preview of affected settings and one-click reversal back to custom preferences.
+- Provide scoped CSS tokens and styles for all control primitives and status UI.
+
 ## 2.2.2 — 2026-10-22
 
 - Verify native-control launcher and non-modal widget panel keyboard/AT integration (closes #35).
