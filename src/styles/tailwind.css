@@ -619,6 +619,29 @@
   outline: 3px solid var(--arap-accent);
   outline-offset: 2px;
 }
+.arap-credits {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 8px;
+  color: var(--arap-muted);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.arap-credits a {
+  color: var(--arap-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.arap-credits a:hover {
+  color: var(--arap-accent-hover);
+}
+.arap-credits a:focus-visible {
+  outline: 2px solid var(--arap-accent);
+  outline-offset: 2px;
+}
 
 /* Oversized / Large controls mode (W-21) */
 .arap-root .arap-btn[data-large-controls="true"] {
