@@ -1,0 +1,23 @@
+{
+  "name": "example-next-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Runnable Next.js App Router consumer example for accessibility-plugin-react",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "accessibility-plugin-react": "file:../..",
+    "next": "^16.2.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

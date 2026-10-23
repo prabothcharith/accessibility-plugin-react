@@ -67,6 +67,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 Mount the widget in the persistent root layout, not each route. Do not place document reads inside render. Do not disable SSR merely to mask hydration problems. Effects and portals appear on the client after hydration; a brief default-style paint can occur.
 
+A complete runnable example is available in [`examples/next-app/`](../examples/next-app/).
+
+## Content Security Policy (CSP)
+
+For strict Content Security Policy environments (such as disabling inline styles or generating cryptographic nonces), see the dedicated [Content Security Policy Guidance](CSP.md) for full Next.js and Vite recipes.
+
 ## Next.js Pages Router
 
 ```tsx
@@ -87,7 +93,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 Load library CSS after a host reset and load intentional widget overrides afterward. There is no library global preflight. Portals are independent of application layout and filter effects. Global host styles can still affect inherited properties or override selectors, especially with `!important`; inspect computed styles if controls differ.
 
-Filters create a containing block for fixed host descendants. Test sticky/fixed headers, modals, menus, images and third-party overlays in your real application. Text measurement does not enter iframe documents or Shadow DOM. Hiding videos is visual only and is not a playback-control feature. See troubleshooting for CSP and font-loading considerations.
+Filters create a containing block for fixed host descendants. Test sticky/fixed headers, modals, menus, images and third-party overlays in your real application. Text measurement does not enter iframe documents or Shadow DOM. Hiding videos is visual only and is not a playback-control feature. See [CSP guidance](CSP.md) and troubleshooting for CSP and font-loading considerations.
 
 ## Verified consumers
 

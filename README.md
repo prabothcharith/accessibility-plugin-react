@@ -247,7 +247,7 @@ export function AccessibilitySettings() {
 ```
 
 See [installation and Next.js](docs/INSTALLATION.md) for App Router and Pages
-Router examples.
+Router examples, runnable code in [`examples/next-app/`](examples/next-app/), and [strict CSP guidance](docs/CSP.md).
 
 ## API and limitations
 
@@ -274,6 +274,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [API reference](docs/API.md)
 - [Feature behavior and bounds](docs/FEATURES.md)
 - [Installation and Next.js](docs/INSTALLATION.md)
+- [Content Security Policy (CSP) guidance](docs/CSP.md)
 - [Custom features](docs/CUSTOM_FEATURES.md)
 - [Migration from v1 and development baselines](docs/MIGRATION.md)
 - [Architecture and lifecycle decisions](docs/ARCHITECTURE.md)

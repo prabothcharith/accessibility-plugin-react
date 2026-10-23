@@ -3,15 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Accessibility examples</title>
+    <title>Accessibility Plugin Examples & Consumer Integrations</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        padding: 40px 20px;
+        max-width: 720px;
+        margin: 0 auto;
+        color: #111827;
+        background-color: #f9fafb;
+        line-height: 1.6;
+      }
+      h1 {
+        color: #1e3a8a;
+      }
+      .example-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .example-card h2 {
+        margin-top: 0;
+        font-size: 1.25rem;
+      }
+      .example-card a {
+        color: #2563eb;
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .example-card a:hover {
+        text-decoration: underline;
+      }
+      .badge {
+        display: inline-block;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        margin-left: 8px;
+      }
+    </style>
   </head>
   <body>
     <main>
-      <h1>Accessibility Plugin examples</h1>
-      <ul>
-        <li><a href="/basic-usage/">All built-in features</a></li>
-        <li><a href="/custom-feature/">Custom feature lifecycle</a></li>
-      </ul>
+      <h1>Accessibility Plugin Examples</h1>
+      <p>
+        Explore runnable consumer examples demonstrating Vite integration,
+        Next.js App Router client boundaries, custom features, and strict CSP
+        support.
+      </p>
+
+      <div class="example-card">
+        <h2>
+          <a href="/basic-usage/">All Built-in Features & Theme Demo</a>
+          <span class="badge">Vite</span>
+        </h2>
+        <p>
+          Demonstrates all 15 prebuilt feature controllers, light and dark
+          themes, non-modal focus management, and dynamic tab/route transitions.
+        </p>
+      </div>
+
+      <div class="example-card">
+        <h2>
+          <a href="/custom-feature/">Custom Feature Lifecycle</a>
+          <span class="badge">Vite</span>
+        </h2>
+        <p>
+          Demonstrates registering site-specific custom features using
+          <code>useAccessibility</code> with provider-owned cleanup and
+          persistence.
+        </p>
+      </div>
+
+      <div class="example-card">
+        <h2>
+          Next.js App Router Consumer
+          <span class="badge">Next.js 16</span>
+        </h2>
+        <p>
+          A complete Next.js App Router application in
+          <code>examples/next-app/</code> featuring Server Component layouts,
+          <code>&quot;use client&quot;</code> boundaries, route navigation
+          (<code>Link</code>), dark theme toggling, and strict Content Security
+          Policy headers.
+        </p>
+        <p>
+          Run locally: <code>npm install && npm run dev</code> in
+          <code>examples/next-app</code>.
+        </p>
+      </div>
     </main>
   </body>
 </html>
