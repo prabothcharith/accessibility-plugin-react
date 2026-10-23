@@ -54,7 +54,19 @@ export {
 } from "./core/preferences";
 
 // Prebuilt Features
-export { FontSizeController } from "./features/FontSizeController";
+export {
+  FontSizeController,
+  type FontSizeControllerProps,
+} from "./features/FontSizeController";
+export {
+  TextScaleController,
+  type TextScaleControllerProps,
+} from "./features/TextScaleController";
+export { TEXT_SCALE_STEPS, type TextScaleStep } from "./core/featureSchema";
+export {
+  TEXT_SCALE_PROTECTED_SELECTOR,
+  isProtectedFromTextScale,
+} from "./core/effects";
 export { LineHeightController } from "./features/LineHeightController";
 export { LetterSpacingController } from "./features/LetterSpacingController";
 export { ContrastController } from "./features/ContrastController";
