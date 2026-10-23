@@ -30,6 +30,64 @@ export function composeFilter(values: Record<string, unknown>): string {
     .join(" ");
 }
 
+export const TEXT_SCALE_PROTECTED_SELECTOR = [
+  "input",
+  "textarea",
+  "select",
+  "select *",
+  "option",
+  "optgroup",
+  "button",
+  "button *",
+  "datalist",
+  "output",
+  "progress",
+  "meter",
+  "label",
+  "label *",
+  "legend",
+  "legend *",
+  "pre",
+  "pre *",
+  "code",
+  "kbd",
+  "samp",
+  "var",
+  "svg",
+  "svg *",
+  "[data-icon]",
+  "[data-icon] *",
+  'i[class*="icon"]',
+  'span[class*="icon"]',
+  'i[class*="fa-"]',
+  'span[class*="fa-"]',
+  'i[class*="material-symbols"]',
+  'span[class*="material-symbols"]',
+  'i[class*="lucide"]',
+  'span[class*="lucide"]',
+  "[data-arap-ignore]",
+  "[data-arap-ignore] *",
+  "[data-arap-exempt]",
+  "[data-arap-exempt] *",
+].join(", ");
+
+export function isProtectedFromTextScale(element: HTMLElement): boolean {
+  try {
+    if (element.matches(EXCLUDED)) return true;
+    if (element.matches(TEXT_SCALE_PROTECTED_SELECTOR)) return true;
+    if (
+      element.closest(
+        "pre, button, label, legend, select, [data-arap-ignore], [data-arap-exempt], [data-arap-ui]",
+      )
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 function applyPage(values: Record<string, unknown>): () => void {
   const undo: (() => void)[] = [];
   function set(element: HTMLElement, property: string, value: string) {
@@ -56,21 +114,34 @@ function applyPage(values: Record<string, unknown>): () => void {
     allElements.length > MAX_HOST_ELEMENTS
       ? allElements.slice(0, MAX_HOST_ELEMENTS)
       : allElements;
-  const font = Number(values.fontSize ?? 100) / 100;
+  const fontScaleValue =
+    typeof values.fontScale === "number" && values.fontScale !== 1.0
+      ? values.fontScale
+      : typeof values.textScale === "number" && values.textScale !== 1.0
+        ? values.textScale
+        : undefined;
+  const fontSizeScale =
+    typeof values.fontSize === "number" && values.fontSize !== 100
+      ? values.fontSize / 100
+      : undefined;
+  const font = fontScaleValue ?? fontSizeScale ?? 1.0;
   const line = Number(values.lineHeight ?? 100) / 100;
   // Measure all baselines before writing, so nested elements never compound scaling.
+  // Protect forms, labels, code, icons, widget and explicitly ignored elements.
   const measurements =
     font !== 1 || line !== 1
-      ? elements.map((el) => {
-          const computed = getComputedStyle(el);
-          return {
-            el,
-            font: parseFloat(computed.fontSize) || 16,
-            line:
-              parseFloat(computed.lineHeight) ||
-              (parseFloat(computed.fontSize) || 16) * 1.2,
-          };
-        })
+      ? elements
+          .filter((el) => !isProtectedFromTextScale(el))
+          .map((el) => {
+            const computed = getComputedStyle(el);
+            return {
+              el,
+              font: parseFloat(computed.fontSize) || 16,
+              line:
+                parseFloat(computed.lineHeight) ||
+                (parseFloat(computed.fontSize) || 16) * 1.2,
+            };
+          })
       : [];
   for (const measured of measurements) {
     if (font !== 1) set(measured.el, "font-size", `${measured.font * font}px`);

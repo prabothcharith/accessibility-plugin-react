@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.4.0 — 2026-10-23
+
+- Implement reflow-safe stepwise text scaling (`1.0`, `1.125`, `1.25`, `1.5`, `2.0`) via scoped CSS properties without CSS transforms (closes #41).
+- Introduce `TextScaleController` component dedicated to WCAG SC 1.4.4 / 1.4.10 reflow-safe text enlargement.
+- Enhance `FontSizeController` with `stepScale` and custom `steps` props while maintaining backward compatibility with continuous 10% steps.
+- Export `TEXT_SCALE_STEPS`, `TextScaleStep`, `TEXT_SCALE_PROTECTED_SELECTOR`, and `isProtectedFromTextScale`.
+- Protect form controls (`input`, `textarea`, `select`, `button`), labels, code blocks (`pre`, `code`, `kbd`, `samp`), vector icons (`svg`, `[data-icon]`), and widget internals from destructive font-size and line-height mutations.
+- Measure all baselines before writing inline styles, preventing nested compounding across deep DOM trees.
+- Wire `fontScale` and `textScale` into `featureSchema` builtins and `effects.ts`, providing full runtime support for accessibility profiles (e.g. Cognitive and Low Vision).
+- Add unit test coverage in `tests/textScaling.test.tsx` and browser integration test in `tests/browser/widget.spec.ts`.
+
 ## 2.3.2 — 2026-10-23
 
 - Harden GitHub Actions CI workflow (`ci.yml`) with job timeouts and comprehensive artifact capture for test results and Playwright HTML reports on failure (closes #40).

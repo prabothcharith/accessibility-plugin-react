@@ -392,3 +392,68 @@ test("quick actions stay visible and click controls move or reset placement", as
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
 });
+
+test("stepwise text scaling scales content without transform and protects forms/labels/widget", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+  const initialH1Size = await page
+    .locator("h1")
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const initialSelectSize = await page
+    .locator("#host select")
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  const initialButtonSize = await page
+    .locator("#host-action")
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  const increaseBtn = page.getByLabel("Increase font size");
+
+  // Step up 10 times to reach 200% (2.0x)
+  for (let i = 0; i < 10; i++) {
+    await increaseBtn.click();
+  }
+
+  // Heading scales to ~2x
+  await expect
+    .poll(async () =>
+      page
+        .locator("h1")
+        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+    )
+    .toBeGreaterThanOrEqual(initialH1Size * 1.95);
+
+  // Form controls (select, button) and labels must NOT have their font-size forced to 2x
+  const scaledSelectSize = await page
+    .locator("#host select")
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  expect(scaledSelectSize).toBe(initialSelectSize);
+
+  const scaledButtonSize = await page
+    .locator("#host-action")
+    .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  expect(scaledButtonSize).toBe(initialButtonSize);
+
+  // No CSS transforms applied
+  const htmlTransform = await page
+    .locator("html")
+    .evaluate((el) => getComputedStyle(el).transform);
+  expect(htmlTransform).toBe("none");
+
+  const bodyTransform = await page
+    .locator("body")
+    .evaluate((el) => getComputedStyle(el).transform);
+  expect(bodyTransform).toBe("none");
+
+  // Reset restores heading to initial size
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect
+    .poll(async () =>
+      page
+        .locator("h1")
+        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+    )
+    .toBeCloseTo(initialH1Size, 0.5);
+});

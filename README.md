@@ -88,23 +88,24 @@ export function App() {
 Every controller is opt-in. Add only the controls that make sense for your
 site, and choose their order in JSX.
 
-| Controller                | Effect                                                                            |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| `FontSizeController`      | Scales eligible HTML text from 50% to 200%.                                       |
-| `LineHeightController`    | Scales computed line height from 50% to 200%.                                     |
-| `LetterSpacingController` | Applies 0–10px letter spacing.                                                    |
-| `ContrastController`      | Turns contrast off, reduces it, increases it, or selects a named palette.         |
-| `SaturationController`    | Reduces or increases saturation.                                                  |
-| `InvertColorsController`  | Inverts eligible page content.                                                    |
-| `GrayscaleController`     | Removes color while preserving the selected saturation value for later.           |
-| `LinkHighlightController` | Highlights links or selects a link palette.                                       |
-| `TextAlignController`     | Restores the host alignment or forces left, center, right, or justified text.     |
-| `HideImagesController`    | Hides images and CSS background images while retaining layout.                    |
-| `HideVideosController`    | Hides video elements and recognized YouTube/Vimeo embeds visually.                |
-| `BigCursorController`     | Applies a larger high-contrast cursor where supported.                            |
-| `ReadingMaskController`   | Dims the page around a transparent reading window.                                |
-| `ReadingGuideController`  | Follows pointer/focus with a reading guide line.                                  |
-| `ResetController`         | Resets display features and custom registered features without moving the widget. |
+| Controller                | Effect                                                                                                     |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `TextScaleController`     | Stepwise reflow-safe text enlargement (1.0x, 1.125x, 1.25x, 1.5x, 2.0x) protecting forms, code, and icons. |
+| `FontSizeController`      | Scales eligible HTML text from 50% to 200%; supports continuous 10% steps or `stepScale` mode.             |
+| `LineHeightController`    | Scales computed line height from 50% to 200%.                                                              |
+| `LetterSpacingController` | Applies 0–10px letter spacing.                                                                             |
+| `ContrastController`      | Turns contrast off, reduces it, increases it, or selects a named palette.                                  |
+| `SaturationController`    | Reduces or increases saturation.                                                                           |
+| `InvertColorsController`  | Inverts eligible page content.                                                                             |
+| `GrayscaleController`     | Removes color while preserving the selected saturation value for later.                                    |
+| `LinkHighlightController` | Highlights links or selects a link palette.                                                                |
+| `TextAlignController`     | Restores the host alignment or forces left, center, right, or justified text.                              |
+| `HideImagesController`    | Hides images and CSS background images while retaining layout.                                             |
+| `HideVideosController`    | Hides video elements and recognized YouTube/Vimeo embeds visually.                                         |
+| `BigCursorController`     | Applies a larger high-contrast cursor where supported.                                                     |
+| `ReadingMaskController`   | Dims the page around a transparent reading window.                                                         |
+| `ReadingGuideController`  | Follows pointer/focus with a reading guide line.                                                           |
+| `ResetController`         | Resets display features and custom registered features without moving the widget.                          |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,
 and grayscale are applied in a deterministic order. Defaults leave host styles
