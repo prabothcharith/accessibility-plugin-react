@@ -9,6 +9,9 @@ export interface LocaleStrings {
   resetAll: string;
   statementLink: string;
   openInNewTab: string;
+  creditsPrefix?: string;
+  creditsName?: string;
+  documentationLink?: string;
   buttonTitle: string;
   dragHelp: string;
   positionLabel: string;

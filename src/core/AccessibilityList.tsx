@@ -156,6 +156,27 @@ function Panel({
           </a>
         </div>
       )}
+      <div className="arap-credits">
+        <span>
+          {strings.creditsPrefix ?? "Designed and developed by"}{" "}
+          <a
+            href="https://www.praboth.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {strings.creditsName ?? "Praboth"}
+            <span className="arap-sr-only"> ({strings.openInNewTab})</span>
+          </a>
+        </span>
+        <a
+          href="https://www.praboth.com/accessibility-plugin-react"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {strings.documentationLink ?? "Official documentation"}
+          <span className="arap-sr-only"> ({strings.openInNewTab})</span>
+        </a>
+      </div>
     </div>
   );
 }

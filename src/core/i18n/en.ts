@@ -11,6 +11,9 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   resetAll: "Reset All",
   statementLink: "Accessibility Statement",
   openInNewTab: "opens in a new tab",
+  creditsPrefix: "Designed and developed by",
+  creditsName: "Praboth",
+  documentationLink: "Official documentation",
   buttonTitle: "Accessibility",
   dragHelp:
     "Drag to move, or use Alt and arrow keys. The Move button menu offers click and keyboard controls.",

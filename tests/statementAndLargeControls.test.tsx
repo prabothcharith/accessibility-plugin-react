@@ -14,6 +14,32 @@ afterEach(() => {
 });
 
 describe("Accessibility Statement link and oversized controls", () => {
+  it("shows permanent credits and documentation links", () => {
+    render(
+      <AccessibilityPlugin>
+        <AccessibilityButton />
+        <AccessibilityList children={null} />
+      </AccessibilityPlugin>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Accessibility" }));
+
+    const prabothLink = screen.getByRole("link", { name: /Praboth/ });
+    expect(prabothLink).toHaveAttribute("href", "https://www.praboth.com");
+    expect(prabothLink).toHaveAttribute("target", "_blank");
+    expect(prabothLink).toHaveAttribute("rel", "noopener noreferrer");
+
+    const documentationLink = screen.getByRole("link", {
+      name: /Official documentation/,
+    });
+    expect(documentationLink).toHaveAttribute(
+      "href",
+      "https://www.praboth.com/accessibility-plugin-react",
+    );
+    expect(documentationLink).toHaveAttribute("target", "_blank");
+    expect(documentationLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
   it("renders statementUrl when provided", () => {
     render(
       <AccessibilityPlugin statementUrl="https://example.com/accessibility-statement">
