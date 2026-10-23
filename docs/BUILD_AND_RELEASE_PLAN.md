@@ -78,7 +78,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-106 — Position, oversized controls, statement link and help #37](https://github.com/prabothcharith/accessibility-react/issues/37) — Implement position and non-drag movement, oversized controls, safe-area actions, conditional statement link and help while reconciling existing positioning work.
 - [x] [A11Y-107 — Base locale infrastructure and English strings #38](https://github.com/prabothcharith/accessibility-react/issues/38) — Add typed English locale strings, configured/html-language fallback, BCP 47 and RTL handling, announcements and safe missing-key behavior.
 - [x] [A11Y-108 — Vite and Next.js App Router consumer integrations #39](https://github.com/prabothcharith/accessibility-react/issues/39) — Provide Vite and Next.js App Router consumers and verify hydration, portals, React peer versions, CSS, declarations, themes and CSP guidance.
-- [ ] [A11Y-109 — CI for typecheck, lint, unit, axe and browser smoke #40](https://github.com/prabothcharith/accessibility-react/issues/40) — Establish CI for typecheck, lint, unit/integration, relevant axe checks, packed browser smoke and supported browser jobs without publication credentials.
+- [x] [A11Y-109 — CI for typecheck, lint, unit, axe and browser smoke #40](https://github.com/prabothcharith/accessibility-react/issues/40) — Establish CI for typecheck, lint, unit/integration, relevant axe checks, packed browser smoke and supported browser jobs without publication credentials.
 
 ### M2 — Stable visual and typographic features
 

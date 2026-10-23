@@ -18,9 +18,25 @@ npm run test:browser
 
 For a PR under review, check out its head branch instead and record the tested commit. Main contains the merged stabilization and Clean light foundation; PR #17 adds movement and fixed actions.
 
-`validate` runs typecheck, lint, unit tests and JS/declaration/CSS build. `test:consumers` builds, packs and installs the archive in `.consumers/react18`, `.consumers/react19` and `.consumers/next`, checks ESM/CJS and declarations/SSR, and produces application production builds. Consumers use explicitly selected framework versions; generated install locks reside in disposable `.consumers`. Network access is required for installation, not widget runtime. Browser tests start local ports 7311/7312/7313 and close their servers afterward. Avoid using these ports for unrelated processes. `CI` disables server reuse and is a test-runner environment flag, not a library setting.
+`validate` runs typecheck, lint, unit tests and JS/declaration/CSS build. `test:consumers` builds, packs and installs the archive in `.consumers/react18`, `.consumers/react19` and `.consumers/next`, checks ESM/CJS and declarations/SSR, and produces application production builds. Consumers use explicitly selected framework versions; generated install locks reside in disposable `.consumers`. Network access is required for installation, not widget runtime.
 
-`npm run example` serves the two built-package examples through Vite after `npm run build`. `npm run dev` watches the library JS bundle; run build:css after editing CSS. `npm run test:watch` is useful locally. `npm pack` produces the actual package archive. Never validate only source imports and call it release-ready.
+### Local Ports and Consumer Servers
+
+Browser integration tests use local test servers started by Playwright:
+
+- **Port `7311`**: React 18.3.1 consumer application (Vite).
+- **Port `7312`**: React 19.2.0 consumer application with Tailwind CSS 3 (Vite).
+- **Port `7313`**: Next.js 16.2.10 production server (`next start`) testing App Router, Pages Router, and Server Component boundaries.
+
+Avoid using these ports for unrelated background processes. If an `EADDRINUSE` error occurs due to an interrupted run, terminate existing node processes holding these ports.
+
+### Browser Test Commands
+
+- `npm run test:browser`: Executes the full 6-project browser test matrix (React 18 Chromium, React 19 Tailwind Chromium, Next.js App Router Chromium, Firefox, WebKit, and Mobile WebKit emulation).
+- `npm run test:browser:smoke`: Rapid Chromium-only smoke test on the React 18 consumer for fast developer iteration.
+- `CI=1 npm run test:browser`: Disables server reuse in Playwright and forces fresh server lifecycle per run.
+
+`npm run example` serves the built-package examples through Vite after `npm run build`. `npm run dev` watches the library JS bundle; run build:css after editing CSS. `npm run test:watch` is useful locally. `npm pack` produces the actual package archive. Never validate only source imports and call it release-ready.
 
 ## Directory map
 
@@ -77,7 +93,18 @@ These checks require a human/tester; mark results and platform/version in PROJEC
 6. Host integration: sticky/fixed overlays, complex forms, embedded media, route navigation, dynamically inserted content and font loading. Confirm each selected setting improves intended content without concealing important controls. Video hiding does not stop playback.
 7. Inspect reset/unmount restoration, rapid reload storage, blocked storage and corrupted saved data. Test a custom feature's restored and removed-control effects.
 
-Automated axe results cover the tested widget DOM and criteria tags; they neither certify the host nor cover all assistive-technology behavior.
+### Automated Axe Audits and Human Acceptance
+
+Automated `@axe-core/playwright` checks are executed as part of `tests/browser/widget.spec.ts` against the widget DOM (`[data-arap-ui]`) using WCAG 2.0 A/AA, 2.1 AA, and 2.2 AA rule sets in both light and dark host themes.
+
+- **Scope:** Automated axe results verify that rendered markup, color contrast within the widget panel, native form controls, and ARIA attributes do not produce detectable programmatic violations.
+- **Non-Certification:** Automated test suites do not establish official WCAG conformance or substitute for human accessibility acceptance. Real screen-reader navigation (VoiceOver, NVDA), physical touch devices, browser zoom (200%/400%), and keyboard reviews are mandatory components of accessibility validation.
+
+### Platform and Environment Failure Modes
+
+- **macOS Local Firefox Launch:** Firefox on macOS may fail during Playwright launch with `Could not find profile folder`. The complete Firefox test suite passes in Ubuntu Linux CI.
+- **Port Conflicts:** Ensure ports `7311`, `7312`, and `7313` are free before running `npm run test:browser`. If interrupted, kill existing node processes.
+- **Missing Browser Binaries:** If browser engines are missing, execute `npx playwright install --with-deps chromium firefox webkit`.
 
 ## Release procedure (manual, owner-authorized)
 
