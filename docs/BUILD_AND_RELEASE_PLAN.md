@@ -82,7 +82,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 
 ### M2 — Stable visual and typographic features
 
-- [ ] [A11Y-201 — Bigger text and reflow-safe scaling #41](https://github.com/prabothcharith/accessibility-react/issues/41) — Add stepwise 1x–2x text scaling through reflow-safe scoped styles without nested compounding, clipping or changes to protected controls.
+- [x] [A11Y-201 — Bigger text and reflow-safe scaling #41](https://github.com/prabothcharith/accessibility-react/issues/41) — Add stepwise 1x–2x text scaling through reflow-safe scoped styles without nested compounding, clipping or changes to protected controls.
 - [ ] [A11Y-202 — Letter, word, paragraph spacing and line height #42](https://github.com/prabothcharith/accessibility-react/issues/42) — Add independent letter, word and paragraph spacing plus line-height options with script-aware limits and restoration tests.
 - [ ] [A11Y-203 — Text alignment, legible fonts and language fallback #43](https://github.com/prabothcharith/accessibility-react/issues/43) — Add scoped text alignment and legally distributable readable font choices with Sinhala/Tamil fallbacks while protecting icons, code and symbols.
 - [ ] [A11Y-204 — Contrast modes and native forced-color protection #44](https://github.com/prabothcharith/accessibility-react/issues/44) — Add targeted original/light/dark/high/invert contrast modes that preserve host content and respect forced colors and other native settings.

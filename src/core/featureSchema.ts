@@ -4,11 +4,19 @@ const oneOf =
   (...values: unknown[]) =>
   (v: unknown) =>
     values.includes(v);
+/**
+ * Reflow-safe text scale steps: 1x baseline, 1.125x subtle, 1.25x medium, 1.5x large, 2.0x maximum.
+ */
+export const TEXT_SCALE_STEPS = [1.0, 1.125, 1.25, 1.5, 2.0] as const;
+export type TextScaleStep = (typeof TEXT_SCALE_STEPS)[number];
+
 export const builtins: Record<
   string,
   { defaultValue: unknown; validate: (v: unknown) => boolean }
 > = Object.assign(Object.create(null), {
   fontSize: { defaultValue: 100, validate: numberIn(50, 200) },
+  fontScale: { defaultValue: 1.0, validate: numberIn(0.5, 2.0) },
+  textScale: { defaultValue: 1.0, validate: numberIn(0.5, 2.0) },
   lineHeight: { defaultValue: 100, validate: numberIn(50, 200) },
   letterSpacing: { defaultValue: 0, validate: numberIn(0, 10) },
   contrast: {
