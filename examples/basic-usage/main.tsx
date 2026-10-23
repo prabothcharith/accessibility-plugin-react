@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import {
   AccessibilityPlugin,
@@ -22,6 +22,19 @@ import {
 } from "accessibility-plugin-react";
 
 function App() {
+  const [dark, setDark] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "article">(
+    "overview",
+  );
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [dark]);
+
   return (
     <AccessibilityPlugin position="right">
       <AccessibilityButton
@@ -46,22 +59,76 @@ function App() {
         <ResetController />
       </AccessibilityList>
 
-      <h1>React Accessibility Plugin</h1>
-      <p>
-        Click the blue button in the bottom-right corner to open the
-        accessibility panel. Try adjusting font size, contrast, and other
-        settings to see them applied in real-time.
-      </p>
-      <p>
-        This example demonstrates all 15 prebuilt feature controllers working
-        together in a single panel.
-      </p>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </p>
+      <header className="toolbar">
+        <nav className="nav-tabs">
+          <button
+            type="button"
+            className={`tab-btn ${activeTab === "overview" ? "active" : ""}`}
+            onClick={() => setActiveTab("overview")}
+          >
+            Overview
+          </button>
+          <button
+            type="button"
+            className={`tab-btn ${activeTab === "article" ? "active" : ""}`}
+            onClick={() => setActiveTab("article")}
+          >
+            Article (Route Test)
+          </button>
+        </nav>
+        <button
+          type="button"
+          className="theme-btn"
+          onClick={() => setDark((prev) => !prev)}
+        >
+          {dark ? "☀️ Light Theme" : "🌙 Dark Theme"}
+        </button>
+      </header>
+
+      <main>
+        {activeTab === "overview" ? (
+          <div className="card">
+            <h1>React Accessibility Plugin</h1>
+            <p>
+              Click the blue button in the bottom-right corner to open the
+              accessibility panel. Try adjusting font size, contrast, spacing,
+              and color filters to see them applied in real-time.
+            </p>
+            <p>
+              This example demonstrates all 15 prebuilt feature controllers
+              working together with persistent settings, theme adaptation, and
+              dynamic view transitions.
+            </p>
+            <p>
+              Learn more in the{" "}
+              <a href="../custom-feature/">custom feature example</a> or view
+              the{" "}
+              <a href="https://github.com/prabothcharith/accessibility-react">
+                GitHub repository
+              </a>
+              .
+            </p>
+          </div>
+        ) : (
+          <div className="card">
+            <h1>Article & Route Transition</h1>
+            <p>
+              This tab simulates a dynamic client-side route or page view
+              transition.
+            </p>
+            <p>
+              Notice how any active preferences (such as enlarged text or
+              increased line height) are immediately applied to this new content
+              as it enters the DOM.
+            </p>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+              nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi.
+              Nulla quis sem at nibh elementum imperdiet.
+            </p>
+          </div>
+        )}
+      </main>
     </AccessibilityPlugin>
   );
 }

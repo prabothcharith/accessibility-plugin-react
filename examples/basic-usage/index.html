@@ -3,20 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React Accessibility Plugin — Basic Usage</title>
+    <title>React Accessibility Plugin — Basic Usage & Theme Demo</title>
     <style>
+      :root {
+        --host-bg: #f9fafb;
+        --host-text: #111827;
+        --host-card: #ffffff;
+        --host-border: #e5e7eb;
+        --host-btn: #2563eb;
+        --host-btn-hover: #1d4ed8;
+      }
+      html.dark {
+        --host-bg: #0f172a;
+        --host-text: #f8fafc;
+        --host-card: #1e293b;
+        --host-border: #334155;
+        --host-btn: #3b82f6;
+        --host-btn-hover: #60a5fa;
+      }
       body {
-        font-family: sans-serif;
-        padding: 40px;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background-color: var(--host-bg);
+        color: var(--host-text);
+        padding: 40px 20px;
         max-width: 800px;
         margin: 0 auto;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
       }
-      h1 {
-        color: #111827;
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--host-border);
+      }
+      .nav-tabs {
+        display: flex;
+        gap: 8px;
+      }
+      .tab-btn {
+        background: transparent;
+        border: 1px solid var(--host-border);
+        color: var(--host-text);
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .tab-btn.active {
+        background-color: var(--host-btn);
+        color: #ffffff;
+        border-color: var(--host-btn);
+      }
+      .theme-btn {
+        background: var(--host-card);
+        border: 1px solid var(--host-border);
+        color: var(--host-text);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .card {
+        background-color: var(--host-card);
+        border: 1px solid var(--host-border);
+        border-radius: 8px;
+        padding: 24px;
+        margin-top: 16px;
+      }
+      h1,
+      h2 {
+        color: var(--host-text);
+        margin-top: 0;
       }
       p {
-        color: #4b5563;
         line-height: 1.6;
+      }
+      a {
+        color: var(--host-btn);
       }
     </style>
   </head>

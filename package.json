@@ -1,6 +1,6 @@
 {
   "name": "accessibility-plugin-react",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A composable React display-preference widget with a clean light design, persistent settings and movable accessible controls.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -38,6 +38,7 @@
     "test:browser": "playwright test",
     "test:consumers": "npm run build && npm run pack:check && node scripts/prepare-consumers.mjs",
     "example": "vite examples",
+    "example:next": "npm --prefix examples/next-app run dev",
     "format": "prettier --write src tests scripts examples docs README.md AGENTS.md CHANGELOG.md *.ts *.json *.mjs .github",
     "format:check": "prettier --check src tests scripts examples docs README.md AGENTS.md CHANGELOG.md *.ts *.json *.mjs .github"
   },
