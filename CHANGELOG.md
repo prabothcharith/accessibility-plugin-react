@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.2 — 2026-10-23
+
+- Harden GitHub Actions CI workflow (`ci.yml`) with job timeouts and comprehensive artifact capture for test results and Playwright HTML reports on failure (closes #40).
+- Add fast developer browser smoke command (`npm run test:browser:smoke`) targeting the Chromium consumer.
+- Document local consumer server ports (`7311`, `7312`, `7313`), browser execution commands, environment failure modes, and automated Axe audit boundaries in `docs/DEVELOPMENT.md`.
+- Conclude Milestone 1 (`[M1] Safe core, accessible widget UI and stable state`).
+
 ## 2.3.1 — 2026-10-23
 
 - Provide runnable Next.js App Router consumer example in `examples/next-app/` with Server Component layout, client boundaries, and route transitions (closes #39).

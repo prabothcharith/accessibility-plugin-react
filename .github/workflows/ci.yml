@@ -8,6 +8,7 @@ permissions:
 jobs:
   unit:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     strategy:
       matrix:
         node: [22, 24]
@@ -24,6 +25,7 @@ jobs:
       - run: npm audit --omit=dev
   consumers:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -37,5 +39,8 @@ jobs:
       - uses: actions/upload-artifact@v7.0.2
         if: failure()
         with:
-          name: browser-failures
-          path: test-results
+          name: browser-failures-${{ github.sha }}
+          path: |
+            test-results
+            playwright-report
+          if-no-files-found: ignore
