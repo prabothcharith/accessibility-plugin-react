@@ -130,7 +130,12 @@ export const invalid = <AccessibilityPlugin position="middle">content</Accessibi
     );
     await writeFile(
       `${directory}/app/page.jsx`,
-      `import Fixture from '../Fixture'; export default function Page(){return <Fixture/>}`,
+      `import Fixture from '../Fixture'; import Link from 'next/link'; export default function Page(){return <><Fixture/><div style={{padding:'20px'}}><Link id="link-route-test" href="/route-test">Go to Route Test</Link></div></>}`,
+    );
+    await mkdir(`${directory}/app/route-test`, { recursive: true });
+    await writeFile(
+      `${directory}/app/route-test/page.jsx`,
+      `import Fixture from '../../Fixture'; import Link from 'next/link'; export default function RoutePage(){return <><Fixture/><div style={{padding:'20px'}}><Link id="link-home" href="/">Back to Home</Link></div></>}`,
     );
     await writeFile(
       `${directory}/pages/_app.jsx`,

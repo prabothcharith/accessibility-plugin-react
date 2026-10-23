@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3.1 — 2026-10-23
+
+- Provide runnable Next.js App Router consumer example in `examples/next-app/` with Server Component layout, client boundaries, and route transitions (closes #39).
+- Add comprehensive Content Security Policy (CSP) guidance in `docs/CSP.md` for Next.js, Vite, and strict environments.
+- Enhance Vite examples with light and dark theme switching and client-side view transition simulation.
+- Verify React 18/19 Server-Side Rendering (SSR) in `tests/consumerSsr.test.tsx` ensuring zero server browser-global access and no hydration divergence.
+- Add browser integration regression for Next.js App Router client-side Link transitions preserving accessibility preferences across routes.
+
 ## 2.3.0 — 2026-10-22
 
 - Introduce accessible feature card and control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`) (closes #36).

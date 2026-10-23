@@ -218,6 +218,47 @@ test("Next Pages Router and direct Server Component imports hydrate", async ({
   expect(errors).toEqual([]);
 });
 
+test("Next.js App Router client-side route transitions preserve preferences without hydration errors", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "next-app");
+  await page.addInitScript(() => localStorage.clear());
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await page.getByLabel("Increase font size").click();
+  await page.getByLabel("Close accessibility settings").click();
+
+  // Wait for preference write to storage
+  await page.waitForFunction(() =>
+    localStorage
+      .getItem("react-accessibility-plugin:state")
+      ?.includes("fontSize"),
+  );
+
+  // Navigate to route-test via client-side Next Link
+  await page.locator("#link-route-test").click();
+  await expect(page.locator("#link-home")).toBeVisible();
+
+  // Settings must remain applied on the new route
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await expect(
+    page
+      .getByRole("group", { name: "Font Size", exact: true })
+      .locator("output"),
+  ).toHaveText("110%");
+  await page.getByLabel("Close accessibility settings").click();
+
+  // Navigate back to home
+  await page.locator("#link-home").click();
+  await expect(page.locator("#link-route-test")).toBeVisible();
+
+  expect(errors).toEqual([]);
+  await page.evaluate(() => localStorage.clear());
+});
+
 test("trigger drag remembers placement and preferences without accidental activation", async ({
   page,
   browserName,
