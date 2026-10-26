@@ -181,7 +181,11 @@ test("media, reading aids, pointer movement and unmount cleanup", async ({
   await page
     .getByRole("button", { name: "Reading Guide", exact: true })
     .click();
-  await expect(page.getByAltText("Example landscape")).toHaveCSS(
+  await expect(page.locator("#sample-decorative-img")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await expect(page.getByAltText("Example landscape")).not.toHaveCSS(
     "visibility",
     "hidden",
   );
@@ -667,6 +671,7 @@ test("semantic contrast modes apply tokens, preserve media, and restore cleanly"
   // Images must NOT have opaque background forced
   const imgBg = await page
     .locator("img")
+    .first()
     .evaluate((el) => el.style.backgroundColor);
   expect(imgBg).toBe("");
 

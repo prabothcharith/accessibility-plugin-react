@@ -533,6 +533,170 @@ export function getScriptSpacingConstraints(
   };
 }
 
+/**
+ * Determines whether an element represents functional, informative, or protected visual content
+ * (e.g., interactive controls, CAPTCHA, charts, graphs, maps, QR codes, or images with meaningful alt/names).
+ * Such content must NEVER be hidden by decorative image preferences.
+ */
+export function isFunctionalOrMeaningfulImage(el: Element): boolean {
+  try {
+    // 1. Linked or interactive controls: images inside buttons, links, inputs, or interactive roles
+    if (
+      el.closest(
+        "a, button, [role='button'], [role='link'], [role='menuitem'], [role='tab'], input, select, textarea, summary",
+      )
+    ) {
+      return true;
+    }
+
+    // 2. CAPTCHA verification
+    if (
+      el.closest(
+        "[id*='captcha' i], [class*='captcha' i], [aria-label*='captcha' i], [data-captcha]",
+      ) ||
+      el.matches(
+        "[src*='captcha' i], [alt*='captcha' i], [title*='captcha' i], [id*='captcha' i], [class*='captcha' i]",
+      )
+    ) {
+      return true;
+    }
+
+    // 3. Charts, graphs, diagrams, and figures
+    if (
+      el.closest(
+        "[role='graphics-document'], [role='graphics-symbol'], [role='figure'], figure, [class*='chart' i], [id*='chart' i], [class*='graph' i], [id*='graph' i], [class*='diagram' i], [id*='diagram' i]",
+      ) ||
+      el.matches(
+        "[role='graphics-document'], [role='graphics-symbol'], [aria-roledescription*='chart' i]",
+      )
+    ) {
+      return true;
+    }
+
+    // 4. Maps and geolocation
+    if (
+      el.closest(
+        "[role='region'][aria-label*='map' i], [class*='map' i], [id*='map' i], [data-map]",
+      ) ||
+      el.matches(
+        "[src*='maps' i], [src*='tiles' i], [src*='openstreetmap' i], [src*='mapbox' i]",
+      )
+    ) {
+      return true;
+    }
+
+    // 5. QR codes and barcodes
+    if (
+      el.closest(
+        "[class*='qr' i], [id*='qr' i], [class*='barcode' i], [id*='barcode' i]",
+      ) ||
+      el.matches(
+        "[src*='qr' i], [alt*='qr' i], [src*='barcode' i], [alt*='barcode' i]",
+      )
+    ) {
+      return true;
+    }
+
+    // 6. Mathematical formulas
+    if (el.closest("[role='math'], math, [class*='math' i]")) {
+      return true;
+    }
+
+    // 7. Meaningful accessible names or semantic roles
+    if (el.hasAttribute("alt")) {
+      const alt = el.getAttribute("alt")?.trim();
+      if (alt && alt.length > 0) return true;
+    }
+
+    if (el.hasAttribute("aria-label")) {
+      const label = el.getAttribute("aria-label")?.trim();
+      if (label && label.length > 0) return true;
+    }
+
+    if (el.hasAttribute("aria-labelledby")) {
+      const labelledby = el.getAttribute("aria-labelledby")?.trim();
+      if (labelledby && labelledby.length > 0) return true;
+    }
+
+    if (el.hasAttribute("title")) {
+      const title = el.getAttribute("title")?.trim();
+      if (title && title.length > 0) return true;
+    }
+
+    const role = el.getAttribute("role");
+    if (role && role !== "presentation" && role !== "none" && role !== "img") {
+      return true;
+    }
+    if (
+      role === "img" &&
+      (el.hasAttribute("aria-label") ||
+        el.hasAttribute("aria-labelledby") ||
+        el.hasAttribute("title") ||
+        (el.hasAttribute("alt") && el.getAttribute("alt")?.trim() !== ""))
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
+/**
+ * Determines whether an element represents an eligible decorative image that is safe to hide.
+ * An image is eligible if it is not functional or meaningful, and meets standard decorative cues
+ * (empty alt="", role="presentation", role="none", aria-hidden="true", or decorative class/attribute).
+ */
+export function isEligibleDecorativeImage(el: Element): boolean {
+  try {
+    if (isFunctionalOrMeaningfulImage(el)) {
+      return false;
+    }
+
+    if (el.matches("img, picture")) {
+      // 1. Explicitly decorative alt (alt="" or whitespace-only)
+      if (el.hasAttribute("alt") && el.getAttribute("alt")?.trim() === "") {
+        return true;
+      }
+
+      // 2. Explicitly decorative ARIA role
+      const role = el.getAttribute("role");
+      if (role === "presentation" || role === "none") {
+        return true;
+      }
+
+      // 3. Hidden from assistive technologies
+      if (el.getAttribute("aria-hidden") === "true") {
+        return true;
+      }
+
+      // 4. Explicit decorative marker
+      if (
+        el.hasAttribute("data-decorative") ||
+        el.classList.contains("decorative") ||
+        el.classList.contains("deco")
+      ) {
+        return true;
+      }
+
+      // For <picture>, check child <img> elements
+      if (el.matches("picture")) {
+        const childImg = el.querySelector("img");
+        if (childImg && isEligibleDecorativeImage(childImg)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
 function applyPage(values: Record<string, unknown>): () => void {
   const undo: (() => void)[] = [];
   function set(element: HTMLElement, property: string, value: string) {
@@ -988,8 +1152,24 @@ function applyPage(values: Record<string, unknown>): () => void {
   for (const el of elements) {
     if (values.bigCursor) set(el, "cursor", cursor);
     if (values.hideImages) {
-      if (el.matches("img, picture")) set(el, "visibility", "hidden");
-      set(el, "background-image", "none");
+      if (isEligibleDecorativeImage(el)) {
+        set(el, "visibility", "hidden");
+      }
+      if (!isFunctionalOrMeaningfulImage(el)) {
+        const inlineBg = el.style.backgroundImage;
+        if (inlineBg && inlineBg !== "none") {
+          set(el, "background-image", "none");
+        } else {
+          try {
+            const computedBg = getComputedStyle(el).backgroundImage;
+            if (computedBg && computedBg !== "none") {
+              set(el, "background-image", "none");
+            }
+          } catch {
+            // Ignore computed style failures in non-standard environments
+          }
+        }
+      }
     }
     // Do not hide unrelated embeds (maps, documents or payment forms).
     if (

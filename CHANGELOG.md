@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.10.0 — 2026-10-26
+
+- Refine decorative image handling and safeguard informative and functional visuals (closes #47).
+- Hide only eligible decorative imagery (`alt=""`, `role="presentation"`, `role="none"`, `aria-hidden="true"`, `data-decorative`) and remove decorative CSS background images from non-functional containers.
+- Strictly preserve interactive controls (`<a>`, `<button>`, inputs, ARIA interactive roles), CAPTCHA challenges, charts, graphs, diagrams, maps, QR codes, and images with meaningful accessible names or descriptions.
+- Ensure the library never fabricates, synthesizes, or modifies `alt` text or accessible names on host elements.
+- Export `HideDecorativeImagesController` alias alongside `HideImagesController`.
+- Export `isEligibleDecorativeImage` and `isFunctionalOrMeaningfulImage` element classification utilities.
+- Add comprehensive documentation in `docs/DECORATIVE_IMAGES.md`.
+- Add unit test suite in `tests/decorativeImages.test.tsx` and browser smoke verification in `tests/browser/widget.spec.ts`.
+
 ## 2.9.0 — 2026-10-26
 
 - Implement reduced motion and best-effort media controls (closes #46).
