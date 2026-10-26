@@ -277,6 +277,9 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 
 - [API reference](docs/API.md)
 - [Feature behavior and bounds](docs/FEATURES.md)
+- [Link highlighting, focus visibility, and landmark skip links](docs/LINKS_AND_FOCUS.md)
+- [Contrast modes and forced-colors protection](docs/CONTRAST.md)
+- [Legible and dyslexia font stacks](docs/FONTS.md)
 - [Installation and Next.js](docs/INSTALLATION.md)
 - [Content Security Policy (CSP) guidance](docs/CSP.md)
 - [Custom features](docs/CUSTOM_FEATURES.md)

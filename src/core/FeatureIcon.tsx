@@ -62,6 +62,18 @@ const drawings: Record<string, ReactNode> = {
       <path d="m10 14 4-4M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0" />
     </>
   ),
+  highlightFocus: (
+    <>
+      <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  focusHighlight: (
+    <>
+      <path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
   textAlign: (
     <>
       <path d="M3 5h18M3 10h12M3 15h18M3 20h12" />
