@@ -92,6 +92,7 @@ export default function Fixture() {
             <A.GrayscaleController />
             <A.LinkHighlightController />
             <A.HighlightFocusController />
+            <A.ReduceMotionController />
             <A.TextAlignController />
             <A.FontFamilyController />
             <A.HideImagesController />

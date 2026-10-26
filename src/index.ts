@@ -79,6 +79,9 @@ export {
   FONT_FAMILY_PROTECTED_SELECTOR,
   isProtectedFromFontFamily,
   isForcedColorsActive,
+  subscribeForcedColors,
+  isReducedMotionActive,
+  subscribeReducedMotion,
   CONTRAST_PROTECTED_SELECTOR,
   isProtectedFromContrast,
   CONTRAST_PALETTES,
@@ -125,6 +128,7 @@ export {
   HighlightFocusController,
   FocusHighlightController,
 } from "./features/HighlightFocusController";
+export { ReduceMotionController } from "./features/ReduceMotionController";
 export { ResetController } from "./features/ResetController";
 
 // Control Primitives & State UI
