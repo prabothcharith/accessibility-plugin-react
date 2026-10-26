@@ -66,9 +66,28 @@ export { TEXT_SCALE_STEPS, type TextScaleStep } from "./core/featureSchema";
 export {
   TEXT_SCALE_PROTECTED_SELECTOR,
   isProtectedFromTextScale,
+  TEXT_SPACING_EXCLUDED_SELECTOR,
+  isProtectedFromTextSpacing,
+  getScriptSpacingConstraints,
+  type ScriptSpacingConstraints,
 } from "./core/effects";
-export { LineHeightController } from "./features/LineHeightController";
-export { LetterSpacingController } from "./features/LetterSpacingController";
+export { LINE_HEIGHT_STEPS, LINE_HEIGHT_RATIOS } from "./core/featureSchema";
+export {
+  LineHeightController,
+  type LineHeightControllerProps,
+} from "./features/LineHeightController";
+export {
+  LetterSpacingController,
+  type LetterSpacingControllerProps,
+} from "./features/LetterSpacingController";
+export {
+  WordSpacingController,
+  type WordSpacingControllerProps,
+} from "./features/WordSpacingController";
+export {
+  ParagraphSpacingController,
+  type ParagraphSpacingControllerProps,
+} from "./features/ParagraphSpacingController";
 export { ContrastController } from "./features/ContrastController";
 export { SaturationController } from "./features/SaturationController";
 export { InvertColorsController } from "./features/InvertColorsController";

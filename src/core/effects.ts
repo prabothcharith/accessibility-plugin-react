@@ -88,6 +88,168 @@ export function isProtectedFromTextScale(element: HTMLElement): boolean {
   return false;
 }
 
+export const TEXT_SPACING_EXCLUDED_SELECTOR = [
+  "input",
+  "textarea",
+  "select",
+  "select *",
+  "option",
+  "optgroup",
+  "button",
+  "button *",
+  "datalist",
+  "output",
+  "progress",
+  "meter",
+  "label",
+  "label *",
+  "legend",
+  "legend *",
+  '[role="button"]',
+  '[role="button"] *',
+  '[role="checkbox"]',
+  '[role="combobox"]',
+  '[role="menuitem"]',
+  '[role="tab"]',
+  "pre",
+  "pre *",
+  "code",
+  "kbd",
+  "samp",
+  "var",
+  "table",
+  "table *",
+  "thead",
+  "thead *",
+  "tbody",
+  "tbody *",
+  "tfoot",
+  "tfoot *",
+  "tr",
+  "tr *",
+  "th",
+  "th *",
+  "td",
+  "td *",
+  "caption",
+  "colgroup",
+  "col",
+  '[role="table"]',
+  '[role="table"] *',
+  '[role="grid"]',
+  '[role="grid"] *',
+  '[role="row"]',
+  '[role="row"] *',
+  '[role="cell"]',
+  '[role="cell"] *',
+  '[role="columnheader"]',
+  '[role="columnheader"] *',
+  '[role="rowheader"]',
+  '[role="rowheader"] *',
+  "svg",
+  "svg *",
+  "[data-icon]",
+  "[data-icon] *",
+  'i[class*="icon"]',
+  'span[class*="icon"]',
+  'i[class*="fa-"]',
+  'span[class*="fa-"]',
+  'i[class*="material-symbols"]',
+  'span[class*="material-symbols"]',
+  'i[class*="lucide"]',
+  'span[class*="lucide"]',
+  "[data-arap-ignore]",
+  "[data-arap-ignore] *",
+  "[data-arap-exempt]",
+  "[data-arap-exempt] *",
+  "[data-arap-ui]",
+  "[data-arap-ui] *",
+  ".arap-root",
+  ".arap-root *",
+].join(", ");
+
+export function isProtectedFromTextSpacing(element: HTMLElement): boolean {
+  try {
+    if (element.matches(EXCLUDED)) return true;
+    if (element.matches(TEXT_SPACING_EXCLUDED_SELECTOR)) return true;
+    if (
+      element.closest(
+        "pre, button, label, legend, select, textarea, [role='button'], table, [role='table'], [role='grid'], [data-arap-ignore], [data-arap-exempt], [data-arap-ui], .arap-root",
+      )
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+export interface ScriptSpacingConstraints {
+  allowLetterSpacing: boolean;
+  maxLetterSpacingPx: number;
+  script: "cursive" | "indic" | "standard";
+}
+
+const ARABIC_SCRIPT_REGEX =
+  /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const INDIC_SCRIPT_REGEX = /[\u0900-\u0DFF]/;
+const CURSIVE_LANG_REGEX = /^(ar|fa|ur|ug|dv|ps|ku)($|-)/i;
+const INDIC_LANG_REGEX = /^(si|ta|hi|bn|te|kn|ml|gu|pa|mr|ne|sa)($|-)/i;
+
+export function getScriptSpacingConstraints(
+  element: HTMLElement,
+): ScriptSpacingConstraints {
+  const lang =
+    element.closest("[lang]")?.getAttribute("lang") ||
+    document.documentElement.lang ||
+    "";
+  const dir =
+    element.closest("[dir]")?.getAttribute("dir") ||
+    document.documentElement.dir ||
+    "";
+
+  if (CURSIVE_LANG_REGEX.test(lang) || dir.toLowerCase() === "rtl") {
+    return {
+      allowLetterSpacing: false,
+      maxLetterSpacingPx: 0,
+      script: "cursive",
+    };
+  }
+
+  if (INDIC_LANG_REGEX.test(lang)) {
+    return {
+      allowLetterSpacing: true,
+      maxLetterSpacingPx: 1,
+      script: "indic",
+    };
+  }
+
+  const text = element.textContent || "";
+  if (text.length > 0) {
+    if (ARABIC_SCRIPT_REGEX.test(text)) {
+      return {
+        allowLetterSpacing: false,
+        maxLetterSpacingPx: 0,
+        script: "cursive",
+      };
+    }
+    if (INDIC_SCRIPT_REGEX.test(text)) {
+      return {
+        allowLetterSpacing: true,
+        maxLetterSpacingPx: 1,
+        script: "indic",
+      };
+    }
+  }
+
+  return {
+    allowLetterSpacing: true,
+    maxLetterSpacingPx: Infinity,
+    script: "standard",
+  };
+}
+
 function applyPage(values: Record<string, unknown>): () => void {
   const undo: (() => void)[] = [];
   function set(element: HTMLElement, property: string, value: string) {
@@ -125,29 +287,63 @@ function applyPage(values: Record<string, unknown>): () => void {
       ? values.fontSize / 100
       : undefined;
   const font = fontScaleValue ?? fontSizeScale ?? 1.0;
-  const line = Number(values.lineHeight ?? 100) / 100;
+
+  const rawLineHeight =
+    typeof values.lineHeight === "number" ? values.lineHeight : 100;
+  const lineRatio = rawLineHeight <= 2.5 ? rawLineHeight : rawLineHeight / 100;
+  const fontActive = font !== 1;
+  const lineActive = lineRatio !== 1;
+
   // Measure all baselines before writing, so nested elements never compound scaling.
-  // Protect forms, labels, code, icons, widget and explicitly ignored elements.
-  const measurements =
-    font !== 1 || line !== 1
-      ? elements
-          .filter((el) => !isProtectedFromTextScale(el))
-          .map((el) => {
-            const computed = getComputedStyle(el);
-            return {
-              el,
-              font: parseFloat(computed.fontSize) || 16,
-              line:
-                parseFloat(computed.lineHeight) ||
-                (parseFloat(computed.fontSize) || 16) * 1.2,
-            };
-          })
-      : [];
-  for (const measured of measurements) {
-    if (font !== 1) set(measured.el, "font-size", `${measured.font * font}px`);
-    if (line !== 1 || font !== 1)
-      set(measured.el, "line-height", `${measured.line * line * font}px`);
+  // Protect forms, labels, code, icons, widget and explicitly ignored elements from text scale.
+  // Protect tables, forms, code, icons, widget from spacing line-height overrides.
+  if (fontActive || lineActive) {
+    const measurements = elements
+      .filter(
+        (el) =>
+          !isProtectedFromTextScale(el) || !isProtectedFromTextSpacing(el),
+      )
+      .map((el) => {
+        const computed = getComputedStyle(el);
+        return {
+          el,
+          protectScale: isProtectedFromTextScale(el),
+          protectSpacing: isProtectedFromTextSpacing(el),
+          font: parseFloat(computed.fontSize) || 16,
+          line:
+            parseFloat(computed.lineHeight) ||
+            (parseFloat(computed.fontSize) || 16) * 1.2,
+        };
+      });
+
+    for (const measured of measurements) {
+      if (fontActive && !measured.protectScale) {
+        set(measured.el, "font-size", `${measured.font * font}px`);
+      }
+      if (measured.protectSpacing) {
+        // Excluded from spacing line-height overrides (tables, controls, code, widget).
+        // If font was scaled, scale line-height proportionally without lineRatio inflation.
+        if (fontActive && !measured.protectScale) {
+          set(measured.el, "line-height", `${measured.line * font}px`);
+        } else if (lineActive) {
+          // Isolate from inherited line-height on parent containers
+          const prev = measured.el.style.getPropertyValue("line-height");
+          if (!prev) {
+            set(measured.el, "line-height", `${measured.line}px`);
+          }
+        }
+      } else {
+        if (lineActive || fontActive) {
+          set(
+            measured.el,
+            "line-height",
+            `${measured.line * lineRatio * font}px`,
+          );
+        }
+      }
+    }
   }
+
   const filter = composeFilter(values);
   // Never filter html/body: they would also transform fixed widget positioning.
   for (const el of Array.from(document.body.children)) {
@@ -172,9 +368,119 @@ function applyPage(values: Record<string, unknown>): () => void {
     const base = computed.filter;
     set(el, "filter", `${base && base !== "none" ? base + " " : ""}${filter}`);
   }
+
+  // Letter spacing with language-aware constraints and element protections
+  const letterSpacingVal =
+    typeof values.letterSpacing === "number" && values.letterSpacing > 0
+      ? values.letterSpacing
+      : 0;
+  const letterSpacingEmVal =
+    typeof values.letterSpacingEm === "number" && values.letterSpacingEm > 0
+      ? values.letterSpacingEm
+      : null;
+
+  if (letterSpacingVal > 0 || letterSpacingEmVal !== null) {
+    for (const el of elements) {
+      if (isProtectedFromTextSpacing(el)) {
+        if (
+          el.matches(
+            "table, [role='table'], td, th, pre, code, kbd, samp, var, button, input, select, textarea, [data-arap-ui]",
+          )
+        ) {
+          const previous = el.style.getPropertyValue("letter-spacing");
+          if (!previous) {
+            set(el, "letter-spacing", "normal");
+          }
+        }
+        continue;
+      }
+      const scriptLimits = getScriptSpacingConstraints(el);
+      if (!scriptLimits.allowLetterSpacing) {
+        // Cursive / Arabic / RTL: isolate from inherited letter spacing
+        const previous = el.style.getPropertyValue("letter-spacing");
+        if (!previous) {
+          set(el, "letter-spacing", "normal");
+        }
+        continue;
+      }
+      let targetSpacing: string;
+      if (letterSpacingEmVal !== null) {
+        const clampedEm =
+          scriptLimits.maxLetterSpacingPx === 1
+            ? Math.min(letterSpacingEmVal, 0.05)
+            : letterSpacingEmVal;
+        targetSpacing = `${clampedEm}em`;
+      } else {
+        const clampedPx = Math.min(
+          letterSpacingVal,
+          scriptLimits.maxLetterSpacingPx,
+        );
+        targetSpacing = `${clampedPx}px`;
+      }
+      set(el, "letter-spacing", targetSpacing);
+    }
+  }
+
+  // Word spacing with element protections
+  const wordSpacingVal =
+    typeof values.wordSpacing === "number" && values.wordSpacing > 0
+      ? values.wordSpacing
+      : 0;
+  const wordSpacingEmVal =
+    typeof values.wordSpacingEm === "number" && values.wordSpacingEm > 0
+      ? values.wordSpacingEm
+      : null;
+
+  if (wordSpacingVal > 0 || wordSpacingEmVal !== null) {
+    for (const el of elements) {
+      if (isProtectedFromTextSpacing(el)) {
+        if (
+          el.matches(
+            "table, [role='table'], td, th, pre, code, kbd, samp, var, button, input, select, textarea, [data-arap-ui]",
+          )
+        ) {
+          const previous = el.style.getPropertyValue("word-spacing");
+          if (!previous) {
+            set(el, "word-spacing", "normal");
+          }
+        }
+        continue;
+      }
+      const targetSpacing =
+        wordSpacingEmVal !== null
+          ? `${wordSpacingEmVal}em`
+          : `${wordSpacingVal}px`;
+      set(el, "word-spacing", targetSpacing);
+    }
+  }
+
+  // Paragraph spacing on p / [role="paragraph"] with element protections
+  const paragraphSpacingVal =
+    typeof values.paragraphSpacing === "number" && values.paragraphSpacing > 0
+      ? values.paragraphSpacing
+      : 0;
+  const paragraphSpacingEmVal =
+    typeof values.paragraphSpacingEm === "number" &&
+    values.paragraphSpacingEm > 0
+      ? values.paragraphSpacingEm
+      : null;
+
+  if (paragraphSpacingVal > 0 || paragraphSpacingEmVal !== null) {
+    for (const el of elements) {
+      if (isProtectedFromTextSpacing(el)) continue;
+      if (el.matches("p, [role='paragraph']")) {
+        const computed = getComputedStyle(el);
+        const baseMargin = parseFloat(computed.marginBottom) || 0;
+        const targetMargin =
+          paragraphSpacingEmVal !== null
+            ? `${paragraphSpacingEmVal}em`
+            : `${baseMargin + paragraphSpacingVal}px`;
+        set(el, "margin-bottom", targetMargin);
+      }
+    }
+  }
+
   for (const el of elements) {
-    if (Number(values.letterSpacing) > 0)
-      set(el, "letter-spacing", `${values.letterSpacing}px`);
     if (values.textAlign && values.textAlign !== "default")
       set(el, "text-align", String(values.textAlign));
     if (values.bigCursor) set(el, "cursor", cursor);
