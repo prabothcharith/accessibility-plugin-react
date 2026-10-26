@@ -639,3 +639,60 @@ test("text alignment scopes to logical text blocks, shows justify warning, and f
     .evaluate((el) => el.style.fontFamily);
   expect(sampleResetFont).toBe("");
 });
+
+test("semantic contrast modes apply tokens, preserve media, and restore cleanly", async ({
+  page,
+}) => {
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+
+  // Test Dark contrast mode
+  const darkBtn = page
+    .getByRole("group", { name: "Contrast Mode" })
+    .getByRole("button", { name: /Dark/i });
+  await darkBtn.click();
+
+  await expect(page.locator("#sample")).toHaveCSS(
+    "color",
+    "rgb(248, 250, 252)",
+  );
+  await expect(page.locator("main#host")).toHaveCSS(
+    "background-color",
+    "rgb(15, 23, 42)",
+  );
+
+  // Images must NOT have opaque background forced
+  const imgBg = await page
+    .locator("img")
+    .evaluate((el) => el.style.backgroundColor);
+  expect(imgBg).toBe("");
+
+  // Test High contrast mode
+  const highBtn = page
+    .getByRole("group", { name: "Contrast Mode" })
+    .getByRole("button", { name: /High/i });
+  await highBtn.click();
+
+  await expect(page.locator("#sample")).toHaveCSS(
+    "color",
+    "rgb(255, 255, 255)",
+  );
+  await expect(page.locator("main#host")).toHaveCSS(
+    "background-color",
+    "rgb(0, 0, 0)",
+  );
+
+  // Reset All restores host state
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  const sampleColor = await page
+    .locator("#sample")
+    .evaluate((el) => el.style.color);
+  const hostBg = await page
+    .locator("main#host")
+    .evaluate((el) => el.style.backgroundColor);
+  expect(sampleColor).toBe("");
+  expect(hostBg).toBe("");
+});

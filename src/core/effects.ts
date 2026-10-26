@@ -6,28 +6,170 @@ const EXCLUDED =
   "[data-arap-ui], [data-arap-ui] *, script, style, link, meta, noscript, template";
 const MAX_HOST_ELEMENTS = 4000;
 const cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M4 2v32l9-9 7 13 6-3-7-12h14z' fill='black' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto`;
+/** Detects whether the user's operating system has forced colors / high contrast active. */
+export function isForcedColorsActive(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  try {
+    return window.matchMedia("(forced-colors: active)").matches;
+  } catch {
+    return false;
+  }
+}
+
+export function subscribeForcedColors(callback: () => void): () => void {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  try {
+    const mql = window.matchMedia("(forced-colors: active)");
+    mql.addEventListener("change", callback);
+    return () => mql.removeEventListener("change", callback);
+  } catch {
+    return () => {};
+  }
+}
+
+export interface ContrastPalette {
+  text: string;
+  background: string;
+  border?: string;
+  link?: string;
+}
+
+export const CONTRAST_PALETTES: Record<string, ContrastPalette> = {
+  light: {
+    text: "#0f172a",
+    background: "#ffffff",
+    border: "#94a3b8",
+    link: "#0284c7",
+  },
+  dark: {
+    text: "#f8fafc",
+    background: "#0f172a",
+    border: "#475569",
+    link: "#38bdf8",
+  },
+  high: {
+    text: "#ffffff",
+    background: "#000000",
+    border: "#ffffff",
+    link: "#93c5fd",
+  },
+  "yellow-on-black": {
+    text: "#ffff00",
+    background: "#000000",
+    border: "#ffff00",
+    link: "#00ffff",
+  },
+  "white-on-black": {
+    text: "#ffffff",
+    background: "#000000",
+    border: "#ffffff",
+    link: "#ffff00",
+  },
+  "blue-on-yellow": {
+    text: "#005a9c",
+    background: "#ffd740",
+    border: "#005a9c",
+    link: "#002b49",
+  },
+  "black-on-white": {
+    text: "#000000",
+    background: "#ffffff",
+    border: "#000000",
+    link: "#0000ee",
+  },
+};
+
 const palette: Record<string, [string, string]> = {
   "yellow-on-black": ["#ffff00", "#000000"],
   "white-on-black": ["#ffffff", "#000000"],
   "blue-on-yellow": ["#005a9c", "#ffd740"],
   "black-on-white": ["#000000", "#ffffff"],
+  light: ["#0f172a", "#ffffff"],
+  dark: ["#f8fafc", "#0f172a"],
+  high: ["#ffffff", "#000000"],
 };
 
 /** One deterministic composition, independent of controller render order. */
 export function composeFilter(values: Record<string, unknown>): string {
+  if (isForcedColorsActive()) return "";
+
   const contrast =
     values.contrast === "reduced"
       ? 0.5
       : ([1, 1.25, 1.5, 2][Number(values.contrast)] ?? 1);
+  const isInvert =
+    Boolean(values.invertColors) ||
+    values.contrast === "invert" ||
+    values.contrastMode === "invert";
+
   return [
     contrast !== 1 && `contrast(${contrast})`,
     values.saturation === 1 && "saturate(0.2)",
     values.saturation === 2 && "saturate(2)",
-    values.invertColors && "invert(1)",
+    isInvert && "invert(1)",
     values.grayscale && "grayscale(1)",
   ]
     .filter(Boolean)
     .join(" ");
+}
+
+export const CONTRAST_PROTECTED_SELECTOR = [
+  "img",
+  "picture",
+  "picture *",
+  "video",
+  "canvas",
+  "svg",
+  "svg *",
+  "[role='img']",
+  "[role='img'] *",
+  "[role='graphics-document']",
+  "[role='graphics-document'] *",
+  "[role='graphics-symbol']",
+  "[role='graphics-symbol'] *",
+  "[data-icon]",
+  "[data-icon] *",
+  'i[class*="icon"]',
+  'span[class*="icon"]',
+  'i[class*="fa-"]',
+  'span[class*="fa-"]',
+  'i[class*="material-symbols"]',
+  'span[class*="material-symbols"]',
+  'i[class*="lucide"]',
+  'span[class*="lucide"]',
+  '[aria-invalid="true"]',
+  '[aria-invalid="true"] *',
+  ":invalid",
+  ".is-invalid",
+  ".invalid-feedback",
+  ":disabled",
+  "[aria-disabled='true']",
+  "[disabled]",
+  "[data-arap-ignore]",
+  "[data-arap-ignore] *",
+  "[data-arap-exempt]",
+  "[data-arap-exempt] *",
+  "[data-arap-ui]",
+  "[data-arap-ui] *",
+  ".arap-root",
+  ".arap-root *",
+].join(", ");
+
+export function isProtectedFromContrast(element: HTMLElement): boolean {
+  try {
+    if (element.matches(EXCLUDED)) return true;
+    if (element.matches(CONTRAST_PROTECTED_SELECTOR)) return true;
+    if (
+      element.closest(
+        "svg, [role='img'], [data-icon], [aria-invalid='true'], :disabled, [aria-disabled='true'], [data-arap-ignore], [data-arap-exempt], [data-arap-ui], .arap-root",
+      )
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
 }
 
 export const TEXT_SCALE_PROTECTED_SELECTOR = [
@@ -640,6 +782,72 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
+  const isInvert =
+    Boolean(values.invertColors) ||
+    values.contrast === "invert" ||
+    values.contrastMode === "invert";
+
+  // When invert is active, protect photos, videos, canvas, and charts by countering the container inversion
+  if (isInvert && !isForcedColorsActive()) {
+    const mediaElements = Array.from(
+      document.body.querySelectorAll<HTMLElement>(
+        "img, video, canvas, picture, [role='img']",
+      ),
+    ).filter((el) => !el.closest("[data-arap-ui]"));
+
+    for (const mediaEl of mediaElements) {
+      set(mediaEl, "filter", "invert(1)");
+    }
+  }
+
+  // Active contrast mode / palette
+  const activeContrastKey =
+    values.contrastMode &&
+    values.contrastMode !== "off" &&
+    values.contrastMode !== "original"
+      ? String(values.contrastMode)
+      : values.contrast !== undefined &&
+          values.contrast !== 0 &&
+          values.contrast !== "0" &&
+          values.contrast !== "off" &&
+          values.contrast !== "original"
+        ? String(values.contrast)
+        : null;
+
+  const activePalette =
+    activeContrastKey && !isForcedColorsActive()
+      ? CONTRAST_PALETTES[activeContrastKey]
+      : null;
+
+  if (activePalette) {
+    for (const el of elements) {
+      if (isProtectedFromContrast(el)) continue;
+
+      set(el, "color", activePalette.text);
+
+      if (el.matches("a[href]") && activePalette.link) {
+        set(el, "color", activePalette.link);
+      }
+
+      if (
+        el.matches(
+          "main, section, article, div, p, h1, h2, h3, h4, h5, h6, ul, ol, li, table, thead, tbody, tr, th, td, button, input, select, textarea, form, blockquote, header, footer, aside, nav",
+        )
+      ) {
+        set(el, "background-color", activePalette.background);
+      }
+
+      if (
+        activePalette.border &&
+        el.matches(
+          "button, input, select, textarea, [role='button'], fieldset, hr, table, th, td",
+        )
+      ) {
+        set(el, "border-color", activePalette.border);
+      }
+    }
+  }
+
   for (const el of elements) {
     if (values.bigCursor) set(el, "cursor", cursor);
     if (values.hideImages) {
@@ -655,7 +863,7 @@ function applyPage(values: Record<string, unknown>): () => void {
     )
       set(el, "visibility", "hidden");
     const colors = palette[String(values.contrast)];
-    if (colors) {
+    if (colors && !activePalette && !isForcedColorsActive()) {
       set(el, "color", colors[0]);
       set(el, "background-color", colors[1]);
     }
