@@ -848,6 +848,42 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
+  // Enhanced focus visibility
+  if (values.highlightFocus || values.focusHighlight) {
+    const FOCUS_STYLE_ID = "arap-focus-highlight-style";
+    let styleEl = document.getElementById(
+      FOCUS_STYLE_ID,
+    ) as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = FOCUS_STYLE_ID;
+      styleEl.dataset.arapUi = "";
+      styleEl.textContent = `
+        *:not([data-arap-ui]):not([data-arap-ui] *):focus-visible {
+          outline: 3px solid #2563eb !important;
+          outline-offset: 3px !important;
+          box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.9) !important;
+        }
+        @media (forced-colors: active) {
+          *:not([data-arap-ui]):not([data-arap-ui] *):focus-visible {
+            outline: 3px solid Highlight !important;
+            outline-offset: 3px !important;
+            box-shadow: none !important;
+          }
+        }
+        *:disabled:focus-visible,
+        *[aria-disabled="true"]:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
+        }
+      `;
+      document.head.appendChild(styleEl);
+      undo.push(() => {
+        styleEl?.remove();
+      });
+    }
+  }
+
   for (const el of elements) {
     if (values.bigCursor) set(el, "cursor", cursor);
     if (values.hideImages) {
@@ -867,14 +903,33 @@ function applyPage(values: Record<string, unknown>): () => void {
       set(el, "color", colors[0]);
       set(el, "background-color", colors[1]);
     }
-    if (values.linkHighlight && el.matches("a[href]")) {
-      const colors = palette[String(values.linkHighlight)] ?? [
-        "#111827",
-        "#fef08a",
-      ];
-      set(el, "color", colors[0]);
-      set(el, "background-color", colors[1]);
-      set(el, "text-decoration", "underline");
+    if (
+      values.linkHighlight &&
+      el.matches("a[href]") &&
+      !el.closest("[data-arap-ui]")
+    ) {
+      const isDisabled =
+        el.getAttribute("aria-disabled") === "true" ||
+        el.hasAttribute("disabled") ||
+        el.classList.contains("disabled");
+      if (!isDisabled) {
+        if (isForcedColorsActive()) {
+          set(el, "color", "LinkText");
+          set(el, "text-decoration", "underline");
+          set(el, "text-decoration-thickness", "2px");
+          set(el, "text-underline-offset", "3px");
+        } else {
+          const colors = palette[String(values.linkHighlight)] ?? [
+            "#111827",
+            "#fef08a",
+          ];
+          set(el, "color", colors[0]);
+          set(el, "background-color", colors[1]);
+          set(el, "text-decoration", "underline");
+          set(el, "text-decoration-thickness", "2px");
+          set(el, "text-underline-offset", "3px");
+        }
+      }
     }
   }
   return () => {

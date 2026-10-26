@@ -10,6 +10,7 @@ import {
 } from "./widgetPlacement";
 import type { WidgetPlacement } from "./types";
 import { WidgetPortal } from "./WidgetPortal";
+import { SkipToMainLink } from "./SkipToMainLink";
 import { resolveLocaleStrings } from "./i18n";
 import type { AccessibilityButtonProps } from "./types";
 export function AccessibilityButton({
@@ -51,6 +52,7 @@ export function AccessibilityButton({
       : defaultCorner(ctx.position);
   return (
     <WidgetPortal>
+      <SkipToMainLink />
       <button
         type="button"
         className={`arap-btn ${className}`}

@@ -6,6 +6,8 @@ import "./styles/tailwind.css";
 export { AccessibilityPlugin } from "./core/AccessibilityPlugin";
 export { AccessibilityButton } from "./core/AccessibilityButton";
 export { AccessibilityList } from "./core/AccessibilityList";
+export { SkipToMainLink, findMainLandmark } from "./core/SkipToMainLink";
+export type { SkipToMainLinkProps } from "./core/SkipToMainLink";
 export { useAccessibility } from "./core/useAccessibility";
 export { AccessibilityContext } from "./core/AccessibilityContext";
 
@@ -119,6 +121,10 @@ export { HideVideosController } from "./features/HideVideosController";
 export { BigCursorController } from "./features/BigCursorController";
 export { ReadingMaskController } from "./features/ReadingMaskController";
 export { ReadingGuideController } from "./features/ReadingGuideController";
+export {
+  HighlightFocusController,
+  FocusHighlightController,
+} from "./features/HighlightFocusController";
 export { ResetController } from "./features/ResetController";
 
 // Control Primitives & State UI

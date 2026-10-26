@@ -3,6 +3,7 @@ export interface LocaleStrings {
   description: string;
   closeLabel: string;
   skipToActions: string;
+  skipToMain?: string;
   toolsLabel: string;
   quickActionsLabel: string;
   resetLabel: string;
