@@ -10,6 +10,12 @@ const oneOf =
 export const TEXT_SCALE_STEPS = [1.0, 1.125, 1.25, 1.5, 2.0] as const;
 export type TextScaleStep = (typeof TEXT_SCALE_STEPS)[number];
 
+/**
+ * Standard WCAG SC 1.4.12 line height options: 1.0 (baseline), 1.5 (150%), 1.75 (175%), 2.0 (200%).
+ */
+export const LINE_HEIGHT_STEPS = [100, 150, 175, 200] as const;
+export const LINE_HEIGHT_RATIOS = [1.0, 1.5, 1.75, 2.0] as const;
+
 export const builtins: Record<
   string,
   { defaultValue: unknown; validate: (v: unknown) => boolean }
@@ -17,8 +23,28 @@ export const builtins: Record<
   fontSize: { defaultValue: 100, validate: numberIn(50, 200) },
   fontScale: { defaultValue: 1.0, validate: numberIn(0.5, 2.0) },
   textScale: { defaultValue: 1.0, validate: numberIn(0.5, 2.0) },
-  lineHeight: { defaultValue: 100, validate: numberIn(50, 200) },
-  letterSpacing: { defaultValue: 0, validate: numberIn(0, 10) },
+  lineHeight: {
+    defaultValue: 100,
+    validate: (v: unknown) =>
+      typeof v === "number" &&
+      Number.isFinite(v) &&
+      ((v >= 0.5 && v <= 2.5) || (v >= 50 && v <= 200)),
+  },
+  letterSpacing: { defaultValue: 0, validate: numberIn(0, 20) },
+  wordSpacing: { defaultValue: 0, validate: numberIn(0, 20) },
+  paragraphSpacing: { defaultValue: 0, validate: numberIn(0, 64) },
+  letterSpacingEm: {
+    defaultValue: null,
+    validate: (v: unknown) => v === null || numberIn(0, 1)(v),
+  },
+  wordSpacingEm: {
+    defaultValue: null,
+    validate: (v: unknown) => v === null || numberIn(0, 1)(v),
+  },
+  paragraphSpacingEm: {
+    defaultValue: null,
+    validate: (v: unknown) => v === null || numberIn(0, 2)(v),
+  },
   contrast: {
     defaultValue: 0,
     validate: oneOf(

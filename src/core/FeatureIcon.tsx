@@ -16,6 +16,16 @@ const drawings: Record<string, ReactNode> = {
       <path d="M3 13 7 3l4 10M4.5 9h5M14 13l4-10 4 10m-6.5-4h5M3 19h18m-3-2 3 2-3 2M6 17l-3 2 3 2" />
     </>
   ),
+  wordSpacing: (
+    <>
+      <path d="M4 6v12M20 6v12M9 12h6m-2-3 3 3-3 3m-4-3-3-3 3 3" />
+    </>
+  ),
+  paragraphSpacing: (
+    <>
+      <path d="M4 5h16M4 9h12M4 19h16M4 15h12M18 10v4m-2-2 2-2 2 2m-4 2 2 2 2-2" />
+    </>
+  ),
   contrast: (
     <>
       <circle cx="12" cy="12" r="9" />

@@ -64,6 +64,13 @@ export default function Fixture() {
           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60'%3E%3Crect width='100' height='60' fill='green'/%3E%3C/svg%3E"
         />
         <video title="Sample video" />
+        <table id="sample-table">
+          <tbody>
+            <tr>
+              <td id="sample-td">Table Data</td>
+            </tr>
+          </tbody>
+        </table>
         <div id="destination">Destination</div>
       </main>
       {mounted && (
@@ -73,6 +80,8 @@ export default function Fixture() {
             <A.FontSizeController />
             <A.LineHeightController />
             <A.LetterSpacingController />
+            <A.WordSpacingController />
+            <A.ParagraphSpacingController />
             <A.ContrastController />
             <A.SaturationController />
             <A.InvertColorsController />

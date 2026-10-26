@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.5.0 — 2026-10-26
+
+- Add independent letter spacing, word spacing, and paragraph spacing with script-aware limits and line-height options (closes #42).
+- Introduce `WordSpacingController` (stepper 0–10px, step 1) and `ParagraphSpacingController` (stepper 0–32px, step 4).
+- Enhance `LineHeightController` with `stepPresets` and custom `steps` props snapping to standard WCAG SC 1.4.12 line height options (100%, 150%, 175%, 200% / 1.0x, 1.5x, 1.75x, 2.0x).
+- Export `LINE_HEIGHT_STEPS`, `LINE_HEIGHT_RATIOS`, `TEXT_SPACING_EXCLUDED_SELECTOR`, `isProtectedFromTextSpacing`, and `getScriptSpacingConstraints`.
+- Protect tables (`table`, `thead`, `tbody`, `tr`, `th`, `td`), form controls, code blocks (`pre`, `code`), and widget internals from disruptive spacing and line-height overrides, including explicit isolation against CSS inherited properties.
+- Implement language- and script-aware constraints: automatically suppress letter spacing on connected/cursive scripts (Arabic, Perso-Arabic, Urdu, or `dir="rtl"`) to preserve cursive glyph ligatures, and clamp letter spacing (<=1px) on Indic scripts (Sinhala, Tamil, Devanagari) to preserve character conjuncts and dependent vowel signs.
+- Support combined W3C WCAG 2.1 SC 1.4.12 text spacing scenarios (1.5x line height, 2x paragraph spacing, 0.12x letter spacing, 0.16x word spacing) with exact restoration on reset.
+- Add comprehensive unit tests in `tests/textSpacing.test.tsx` and packed browser integration tests in `tests/browser/widget.spec.ts`.
+
 ## 2.4.0 — 2026-10-23
 
 - Implement reflow-safe stepwise text scaling (`1.0`, `1.125`, `1.25`, `1.5`, `2.0`) via scoped CSS properties without CSS transforms (closes #41).
