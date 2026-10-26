@@ -74,6 +74,13 @@ const drawings: Record<string, ReactNode> = {
       <circle cx="12" cy="12" r="3" />
     </>
   ),
+  reduceMotion: (
+    <>
+      <path d="M3 8h4M3 12h6M3 16h4" />
+      <rect x="14" y="6" width="2" height="12" rx="1" />
+      <rect x="18" y="6" width="2" height="12" rx="1" />
+    </>
+  ),
   textAlign: (
     <>
       <path d="M3 5h18M3 10h12M3 15h18M3 20h12" />
