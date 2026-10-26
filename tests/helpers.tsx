@@ -21,7 +21,7 @@ export function renderFeatures(children: ReactNode) {
   const host = document.createElement("main");
   host.id = "host";
   host.innerHTML =
-    '<h1 style="font-size:20px;line-height:30px">Heading</h1><p>Text</p><a href="#">Link</a><img alt="Test image"/><video title="Test video"></video><iframe title="Map" src="about:blank"></iframe>';
+    '<h1 style="font-size:20px;line-height:30px">Heading</h1><p>Text</p><a href="#">Link</a><img alt="" role="presentation" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\'%3E%3C/svg%3E"/><img alt="Test image"/><video title="Test video"></video><iframe title="Map" src="about:blank"></iframe>';
   document.body.appendChild(host);
   const result = render(<Widget>{children}</Widget>);
   fireEvent.click(screen.getByRole("button", { name: "Accessibility" }));

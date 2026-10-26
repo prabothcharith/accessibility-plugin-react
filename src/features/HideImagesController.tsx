@@ -6,22 +6,28 @@ import { useAccessibility } from "../core/useAccessibility";
 const FEATURE_KEY = "hideImages";
 const DEFAULT_VALUE = false;
 
-export function HideImagesController() {
+export interface HideImagesControllerProps {
+  label?: string;
+}
+
+export function HideImagesController({
+  label = "Hide Images",
+}: HideImagesControllerProps = {}) {
   const { value, setValue } = useAccessibility<boolean>(
     FEATURE_KEY,
     DEFAULT_VALUE,
   );
 
   return (
-    <div className="arap-feature" role="group" aria-label="Hide Images">
+    <div className="arap-feature" role="group" aria-label={label}>
       <span className="arap-label">
         <FeatureIcon name={FEATURE_KEY} />
-        <span>Hide Images</span>
+        <span>{label}</span>
       </span>
       <button
         className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
         onClick={() => setValue(!value)}
-        aria-label="Hide Images"
+        aria-label={label}
         aria-pressed={value}
         type="button"
       >
@@ -31,4 +37,5 @@ export function HideImagesController() {
   );
 }
 
+export const HideDecorativeImagesController = HideImagesController;
 export default HideImagesController;

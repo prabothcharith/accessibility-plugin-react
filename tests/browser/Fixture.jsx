@@ -60,6 +60,12 @@ export default function Fixture() {
           </p>
         )}
         <img
+          id="sample-decorative-img"
+          alt=""
+          role="presentation"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Crect width='80' height='40' fill='gray'/%3E%3C/svg%3E"
+        />
+        <img
           alt="Example landscape"
           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60'%3E%3Crect width='100' height='60' fill='green'/%3E%3C/svg%3E"
         />
