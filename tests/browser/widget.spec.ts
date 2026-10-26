@@ -457,3 +457,104 @@ test("stepwise text scaling scales content without transform and protects forms/
     )
     .toBeCloseTo(initialH1Size, 0.5);
 });
+
+test("independent text spacing applies to paragraphs while protecting tables, controls, and code", async ({
+  page,
+}) => {
+  const initialLineHeight = await page
+    .locator("#sample")
+    .evaluate((el) => parseFloat(getComputedStyle(el).lineHeight));
+  const initialMarginBottom = await page
+    .locator("#sample")
+    .evaluate((el) => parseFloat(getComputedStyle(el).marginBottom));
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Increase line height (+10%)
+  await page.getByLabel("Increase line height").click();
+  await page.getByLabel("Increase line height").click();
+
+  // Increase letter spacing (+2px)
+  await page.getByLabel("Increase letter spacing").click();
+  await page.getByLabel("Increase letter spacing").click();
+
+  // Increase word spacing (+2px)
+  await page.getByLabel("Increase word spacing").click();
+  await page.getByLabel("Increase word spacing").click();
+
+  // Increase paragraph spacing (+8px)
+  await page.getByLabel("Increase paragraph spacing").click();
+  await page.getByLabel("Increase paragraph spacing").click();
+
+  // Paragraph should have updated text spacing
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => parseFloat(getComputedStyle(el).lineHeight)),
+    )
+    .toBeGreaterThan(initialLineHeight);
+
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => getComputedStyle(el).letterSpacing),
+    )
+    .toBe("2px");
+
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => getComputedStyle(el).wordSpacing),
+    )
+    .toBe("2px");
+
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => parseFloat(getComputedStyle(el).marginBottom)),
+    )
+    .toBeGreaterThanOrEqual(initialMarginBottom + 7);
+
+  // Table cell and host button must NOT receive letter-spacing or word-spacing overrides
+  const tdLetterSpacing = await page
+    .locator("#sample-td")
+    .evaluate((el) => getComputedStyle(el).letterSpacing);
+  const tdWordSpacing = await page
+    .locator("#sample-td")
+    .evaluate((el) => getComputedStyle(el).wordSpacing);
+  const btnLetterSpacing = await page
+    .locator("#host-action")
+    .evaluate((el) => getComputedStyle(el).letterSpacing);
+  const btnWordSpacing = await page
+    .locator("#host-action")
+    .evaluate((el) => getComputedStyle(el).wordSpacing);
+
+  expect(tdLetterSpacing).toBe("normal");
+  expect(["normal", "0px"]).toContain(tdWordSpacing);
+  expect(btnLetterSpacing).toBe("normal");
+  expect(["normal", "0px"]).toContain(btnWordSpacing);
+
+  // Reset All restores everything
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => getComputedStyle(el).letterSpacing),
+    )
+    .toBe("normal");
+
+  await expect
+    .poll(async () =>
+      page
+        .locator("#sample")
+        .evaluate((el) => getComputedStyle(el).wordSpacing),
+    )
+    .toMatch(/^(normal|0px)$/);
+});
