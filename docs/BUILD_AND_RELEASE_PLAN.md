@@ -88,7 +88,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-204 — Contrast modes and native forced-color protection #44](https://github.com/prabothcharith/accessibility-react/issues/44) — Add targeted original/light/dark/high/invert contrast modes that preserve host content and respect forced colors and other native settings.
 - [x] [A11Y-205 — Link highlighting and focus visibility #45](https://github.com/prabothcharith/accessibility-react/issues/45) — Add non-color-only link cues and stronger focus visibility without removing native indicators or creating unsafe skip links.
 - [x] [A11Y-206 — Reduce motion and best-effort media controls #46](https://github.com/prabothcharith/accessibility-react/issues/46) — Add reduced-motion CSS, tracked Web Animations pausing and explicit media controls while documenting GIF and cross-origin limitations.
-- [ ] [A11Y-207 — Decorative image handling #47](https://github.com/prabothcharith/accessibility-react/issues/47) — Hide only eligible decorative imagery and keep functional, meaningful, CAPTCHA, chart, map and QR content available.
+- [x] [A11Y-207 — Decorative image handling #47](https://github.com/prabothcharith/accessibility-react/issues/47) — Hide only eligible decorative imagery and keep functional, meaningful, CAPTCHA, chart, map and QR content available.
 - [ ] [A11Y-208 — Visual regression and performance sweep #48](https://github.com/prabothcharith/accessibility-react/issues/48) — Run cross-feature visual, restoration, repeated-toggle, route, zoom, forced-color, reduced-motion and performance regression sweeps.
 
 ### M3 — Reading support, profiles and localization

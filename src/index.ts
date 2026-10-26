@@ -82,6 +82,8 @@ export {
   subscribeForcedColors,
   isReducedMotionActive,
   subscribeReducedMotion,
+  isEligibleDecorativeImage,
+  isFunctionalOrMeaningfulImage,
   CONTRAST_PROTECTED_SELECTOR,
   isProtectedFromContrast,
   CONTRAST_PALETTES,
@@ -119,7 +121,11 @@ export { GrayscaleController } from "./features/GrayscaleController";
 export { LinkHighlightController } from "./features/LinkHighlightController";
 export { TextAlignController } from "./features/TextAlignController";
 export { FontFamilyController } from "./features/FontFamilyController";
-export { HideImagesController } from "./features/HideImagesController";
+export {
+  HideImagesController,
+  HideDecorativeImagesController,
+  type HideImagesControllerProps,
+} from "./features/HideImagesController";
 export { HideVideosController } from "./features/HideVideosController";
 export { BigCursorController } from "./features/BigCursorController";
 export { ReadingMaskController } from "./features/ReadingMaskController";
