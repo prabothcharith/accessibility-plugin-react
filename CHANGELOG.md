@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.6.0 — 2026-10-26
+
+- Add scoped text alignment, legible fonts, and dyslexia-friendly font options with script fallbacks and symbol/code protections (closes #43).
+- Scope `TextAlignController` strictly to logical text blocks (`p`, `h1`–`h6`, `li`, `blockquote`, `dt`, `dd`, `figcaption`, `[role="paragraph"]`, `[role="heading"]`), preventing distortions on tables, buttons, inputs, and code blocks.
+- Add accessible WCAG SC 1.4.8 justification advisory warning in `TextAlignController` (&ldquo;rivers of white&rdquo; readability notice).
+- Introduce `FontFamilyController` with `Default`, `Legible`, and `Dyslexia` segmented options.
+- Export `FONT_FAMILY_PRESETS`, `FontFamilyPreset`, `LEGIBLE_FONT_STACK`, `DYSLEXIA_FONT_STACK`, `FONT_FAMILY_PROTECTED_SELECTOR`, `isProtectedFromFontFamily`, `TEXT_ALIGN_BLOCK_SELECTOR`, and `isProtectedFromTextAlign`.
+- Add script fallbacks for Sinhala (`Noto Sans Sinhala`, `Iskoola Pota`, `Nirmala UI`) and Tamil (`Noto Sans Tamil`, `Latha`, `Nirmala UI`).
+- Protect code blocks (`pre`, `code`, `kbd`, `samp`, `var`), SVGs, and icon fonts from font overrides, isolating monospace inheritance.
+- Document font licensing details for OpenDyslexic (SIL OFL v1.1 / CC-BY 3.0) and system font stacks in `docs/FONTS.md`.
+- Add comprehensive unit tests in `tests/textAlignmentAndFonts.test.tsx` and browser tests in `tests/browser/widget.spec.ts`.
+
 ## 2.5.0 — 2026-10-26
 
 - Add independent letter spacing, word spacing, and paragraph spacing with script-aware limits and line-height options (closes #42).

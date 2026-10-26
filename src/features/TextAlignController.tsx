@@ -38,6 +38,16 @@ export function TextAlignController() {
           </button>
         ))}
       </div>
+      {value === "justify" && (
+        <div
+          className="arap-notice arap-notice-warning"
+          role="note"
+          aria-live="polite"
+        >
+          Justified text creates uneven word spacing (&ldquo;rivers of
+          white&rdquo;) that can impair readability.
+        </div>
+      )}
     </div>
   );
 }

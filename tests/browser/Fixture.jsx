@@ -72,6 +72,9 @@ export default function Fixture() {
           </tbody>
         </table>
         <div id="destination">Destination</div>
+        <pre id="sample-pre">
+          <code id="sample-code">const accessible = true;</code>
+        </pre>
       </main>
       {mounted && (
         <A.AccessibilityPlugin position={position}>
@@ -88,6 +91,7 @@ export default function Fixture() {
             <A.GrayscaleController />
             <A.LinkHighlightController />
             <A.TextAlignController />
+            <A.FontFamilyController />
             <A.HideImagesController />
             <A.HideVideosController />
             <A.BigCursorController />

@@ -558,3 +558,84 @@ test("independent text spacing applies to paragraphs while protecting tables, co
     )
     .toMatch(/^(normal|0px)$/);
 });
+
+test("text alignment scopes to logical text blocks, shows justify warning, and fonts protect code", async ({
+  page,
+}) => {
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+
+  // Test alignment scoping to text blocks
+  const rightBtn = page
+    .getByRole("group", { name: "Text Alignment" })
+    .getByRole("button", { name: /right/i });
+  await rightBtn.click();
+
+  await expect(page.locator("#sample")).toHaveCSS("text-align", "right");
+
+  // Protected elements (table data and host action button) must NOT be forced to right
+  const tdAlign = await page
+    .locator("#sample-td")
+    .evaluate((el) => el.style.textAlign);
+  const btnAlign = await page
+    .locator("#host-action")
+    .evaluate((el) => el.style.textAlign);
+  expect(tdAlign).toBe("");
+  expect(btnAlign).toBe("");
+
+  // Test justify warning advisory
+  const justifyBtn = page
+    .getByRole("group", { name: "Text Alignment" })
+    .getByRole("button", { name: /justify/i });
+  await justifyBtn.click();
+  await expect(page.getByRole("note")).toBeVisible();
+  await expect(page.getByRole("note")).toContainText("rivers of white");
+
+  // Test font family application and code protection
+  const legibleBtn = page
+    .getByRole("group", { name: "Font Family" })
+    .getByRole("button", { name: /legible/i });
+  await legibleBtn.click();
+
+  const sampleFont = await page
+    .locator("#sample")
+    .evaluate((el) => el.style.fontFamily);
+  expect(sampleFont).toContain("system-ui");
+  expect(sampleFont).toContain("Noto Sans Sinhala");
+
+  // Code block must retain monospace protection
+  const codeFont = await page
+    .locator("#sample-code")
+    .evaluate((el) => el.style.fontFamily);
+  expect(codeFont).not.toContain("system-ui");
+  expect(codeFont).toContain("monospace");
+
+  // Dyslexia font option
+  const dyslexiaBtn = page
+    .getByRole("group", { name: "Font Family" })
+    .getByRole("button", { name: /dyslexia/i });
+  await dyslexiaBtn.click();
+
+  const sampleDyslexiaFont = await page
+    .locator("#sample")
+    .evaluate((el) => el.style.fontFamily);
+  expect(sampleDyslexiaFont).toContain("OpenDyslexic");
+
+  // Reset All restores host state
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(page.locator("#sample")).toHaveCSS(
+    "text-align",
+    /^(start|left)$/,
+  );
+  const sampleResetAlign = await page
+    .locator("#sample")
+    .evaluate((el) => el.style.textAlign);
+  expect(sampleResetAlign).toBe("");
+  const sampleResetFont = await page
+    .locator("#sample")
+    .evaluate((el) => el.style.fontFamily);
+  expect(sampleResetFont).toBe("");
+});
