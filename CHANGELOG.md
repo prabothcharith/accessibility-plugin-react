@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.9.0 — 2026-10-26
+
+- Implement reduced motion and best-effort media controls (closes #46).
+- Introduce `ReduceMotionController` providing an accessible toggle to suppress animations, smooth scrolling, and autoplaying media.
+- Inject scoped style overrides (`animation-duration: 0.001ms !important`, `animation-iteration-count: 1 !important`, `transition-duration: 0.001ms !important`, `scroll-behavior: auto !important`) protecting widget UI and ensuring transition callbacks dispatch cleanly without lockups.
+- Pause actively running Web Animations API (WAAPI) animations on host elements and track them for selective resumption upon teardown.
+- Explicitly pause playing HTML5 `<video>` and `<audio>` elements without ever autoplays on reset or teardown.
+- Export `isReducedMotionActive` and `subscribeReducedMotion` for OS `prefers-reduced-motion` detection.
+- Document animation pausing architecture, GIF limitations, and cross-origin boundaries in `docs/REDUCE_MOTION.md`.
+- Add unit test suite in `tests/reduceMotion.test.tsx` and browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.8.0 — 2026-10-26
 
 - Implement non-color-only link highlighting, enhanced focus visibility, and authentic skip-to-main landmark link (closes #45).

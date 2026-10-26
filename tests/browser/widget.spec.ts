@@ -760,3 +760,32 @@ test("link highlighting, enhanced focus visibility, and skip-to-main landmark li
   const resetLinkDec = await link.evaluate((el) => el.style.textDecoration);
   expect(resetLinkDec).toBe("");
 });
+
+test("reduce motion applies animation duration overrides and cleans up on reset", async ({
+  page,
+}) => {
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+
+  // Test Reduce Motion toggle
+  const motionToggle = page
+    .getByRole("group", { name: "Reduce Motion" })
+    .getByRole("button", { name: "Reduce Motion" });
+  await motionToggle.click();
+
+  const hasMotionStyle = await page.evaluate(() =>
+    Boolean(document.getElementById("arap-reduce-motion-style")),
+  );
+  expect(hasMotionStyle).toBe(true);
+
+  // Reset All cleans up motion style
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+
+  const hasMotionStyleAfterReset = await page.evaluate(() =>
+    Boolean(document.getElementById("arap-reduce-motion-style")),
+  );
+  expect(hasMotionStyleAfterReset).toBe(false);
+});

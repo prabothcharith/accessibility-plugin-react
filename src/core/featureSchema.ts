@@ -129,6 +129,7 @@ for (const key of [
   "readingGuide",
   "highlightFocus",
   "focusHighlight",
+  "reduceMotion",
 ]) {
   builtins[key] = {
     defaultValue: false,

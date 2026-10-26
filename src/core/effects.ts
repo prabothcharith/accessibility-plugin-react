@@ -27,6 +27,27 @@ export function subscribeForcedColors(callback: () => void): () => void {
   }
 }
 
+/** Detects whether the user's operating system has prefers-reduced-motion active. */
+export function isReducedMotionActive(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  try {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch {
+    return false;
+  }
+}
+
+export function subscribeReducedMotion(callback: () => void): () => void {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  try {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mql.addEventListener("change", callback);
+    return () => mql.removeEventListener("change", callback);
+  } catch {
+    return () => {};
+  }
+}
+
 export interface ContrastPalette {
   text: string;
   background: string;
@@ -882,6 +903,86 @@ function applyPage(values: Record<string, unknown>): () => void {
         styleEl?.remove();
       });
     }
+  }
+
+  // Reduce motion: scoped CSS, WAAPI animation pausing, explicit media pausing
+  if (values.reduceMotion) {
+    const MOTION_STYLE_ID = "arap-reduce-motion-style";
+    let styleEl = document.getElementById(
+      MOTION_STYLE_ID,
+    ) as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = MOTION_STYLE_ID;
+      styleEl.dataset.arapUi = "";
+      styleEl.textContent = `
+        *:not([data-arap-ui]):not([data-arap-ui] *),
+        *:not([data-arap-ui]):not([data-arap-ui] *)::before,
+        *:not([data-arap-ui]):not([data-arap-ui] *)::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+          scroll-behavior: auto !important;
+        }
+      `;
+      document.head.appendChild(styleEl);
+      undo.push(() => {
+        styleEl?.remove();
+      });
+    }
+
+    // Pause only tracked WAAPI animations
+    const trackedAnimations = new Set<Animation>();
+    if (
+      typeof document !== "undefined" &&
+      typeof document.getAnimations === "function"
+    ) {
+      try {
+        const animations = document.getAnimations();
+        for (const anim of animations) {
+          const target = (anim.effect as KeyframeEffect | null)?.target;
+          if (target instanceof Element && target.closest("[data-arap-ui]")) {
+            continue;
+          }
+          if (anim.playState === "running") {
+            anim.pause();
+            trackedAnimations.add(anim);
+          }
+        }
+      } catch {
+        // Environment does not support or threw during getAnimations
+      }
+    }
+
+    // Explicit media autoplay pause (never autoplay on reset)
+    if (typeof document !== "undefined") {
+      const mediaList = Array.from(
+        document.querySelectorAll<HTMLMediaElement>("video, audio"),
+      ).filter((media) => !media.closest("[data-arap-ui]"));
+
+      for (const media of mediaList) {
+        if (!media.paused) {
+          try {
+            media.pause();
+          } catch {
+            // Media pause failed or was blocked
+          }
+        }
+      }
+    }
+
+    // Teardown: resume only tracked animations that are still paused; never resume media
+    undo.push(() => {
+      for (const anim of trackedAnimations) {
+        if (anim.playState === "paused") {
+          try {
+            anim.play();
+          } catch {
+            // Animation resume failed
+          }
+        }
+      }
+    });
   }
 
   for (const el of elements) {
