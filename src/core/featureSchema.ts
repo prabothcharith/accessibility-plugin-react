@@ -112,6 +112,7 @@ export const builtins: Record<
     validate: oneOf(
       false,
       true,
+      "underline",
       "yellow-on-black",
       "blue-on-yellow",
       "black-on-white",
@@ -126,6 +127,8 @@ for (const key of [
   "bigCursor",
   "readingMask",
   "readingGuide",
+  "highlightFocus",
+  "focusHighlight",
 ]) {
   builtins[key] = {
     defaultValue: false,

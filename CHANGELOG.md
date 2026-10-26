@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.8.0 — 2026-10-26
+
+- Implement non-color-only link highlighting, enhanced focus visibility, and authentic skip-to-main landmark link (closes #45).
+- Add `HighlightFocusController` (and `FocusHighlightController` alias) featuring a high-visibility dual-ring focus outline (3px solid #2563eb outer ring with 5px white halo) for keyboard navigation.
+- Yield focus rings to `Highlight` system color under `@media (forced-colors: active)` and explicitly preserve disabled control semantics (`*:disabled:focus-visible`, `*[aria-disabled="true"]:focus-visible`).
+- Enhance `LinkHighlightController` with non-color underline cues (`text-decoration: underline`, `text-decoration-thickness: 2px`, `text-underline-offset: 3px`) while preserving disabled links and system `LinkText` in forced-colors mode.
+- Introduce `SkipToMainLink` and `findMainLandmark()` utility, dynamically detecting native `<main>` or `[role="main"]` landmarks and rendering an accessible skip link only when an authentic landmark exists.
+- Add comprehensive documentation in `docs/LINKS_AND_FOCUS.md`.
+- Add unit test suite in `tests/linksAndFocus.test.tsx` and browser smoke coverage in `tests/browser/widget.spec.ts`.
+
 ## 2.7.0 — 2026-10-26
 
 - Implement semantic contrast modes (`original`, `light`, `dark`, `high`, `invert`) and native operating system forced-colors protection (closes #44).

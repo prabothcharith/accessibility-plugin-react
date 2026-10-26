@@ -696,3 +696,67 @@ test("semantic contrast modes apply tokens, preserve media, and restore cleanly"
   expect(sampleColor).toBe("");
   expect(hostBg).toBe("");
 });
+
+test("link highlighting, enhanced focus visibility, and skip-to-main landmark link", async ({
+  page,
+}) => {
+  // Verify skip-to-main landmark link is present when <main> exists
+  const skipLink = page.locator(".arap-skip-to-main");
+  await expect(skipLink).toBeAttached();
+  await expect(skipLink).toHaveAttribute("href", "#host");
+
+  // Focus skip link: becomes visible with min 44px target height
+  await skipLink.focus();
+  const box = await skipLink.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+
+  // Click skip link: transfers focus to main#host
+  await skipLink.click();
+  const isMainFocused = await page
+    .locator("main#host")
+    .evaluate((el) => document.activeElement === el);
+  expect(isMainFocused).toBe(true);
+
+  // Open widget
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+
+  // Test Link Highlight
+  const linkToggle = page
+    .getByRole("group", { name: "Link Highlight" })
+    .getByRole("button", { name: "Link Highlight" });
+  await linkToggle.click();
+
+  const link = page.locator("#host a").first();
+  await expect(link).toHaveCSS("text-decoration-line", "underline");
+  const linkUnderlineOffset = await link.evaluate(
+    (el) => window.getComputedStyle(el).textUnderlineOffset,
+  );
+  expect(linkUnderlineOffset).toBe("3px");
+
+  // Test Highlight Focus
+  const focusToggle = page
+    .getByRole("group", { name: "Highlight Focus" })
+    .getByRole("button", { name: "Highlight Focus" });
+  await focusToggle.click();
+
+  const hasFocusStyle = await page.evaluate(() =>
+    Boolean(document.getElementById("arap-focus-highlight-style")),
+  );
+  expect(hasFocusStyle).toBe(true);
+
+  // Reset All restores links and cleans up focus style
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+
+  const hasFocusStyleAfterReset = await page.evaluate(() =>
+    Boolean(document.getElementById("arap-focus-highlight-style")),
+  );
+  expect(hasFocusStyleAfterReset).toBe(false);
+
+  const resetLinkDec = await link.evaluate((el) => el.style.textDecoration);
+  expect(resetLinkDec).toBe("");
+});

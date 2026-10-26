@@ -5,6 +5,7 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   description: "Adjust your reading experience",
   closeLabel: "Close accessibility settings",
   skipToActions: "Jump to quick actions",
+  skipToMain: "Skip to main content",
   toolsLabel: "Accessibility tools",
   quickActionsLabel: "Quick actions",
   resetLabel: "Reset all accessibility settings",
