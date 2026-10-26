@@ -123,7 +123,13 @@ it.each(["default", "left", "center", "right", "justify"])(
   (value) => {
     const { host } = renderFeatures(<API.TextAlignController />);
     fireEvent.click(screen.getByText(value));
-    expect(host.style.textAlign).toBe(value === "default" ? "" : value);
+    const expected = value === "default" ? "" : value;
+    expect((host.querySelector("p") as HTMLElement).style.textAlign).toBe(
+      expected,
+    );
+    expect((host.querySelector("h1") as HTMLElement).style.textAlign).toBe(
+      expected,
+    );
   },
 );
 it.each([

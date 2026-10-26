@@ -70,8 +70,19 @@ export {
   isProtectedFromTextSpacing,
   getScriptSpacingConstraints,
   type ScriptSpacingConstraints,
+  TEXT_ALIGN_BLOCK_SELECTOR,
+  isProtectedFromTextAlign,
+  LEGIBLE_FONT_STACK,
+  DYSLEXIA_FONT_STACK,
+  FONT_FAMILY_PROTECTED_SELECTOR,
+  isProtectedFromFontFamily,
 } from "./core/effects";
-export { LINE_HEIGHT_STEPS, LINE_HEIGHT_RATIOS } from "./core/featureSchema";
+export {
+  FONT_FAMILY_PRESETS,
+  type FontFamilyPreset,
+  LINE_HEIGHT_STEPS,
+  LINE_HEIGHT_RATIOS,
+} from "./core/featureSchema";
 export {
   LineHeightController,
   type LineHeightControllerProps,
@@ -94,6 +105,7 @@ export { InvertColorsController } from "./features/InvertColorsController";
 export { GrayscaleController } from "./features/GrayscaleController";
 export { LinkHighlightController } from "./features/LinkHighlightController";
 export { TextAlignController } from "./features/TextAlignController";
+export { FontFamilyController } from "./features/FontFamilyController";
 export { HideImagesController } from "./features/HideImagesController";
 export { HideVideosController } from "./features/HideVideosController";
 export { BigCursorController } from "./features/BigCursorController";

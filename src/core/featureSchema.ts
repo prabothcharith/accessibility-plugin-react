@@ -16,6 +16,16 @@ export type TextScaleStep = (typeof TEXT_SCALE_STEPS)[number];
 export const LINE_HEIGHT_STEPS = [100, 150, 175, 200] as const;
 export const LINE_HEIGHT_RATIOS = [1.0, 1.5, 1.75, 2.0] as const;
 
+/**
+ * Font family options: default (host fonts), legible (clean modern sans-serif), dyslexia-option (weighted baseline fonts).
+ */
+export const FONT_FAMILY_PRESETS = [
+  "default",
+  "legible",
+  "dyslexia-option",
+] as const;
+export type FontFamilyPreset = (typeof FONT_FAMILY_PRESETS)[number];
+
 export const builtins: Record<
   string,
   { defaultValue: unknown; validate: (v: unknown) => boolean }
@@ -62,6 +72,16 @@ export const builtins: Record<
   textAlign: {
     defaultValue: "default",
     validate: oneOf("default", "left", "center", "right", "justify"),
+  },
+  fontFamily: {
+    defaultValue: "default",
+    validate: oneOf(
+      "default",
+      "original",
+      "legible",
+      "dyslexia-option",
+      "dyslexia",
+    ),
   },
   linkHighlight: {
     defaultValue: false,
