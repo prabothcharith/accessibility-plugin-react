@@ -101,7 +101,8 @@ site, and choose their order in JSX.
 | `InvertColorsController`     | Inverts eligible page content.                                                                             |
 | `GrayscaleController`        | Removes color while preserving the selected saturation value for later.                                    |
 | `LinkHighlightController`    | Highlights links or selects a link palette.                                                                |
-| `TextAlignController`        | Restores the host alignment or forces left, center, right, or justified text.                              |
+| `TextAlignController`        | Scopes left, center, right, or justified alignment to text blocks; warns about justification.              |
+| `FontFamilyController`       | Applies clean system-ui or OpenDyslexic with Sinhala/Tamil fallbacks while protecting code and icons.      |
 | `HideImagesController`       | Hides images and CSS background images while retaining layout.                                             |
 | `HideVideosController`       | Hides video elements and recognized YouTube/Vimeo embeds visually.                                         |
 | `BigCursorController`        | Applies a larger high-contrast cursor where supported.                                                     |

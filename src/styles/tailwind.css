@@ -1023,3 +1023,19 @@
   color: var(--arap-text);
   border-color: var(--arap-text);
 }
+.arap-notice {
+  grid-column: 1 / -1;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  color: #854d0e;
+}
+.arap-notice-warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}

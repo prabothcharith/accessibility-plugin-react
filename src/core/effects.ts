@@ -185,6 +185,126 @@ export function isProtectedFromTextSpacing(element: HTMLElement): boolean {
   return false;
 }
 
+export const TEXT_ALIGN_BLOCK_SELECTOR = [
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "li",
+  "blockquote",
+  "dt",
+  "dd",
+  "figcaption",
+  '[role="paragraph"]',
+  '[role="heading"]',
+].join(", ");
+
+export function isProtectedFromTextAlign(element: HTMLElement): boolean {
+  try {
+    if (element.matches(EXCLUDED)) return true;
+    if (element.matches(TEXT_SPACING_EXCLUDED_SELECTOR)) return true;
+    if (
+      element.closest(
+        "pre, code, kbd, samp, var, button, input, select, textarea, [role='button'], table, [role='table'], [role='grid'], [data-arap-ignore], [data-arap-exempt], [data-arap-ui], .arap-root",
+      )
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+/**
+ * Standard legible font stack with Sinhala ("Noto Sans Sinhala", "Iskoola Pota")
+ * and Tamil ("Noto Sans Tamil", "Latha", "Nirmala UI") script fallbacks.
+ */
+export const LEGIBLE_FONT_STACK = [
+  "system-ui",
+  "-apple-system",
+  "BlinkMacSystemFont",
+  '"Segoe UI"',
+  "Roboto",
+  '"Helvetica Neue"',
+  "Arial",
+  '"Noto Sans Sinhala"',
+  '"Iskoola Pota"',
+  '"Noto Sans Tamil"',
+  '"Latha"',
+  '"Nirmala UI"',
+  "sans-serif",
+].join(", ");
+
+/**
+ * Dyslexia-friendly font stack with OpenDyslexic (licensed under SIL OFL / CC-BY),
+ * weighted rounded fallbacks, and Indic/Sinhala/Tamil script fallbacks.
+ */
+export const DYSLEXIA_FONT_STACK = [
+  "OpenDyslexic",
+  '"Comic Sans MS"',
+  '"Trebuchet MS"',
+  '"Arial Rounded MT Bold"',
+  '"Noto Sans Sinhala"',
+  '"Iskoola Pota"',
+  '"Noto Sans Tamil"',
+  '"Latha"',
+  "sans-serif",
+].join(", ");
+
+export const FONT_FAMILY_PROTECTED_SELECTOR = [
+  "pre",
+  "pre *",
+  "code",
+  "code *",
+  "kbd",
+  "kbd *",
+  "samp",
+  "samp *",
+  "var",
+  "var *",
+  "svg",
+  "svg *",
+  "[data-icon]",
+  "[data-icon] *",
+  'i[class*="icon"]',
+  'span[class*="icon"]',
+  'i[class*="fa-"]',
+  'span[class*="fa-"]',
+  'i[class*="material-symbols"]',
+  'span[class*="material-symbols"]',
+  'i[class*="lucide"]',
+  'span[class*="lucide"]',
+  "[data-arap-ignore]",
+  "[data-arap-ignore] *",
+  "[data-arap-exempt]",
+  "[data-arap-exempt] *",
+  "[data-arap-ui]",
+  "[data-arap-ui] *",
+  ".arap-root",
+  ".arap-root *",
+].join(", ");
+
+export function isProtectedFromFontFamily(element: HTMLElement): boolean {
+  try {
+    if (element.matches(EXCLUDED)) return true;
+    if (element.matches(FONT_FAMILY_PROTECTED_SELECTOR)) return true;
+    if (
+      element.closest(
+        "pre, code, kbd, samp, var, svg, [data-icon], [data-arap-ignore], [data-arap-exempt], [data-arap-ui], .arap-root",
+      )
+    ) {
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
 export interface ScriptSpacingConstraints {
   allowLetterSpacing: boolean;
   maxLetterSpacingPx: number;
@@ -480,9 +600,47 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
+  // Text alignment scoped strictly to logical text blocks (p, headings, lists, quotes)
+  const textAlignVal = values.textAlign ? String(values.textAlign) : "default";
+  if (textAlignVal !== "default" && textAlignVal !== "original") {
+    for (const el of elements) {
+      if (isProtectedFromTextAlign(el)) continue;
+      if (el.matches(TEXT_ALIGN_BLOCK_SELECTOR)) {
+        set(el, "text-align", textAlignVal);
+      }
+    }
+  }
+
+  // Font family with script-aware fallbacks and icon/code protection
+  const fontFamilyVal = values.fontFamily
+    ? String(values.fontFamily)
+    : "default";
+  if (fontFamilyVal !== "default" && fontFamilyVal !== "original") {
+    const targetStack =
+      fontFamilyVal === "dyslexia-option" || fontFamilyVal === "dyslexia"
+        ? DYSLEXIA_FONT_STACK
+        : LEGIBLE_FONT_STACK;
+
+    for (const el of elements) {
+      if (isProtectedFromFontFamily(el)) {
+        // Monospace blocks inside styled containers must retain monospace styling
+        if (el.matches("pre, code, kbd, samp, var")) {
+          const previous = el.style.getPropertyValue("font-family");
+          if (!previous) {
+            set(
+              el,
+              "font-family",
+              'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+            );
+          }
+        }
+        continue;
+      }
+      set(el, "font-family", targetStack);
+    }
+  }
+
   for (const el of elements) {
-    if (values.textAlign && values.textAlign !== "default")
-      set(el, "text-align", String(values.textAlign));
     if (values.bigCursor) set(el, "cursor", cursor);
     if (values.hideImages) {
       if (el.matches("img, picture")) set(el, "visibility", "hidden");

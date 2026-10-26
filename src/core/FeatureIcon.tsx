@@ -61,6 +61,11 @@ const drawings: Record<string, ReactNode> = {
       <path d="M3 5h18M3 10h12M3 15h18M3 20h12" />
     </>
   ),
+  fontFamily: (
+    <>
+      <path d="M4 7V4h16v3M9 20h6M12 4v16" />
+    </>
+  ),
   hideImages: (
     <>
       <rect x="3" y="4" width="18" height="16" rx="2" />
