@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.7.0 — 2026-10-26
+
+- Implement semantic contrast modes (`original`, `light`, `dark`, `high`, `invert`) and native operating system forced-colors protection (closes #44).
+- Introduce `ContrastModeController` providing one-click switching between semantic contrast tokens with Clean light design and pressed states.
+- Enhance `ContrastController` with semantic tokens (`Light`, `Dark`, `High Contrast`, `Invert`) alongside existing contrast multiplier steps and legacy palettes.
+- Export `CONTRAST_MODES`, `ContrastModeValue`, `isForcedColorsActive`, `CONTRAST_PROTECTED_SELECTOR`, `isProtectedFromContrast`, `CONTRAST_PALETTES`, and `ContrastPalette`.
+- Protect non-text media (`img`, `picture`, `video`, `canvas`, `svg`), data visualizations, charts, icon glyphs, and widget internals from destructive background and color overrides.
+- Invert mode preserves photography, artwork, and streaming media by applying mathematical counter-inversion (`filter: invert(1)`), preventing photographic negative distortion.
+- Preserve form validation cues (`[aria-invalid="true"]`, `:invalid`, `.is-invalid`) and disabled control states (`:disabled`, `[aria-disabled="true"]`).
+- Detect native OS `forced-colors: active` (e.g., Windows High Contrast Mode); bypass inline filter and color overrides to guarantee native system high contrast theme fidelity without interference.
+- Document contrast architecture, tokens, and protections in `docs/CONTRAST.md`.
+- Add unit test suite in `tests/contrastModes.test.tsx` and browser smoke coverage in `tests/browser/widget.spec.ts`.
+
 ## 2.6.0 — 2026-10-26
 
 - Add scoped text alignment, legible fonts, and dyslexia-friendly font options with script fallbacks and symbol/code protections (closes #43).

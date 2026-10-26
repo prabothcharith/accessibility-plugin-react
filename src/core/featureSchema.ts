@@ -26,6 +26,19 @@ export const FONT_FAMILY_PRESETS = [
 ] as const;
 export type FontFamilyPreset = (typeof FONT_FAMILY_PRESETS)[number];
 
+/**
+ * Semantic contrast modes: off/original (standard colors), light (crisp light), dark (deep dark), high (AAA high contrast), invert (luminance inversion).
+ */
+export const CONTRAST_MODES = [
+  "off",
+  "original",
+  "light",
+  "dark",
+  "high",
+  "invert",
+] as const;
+export type ContrastModeValue = (typeof CONTRAST_MODES)[number];
+
 export const builtins: Record<
   string,
   { defaultValue: unknown; validate: (v: unknown) => boolean }
@@ -62,11 +75,22 @@ export const builtins: Record<
       1,
       2,
       3,
+      "off",
+      "original",
+      "light",
+      "dark",
+      "high",
+      "invert",
       "reduced",
       "yellow-on-black",
       "white-on-black",
       "blue-on-yellow",
+      "black-on-white",
     ),
+  },
+  contrastMode: {
+    defaultValue: "off",
+    validate: oneOf("off", "original", "light", "dark", "high", "invert"),
   },
   saturation: { defaultValue: 0, validate: oneOf(0, 1, 2) },
   textAlign: {

@@ -76,10 +76,17 @@ export {
   DYSLEXIA_FONT_STACK,
   FONT_FAMILY_PROTECTED_SELECTOR,
   isProtectedFromFontFamily,
+  isForcedColorsActive,
+  CONTRAST_PROTECTED_SELECTOR,
+  isProtectedFromContrast,
+  CONTRAST_PALETTES,
+  type ContrastPalette,
 } from "./core/effects";
 export {
   FONT_FAMILY_PRESETS,
   type FontFamilyPreset,
+  CONTRAST_MODES,
+  type ContrastModeValue,
   LINE_HEIGHT_STEPS,
   LINE_HEIGHT_RATIOS,
 } from "./core/featureSchema";
@@ -100,6 +107,7 @@ export {
   type ParagraphSpacingControllerProps,
 } from "./features/ParagraphSpacingController";
 export { ContrastController } from "./features/ContrastController";
+export { ContrastModeController } from "./features/ContrastModeController";
 export { SaturationController } from "./features/SaturationController";
 export { InvertColorsController } from "./features/InvertColorsController";
 export { GrayscaleController } from "./features/GrayscaleController";
