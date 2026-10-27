@@ -146,3 +146,24 @@ interface DiagnosticsReport {
 ### `useDiagnostics(config?: DiagnosticsConfig): DiagnosticsReport`
 React hook returning reactive diagnostics reports.
 
+## Privacy-Safe Feature Event Callbacks (A11Y-406)
+
+### `AccessibilityPluginProps.onFeatureEvent`
+- Type: `(event: AccessibilityFeatureEvent) => void`
+- Optional local lifecycle callback triggered on user interactions (toggles, steppers, resets, profiles, presets, panel visibility, placement). Disabled by default.
+
+### `AccessibilityFeatureEvent` Types
+```ts
+type AccessibilityFeatureEvent =
+  | FeatureChangeEvent
+  | FeatureResetEvent
+  | PanelToggleEvent
+  | PlacementChangeEvent
+  | ProfileApplyEvent
+  | PresetApplyEvent;
+```
+
+### `sanitizeFeatureEvent(raw: AccessibilityFeatureEvent): AccessibilityFeatureEvent`
+Sanitizes and freezes event payloads against an allowlist, stripping forbidden or private fields.
+
+

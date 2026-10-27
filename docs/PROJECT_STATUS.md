@@ -1,9 +1,9 @@
 # Project status — 2026-10-27
 
-**Version 2.23.0 is merged into main and published.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.23.0
+**Version 2.24.0 is merged into main and published.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.24.0
 are implemented, tested, and published under `latest`. The repository currently
-prepares `2.24.0` for development-only integration diagnostics and test harness (Issue #61).
+prepares `2.25.0` for optional privacy-safe feature event callbacks (Issue #62).
 
 ## Status categories
 

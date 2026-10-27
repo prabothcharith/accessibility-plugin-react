@@ -1637,3 +1637,25 @@ test("development-only diagnostics harness opens and displays actionable integra
   await expect(panel).not.toBeVisible();
 });
 
+test("privacy-safe feature event callbacks receive sanitized local notifications (A11Y-406)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Last event element in fixture should indicate panel-toggle
+  const eventEl = page.locator("#fixture-last-event");
+  await expect(eventEl).toHaveAttribute("data-event-type", "panel-toggle");
+
+  // Adjust a feature: click increase font size
+  await page.getByLabel("Increase font size").click();
+  await expect(eventEl).toHaveAttribute("data-event-type", "feature-change");
+
+  // Reset all settings
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(eventEl).toHaveAttribute("data-event-type", "feature-reset");
+});
+
+

@@ -54,6 +54,7 @@ import type {
 import type { FeatureLocaleLabels, LocaleStrings } from "./i18n";
 
 import type { DiagnosticsConfig } from "./diagnostics";
+import type { FeatureEventListener } from "./events";
 
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
@@ -76,6 +77,12 @@ export interface AccessibilityPluginProps {
    * Inactive in production unless explicitly forced.
    */
   diagnostics?: boolean | DiagnosticsConfig;
+  /**
+   * Optional privacy-safe feature event lifecycle callback (A11Y-406).
+   * Strictly local, opt-in, and disabled by default. Excludes page text, selections,
+   * inputs, transcripts, and identifiers.
+   */
+  onFeatureEvent?: FeatureEventListener;
 }
 export interface AccessibilityButtonProps {
   /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
@@ -145,4 +152,19 @@ export type {
   DiagnosticsReport,
   DiagnosticsSummary,
 } from "./diagnostics";
+
+export type {
+  AccessibilityEventType,
+  EventTriggerSource,
+  BaseAccessibilityEvent,
+  FeatureChangeEvent,
+  FeatureResetEvent,
+  PanelToggleEvent,
+  PlacementChangeEvent,
+  ProfileApplyEvent,
+  PresetApplyEvent,
+  AccessibilityFeatureEvent,
+  FeatureEventListener,
+} from "./events";
+
 

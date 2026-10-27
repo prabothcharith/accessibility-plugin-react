@@ -32,7 +32,8 @@ export default function Fixture() {
     [position, setPosition] = useState("right"),
     [locale, setLocale] = useState("en"),
     [customMenu, setCustomMenu] = useState(false),
-    [showDiagnostics, setShowDiagnostics] = useState(false);
+    [showDiagnostics, setShowDiagnostics] = useState(false),
+    [lastEvent, setLastEvent] = useState(null);
   return (
     <>
       <main id="host" className={dark ? "dark" : ""}>
@@ -127,7 +128,11 @@ export default function Fixture() {
         </label>
       </div>
       {mounted && (
-        <A.AccessibilityPlugin position={position} locale={locale}>
+        <A.AccessibilityPlugin
+          position={position}
+          locale={locale}
+          onFeatureEvent={(e) => setLastEvent(e)}
+        >
           <A.AccessibilityButton description="Adjust your display preferences" />
           {customMenu ? (
             <A.AccessibilityList
@@ -190,6 +195,11 @@ export default function Fixture() {
         </A.AccessibilityPlugin>
       )}
       {showDiagnostics && <A.DiagnosticsHarness force={true} />}
+      {lastEvent && (
+        <div id="fixture-last-event" data-event-type={lastEvent.type}>
+          {lastEvent.type}
+        </div>
+      )}
     </>
   );
 }
