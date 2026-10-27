@@ -102,7 +102,8 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksAmbiguous: "Ambiguous",
 
   // Read Aloud TTS (A11Y-401)
-  readAloudDescription: "Listen to page content or selected text using text-to-speech",
+  readAloudDescription:
+    "Listen to page content or selected text using text-to-speech",
   readAloudPlay: "Read aloud",
   readAloudPlaySelection: "Read selection",
   readAloudPlayArticle: "Read article",
@@ -118,10 +119,27 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   readAloudStatusStopped: "Stopped",
   readAloudUnsupported: "Text-to-speech is not supported in this browser.",
   readAloudNoText: "No readable content found on this page.",
-  readAloudSensitiveSkipped: "Private or sensitive form fields are excluded from read-aloud.",
+  readAloudSensitiveSkipped:
+    "Private or sensitive form fields are excluded from read-aloud.",
   readAloudSpeed: "Speed",
   shortcutReadAloud: "Read aloud",
   shortcutReadAloudDesc: "Start, pause, or stop text-to-speech read aloud",
+
+  // Saturation & grayscale modes
+  saturationOff: "Off",
+  saturationLow: "Low",
+  saturationHigh: "High",
+  saturationGrayscale: "Grayscale",
+  saturationLowWarning:
+    "Low saturation reduces color differences. Color-coded charts and indicators may be harder to distinguish.",
+  saturationHighWarning:
+    "High saturation increases color intensity (200%), which may cause visual glare or color clipping.",
+  grayscaleWarning:
+    "Grayscale removes all color. Visualizations and charts relying on color alone may require alternative labels.",
+  forcedColorsActiveWarning:
+    "Operating system high contrast (forced colors) is active. Filter effects are bypassed to preserve OS contrast.",
+  shortcutGrayscale: "Grayscale",
+  shortcutGrayscaleDesc: "Toggle monochrome grayscale display mode",
 
   features: {
     textScale: "Bigger Text",
@@ -142,5 +160,7 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
     readingMode: "Reading Mode",
     keyboardShortcuts: "Keyboard Shortcuts",
     readAloud: "Read aloud",
+    saturation: "Saturation",
+    grayscale: "Grayscale",
   },
 });

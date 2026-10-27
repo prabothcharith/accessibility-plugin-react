@@ -16,6 +16,8 @@ export interface FeatureLocaleLabels {
   presets?: string;
   readingMode?: string;
   readAloud?: string;
+  saturation?: string;
+  grayscale?: string;
   [key: string]: string | undefined;
 }
 
@@ -137,6 +139,18 @@ export interface LocaleStrings {
   readAloudSpeed?: string;
   shortcutReadAloud?: string;
   shortcutReadAloudDesc?: string;
+
+  // Saturation & grayscale modes
+  saturationOff?: string;
+  saturationLow?: string;
+  saturationHigh?: string;
+  saturationGrayscale?: string;
+  saturationLowWarning?: string;
+  saturationHighWarning?: string;
+  grayscaleWarning?: string;
+  forcedColorsActiveWarning?: string;
+  shortcutGrayscale?: string;
+  shortcutGrayscaleDesc?: string;
 
   // Feature names
   features?: FeatureLocaleLabels;

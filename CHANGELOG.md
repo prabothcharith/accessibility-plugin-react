@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.21.0 — 2026-10-27
+
+- Implement opt-in saturation and grayscale modes with chart/image advisory warnings, forced-colors protection, and instant reset across Chromium, Firefox, and WebKit (closes #58).
+- Enhance `SaturationController` and `src/core/effects.ts`:
+  - Support opt-in `Off` (0 / "original"), `Low` (1 / "low", 20% chroma `saturate(0.2)`), `High` (2 / "high", 200% chroma `saturate(2)`), and `Grayscale` (3 / "grayscale", 100% monochrome `grayscale(1)`).
+  - Optional `includeGrayscale` prop (defaults to `true`) allowing developers to include or omit the grayscale segment within the saturation group.
+  - Documented chart and image risk advisories (`role="note"`, `aria-live="polite"`):
+    - Low saturation advisory: warns that reduced color differences may make color-dependent charts, maps, and status badges harder to distinguish per WCAG 1.4.1.
+    - High saturation advisory: warns that 200% chroma may produce visual glare or photographic color clipping.
+    - Grayscale advisory: warns that all color is removed and charts relying on color alone may require alternative labels.
+    - Optional `showAdvisory` prop (defaults to `true`) to control advisory display.
+- Enhance `GrayscaleController`:
+  - Accessible standalone toggle with active state check, `showAdvisory` support, and forced-colors detection.
+- Add forced-colors (Windows High Contrast Mode) protection:
+  - Detects `@media (forced-colors: active)` and bypasses filter injection to preserve authoritative OS contrast palettes without compounding.
+  - Renders live status announcement (`role="status"`, `aria-live="polite"`) informing users that filters are bypassed for OS contrast.
+- Ensure instant, non-destructive reset across Chromium, Firefox, and WebKit:
+  - Scoped effect cleanup restores prior inline host filter styles or removes property without leaving stale filters or artificial containing blocks.
+- Register `saturation` values (`0, 1, 2, 3, "original", "low", "high", "grayscale"`) in `builtins` schema with versioned persistence.
+- Add keyboard shortcut for Grayscale (`Alt+G`) in `DEFAULT_SHORTCUTS`.
+- Provide complete Sinhala (`si`, `si-LK`) and Tamil (`ta`, `ta-LK`) localizations for all saturation levels, Grayscale, and advisory notices.
+- Export `SaturationControllerProps` and `GrayscaleControllerProps` in `src/index.ts`.
+- Add documentation in `docs/SATURATION_AND_GRAYSCALE.md`, updated `docs/FEATURES.md`, `docs/API.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add 13 unit/integration tests in `tests/saturationAndGrayscale.test.tsx` and Playwright browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.20.0 — 2026-10-27
 
 - Implement user-initiated read-aloud TTS with voice, rate, pitch, and stop controls (closes #57).

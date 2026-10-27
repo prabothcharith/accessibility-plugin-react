@@ -85,6 +85,14 @@ export const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
     allowRemap: true,
   },
   {
+    id: "grayscale",
+    category: "tools",
+    labelKey: "shortcutGrayscale",
+    descriptionKey: "shortcutGrayscaleDesc",
+    defaultKey: "Alt+G",
+    allowRemap: true,
+  },
+  {
     id: "shortcutsHelp",
     category: "tools",
     labelKey: "shortcutHelp",

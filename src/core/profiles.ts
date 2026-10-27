@@ -115,7 +115,9 @@ export function mapProfileSettingsToFeatures(
         ? 1
         : settings.saturation === "high"
           ? 2
-          : 0;
+          : settings.saturation === "grayscale"
+            ? 3
+            : 0;
   }
 
   if (settings.tooltips !== undefined) {
@@ -206,6 +208,22 @@ export function mapFeaturesToProfileSettings(
     features.accessibleTooltips !== undefined
   ) {
     result.tooltips = Boolean(features.tooltips ?? features.accessibleTooltips);
+  }
+
+  if (features.saturation !== undefined || features.grayscale !== undefined) {
+    if (
+      features.grayscale ||
+      features.saturation === 3 ||
+      features.saturation === "grayscale"
+    ) {
+      result.saturation = "grayscale";
+    } else if (features.saturation === 1 || features.saturation === "low") {
+      result.saturation = "low";
+    } else if (features.saturation === 2 || features.saturation === "high") {
+      result.saturation = "high";
+    } else {
+      result.saturation = "original";
+    }
   }
 
   return result;

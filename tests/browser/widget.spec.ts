@@ -1384,3 +1384,122 @@ test("A11Y-401: Read-aloud TTS with voice, rate and stop controls", async ({
   await expect(stopBtn).toBeDisabled();
   await expect(playBtn).toBeVisible();
 });
+
+test("A11Y-402: Saturation and grayscale modes with chart/image advisory warnings and instant reset", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await trigger.click();
+
+  const satGroup = page.getByRole("group", { name: "Saturation" });
+  await expect(satGroup).toBeVisible();
+
+  // Verify 4 segmented buttons
+  const offBtn = satGroup.getByRole("button", {
+    name: "Original saturation (Off)",
+  });
+  const lowBtn = satGroup.getByRole("button", { name: "Low saturation (20%)" });
+  const highBtn = satGroup.getByRole("button", {
+    name: "High saturation (200%)",
+  });
+  const grayBtn = satGroup.getByRole("button", {
+    name: "Saturation: Grayscale",
+  });
+
+  await expect(offBtn).toHaveAttribute("aria-pressed", "true");
+
+  // 1. Select Low Saturation (20%)
+  await lowBtn.click();
+  await expect(lowBtn).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toContain("saturate(0.2)");
+
+  const lowAdvisory = satGroup.locator(".arap-notice-warning");
+  await expect(lowAdvisory).toBeVisible();
+  await expect(lowAdvisory).toContainText(
+    "Low saturation reduces color differences",
+  );
+
+  // 2. Select High Saturation (200%)
+  await highBtn.click();
+  await expect(highBtn).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toContain("saturate(2)");
+
+  const highAdvisory = satGroup.locator(".arap-notice-warning");
+  await expect(highAdvisory).toBeVisible();
+  await expect(highAdvisory).toContainText(
+    "High saturation increases color intensity",
+  );
+
+  // 3. Select Grayscale via Saturation group
+  await grayBtn.click();
+  await expect(grayBtn).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toContain("grayscale(1)");
+
+  const grayAdvisory = satGroup.locator(".arap-notice-warning");
+  await expect(grayAdvisory).toBeVisible();
+  await expect(grayAdvisory).toContainText("Grayscale removes all color");
+
+  // 4. Return to Off
+  await offBtn.click();
+  await expect(offBtn).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toBe("none");
+  await expect(satGroup.locator(".arap-notice-warning")).not.toBeVisible();
+
+  // 5. Test Grayscale toggle controller
+  const grayToggle = page.getByRole("button", {
+    name: "Grayscale",
+    exact: true,
+  });
+  await expect(grayToggle).toBeVisible();
+  await grayToggle.click();
+  await expect(grayToggle).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toContain("grayscale(1)");
+
+  // 6. Instant Reset
+  const resetBtn = page.getByRole("button", { name: "Reset All" });
+  await resetBtn.click();
+  await expect
+    .poll(async () => {
+      return page
+        .locator("#root")
+        .evaluate((el) => getComputedStyle(el).filter);
+    })
+    .toBe("none");
+  await expect(page.locator(".arap-notice-warning")).not.toBeVisible();
+});
