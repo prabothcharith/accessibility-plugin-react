@@ -204,6 +204,14 @@ const drawings: Record<string, ReactNode> = {
       <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
     </>
   ),
+  dictionary: (
+    <>
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+      <path d="M4 6h16" />
+      <path d="M10 10v6" />
+      <path d="M8 12h4" />
+    </>
+  ),
 };
 
 /** Decorative only: each control keeps its existing visible and accessible name. */

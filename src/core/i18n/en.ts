@@ -141,6 +141,25 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   shortcutGrayscale: "Grayscale",
   shortcutGrayscaleDesc: "Toggle monochrome grayscale display mode",
 
+  // Dictionary lookup
+  dictionaryTitle: "Dictionary",
+  dictionaryDescription: "Look up definitions and accessibility terminology",
+  dictionarySearchPlaceholder: "Type a word to look up...",
+  dictionaryLookupButton: "Look up",
+  dictionaryClearButton: "Clear word",
+  dictionaryCloseDialog: "Close dictionary",
+  dictionaryStatusSearching: "Searching...",
+  dictionaryStatusFound: (word: string) => `Definition found for "${word}".`,
+  dictionaryStatusNotFound: (word: string) =>
+    `No definition found for "${word}". Check your spelling or try a suggestion below.`,
+  dictionarySuggestionsTitle: "Did you mean:",
+  dictionarySourceLocal: "Built-in Glossary",
+  dictionarySourceProvider: "Configured Provider",
+  dictionaryPartOfSpeech: "Part of speech",
+  dictionaryExampleLabel: "Example",
+  shortcutDictionary: "Dictionary",
+  shortcutDictionaryDesc: "Open accessible terminology dictionary lookup",
+
   features: {
     textScale: "Bigger Text",
     lineHeight: "Line Height",
@@ -162,5 +181,6 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
     readAloud: "Read aloud",
     saturation: "Saturation",
     grayscale: "Grayscale",
+    dictionary: "Dictionary",
   },
 });
