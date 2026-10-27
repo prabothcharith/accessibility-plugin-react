@@ -7,7 +7,6 @@ import {
   resolveActiveShortcut,
 } from "../src/core/shortcuts";
 
-
 describe("A11Y-308: Keyboard shortcuts engine", () => {
   describe("normalizeKeyCombo", () => {
     it("normalizes and standardizes modifier ordering", () => {

@@ -11,6 +11,7 @@ import {
 } from "./widgetPlacement";
 import { WidgetPortal } from "./WidgetPortal";
 import { resolveLocaleStrings, isRtlLocale } from "./i18n";
+import { FeatureMenu } from "../features/FeatureMenu";
 import type { AccessibilityListProps } from "./types";
 
 function Panel({
@@ -24,6 +25,7 @@ function Panel({
   statementUrl,
   largeControls,
   locale,
+  menuConfig,
 }: AccessibilityListProps) {
   const ctx = useContext(AccessibilityContext)!;
   const effectiveLocale =
@@ -136,7 +138,11 @@ function Panel({
           tabIndex={0}
           aria-label={strings.toolsLabel}
         >
-          {children}
+          {children ? (
+            children
+          ) : menuConfig ? (
+            <FeatureMenu config={menuConfig} grouped={menuConfig.grouped} />
+          ) : null}
         </div>
       </PanelActionsContext.Provider>
       <div
@@ -144,12 +150,14 @@ function Panel({
         role="group"
         aria-label={strings.quickActionsLabel}
       >
-        <PositionControls key={ctx.isOpen ? "open" : "closed"} />
+        {menuConfig?.showPositionControls !== false && (
+          <PositionControls key={ctx.isOpen ? "open" : "closed"} />
+        )}
         <div className="arap-actions" ref={setActions}>
           {footer}
         </div>
       </div>
-      {effectiveStatementUrl && (
+      {effectiveStatementUrl && menuConfig?.showStatement !== false && (
         <div className="arap-statement">
           <a
             href={effectiveStatementUrl}

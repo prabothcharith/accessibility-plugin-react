@@ -30,7 +30,8 @@ export default function Fixture() {
     [dark, setDark] = useState(false),
     [mounted, setMounted] = useState(true),
     [position, setPosition] = useState("right"),
-    [locale, setLocale] = useState("en");
+    [locale, setLocale] = useState("en"),
+    [customMenu, setCustomMenu] = useState(false);
   return (
     <>
       <main id="host" className={dark ? "dark" : ""}>
@@ -44,6 +45,12 @@ export default function Fixture() {
         <button onClick={() => setRoute(!route)}>Navigate</button>
         <button onClick={() => setDark(!dark)}>Theme</button>
         <button onClick={() => setMounted(!mounted)}>Mount widget</button>
+        <button
+          id="toggle-custom-menu"
+          onClick={() => setCustomMenu(!customMenu)}
+        >
+          Toggle custom menu
+        </button>
         <label>
           Widget position{" "}
           <select
@@ -115,38 +122,64 @@ export default function Fixture() {
       {mounted && (
         <A.AccessibilityPlugin position={position} locale={locale}>
           <A.AccessibilityButton description="Adjust your display preferences" />
-          <A.AccessibilityList>
-            <A.FontSizeController />
-            <A.LineHeightController />
-            <A.LetterSpacingController />
-            <A.WordSpacingController />
-            <A.ParagraphSpacingController />
-            <A.ContrastController />
-            <A.ContrastModeController />
-            <A.SaturationController />
-            <A.InvertColorsController />
-            <A.GrayscaleController />
-            <A.LinkHighlightController />
-            <A.HighlightFocusController />
-            <A.ReduceMotionController />
-            <A.TextAlignController />
-            <A.FontFamilyController />
-            <A.HideImagesController />
-            <A.HideVideosController />
-            <A.BigCursorController />
-            <A.ReadingMaskController />
-            <A.ReadingGuideController />
-            <A.TooltipsController />
-            <A.PageNavigatorController />
-            <A.ProfilesController />
-            <A.PresetsController />
-            <A.ReadingModeController />
-            <A.KeyboardShortcutsController />
-            <A.ReadAloudController />
-            <A.DictionaryController />
-            <Custom />
-            <A.ResetController />
-          </A.AccessibilityList>
+          {customMenu ? (
+            <A.AccessibilityList
+              menuConfig={{
+                grouped: true,
+                groups: [
+                  { id: "customTypography", title: "Custom Text Group" },
+                  { id: "customVisuals", title: "Custom Visuals Group" },
+                ],
+                items: [
+                  {
+                    id: "fontSize",
+                    group: "customTypography",
+                    label: "Custom Font Sizer",
+                    order: 10,
+                  },
+                  {
+                    id: "grayscale",
+                    group: "customVisuals",
+                    label: "Custom Black & White",
+                    order: 20,
+                  },
+                ],
+              }}
+            />
+          ) : (
+            <A.AccessibilityList>
+              <A.FontSizeController />
+              <A.LineHeightController />
+              <A.LetterSpacingController />
+              <A.WordSpacingController />
+              <A.ParagraphSpacingController />
+              <A.ContrastController />
+              <A.ContrastModeController />
+              <A.SaturationController />
+              <A.InvertColorsController />
+              <A.GrayscaleController />
+              <A.LinkHighlightController />
+              <A.HighlightFocusController />
+              <A.ReduceMotionController />
+              <A.TextAlignController />
+              <A.FontFamilyController />
+              <A.HideImagesController />
+              <A.HideVideosController />
+              <A.BigCursorController />
+              <A.ReadingMaskController />
+              <A.ReadingGuideController />
+              <A.TooltipsController />
+              <A.PageNavigatorController />
+              <A.ProfilesController />
+              <A.PresetsController />
+              <A.ReadingModeController />
+              <A.KeyboardShortcutsController />
+              <A.ReadAloudController />
+              <A.DictionaryController />
+              <Custom />
+              <A.ResetController />
+            </A.AccessibilityList>
+          )}
         </A.AccessibilityPlugin>
       )}
     </>

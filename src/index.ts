@@ -306,3 +306,21 @@ export type {
   ErrorStateProps,
   ProfilePreviewCardProps,
 } from "./core/controls";
+
+// Menu Customization & Reordering (A11Y-404)
+export { FeatureMenu, type FeatureMenuProps } from "./features/FeatureMenu";
+export {
+  validateMenuConfig,
+  getMenuConfigSignature,
+  KNOWN_FEATURE_IDS,
+  DEFAULT_MENU_GROUPS,
+  DEFAULT_FEATURE_GROUP_MAP,
+  type FeatureMenuItemConfig,
+  type FeatureMenuGroupConfig,
+  type MenuCustomizationConfig,
+  type MenuValidationIssue,
+  type MenuValidationResult,
+  type NormalizedMenuConfig,
+  type NormalizedMenuItem,
+  type NormalizedMenuGroup,
+} from "./core/menuCustomization";

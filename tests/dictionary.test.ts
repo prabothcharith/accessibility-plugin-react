@@ -128,10 +128,14 @@ describe("A11Y-403: Dictionary Core & Sanitization", () => {
         }),
       };
 
-      const result = await lookupWord("customterm", { provider: customProvider });
+      const result = await lookupWord("customterm", {
+        provider: customProvider,
+      });
       expect(customProvider.lookup).toHaveBeenCalledWith("customterm", "en");
       expect(result.found).toBe(true);
-      expect(result.entry?.definition).toBe("A custom definition from remote API.");
+      expect(result.entry?.definition).toBe(
+        "A custom definition from remote API.",
+      );
       expect(result.entry?.source).toBe("provider");
     });
 

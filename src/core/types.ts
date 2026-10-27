@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
+import type { MenuCustomizationConfig } from "./menuCustomization";
 
 export interface AccessibilityState {
   isOpen: boolean;
@@ -83,7 +84,8 @@ export interface AccessibilityListProps {
   footer?: ReactNode;
   /** Supporting panel text. Pass an empty string to omit it. */
   description?: string;
-  children: ReactNode;
+  /** Explicit controller children or custom markup. Optional if menuConfig is supplied. */
+  children?: ReactNode;
   className?: string;
   style?: CSSProperties;
   title?: string;
@@ -94,6 +96,8 @@ export interface AccessibilityListProps {
   largeControls?: boolean;
   /** Preferred UI language locale. */
   locale?: string;
+  /** Declarative per-site feature menu customization and reordering (A11Y-404). */
+  menuConfig?: MenuCustomizationConfig;
 }
 
 export type {
