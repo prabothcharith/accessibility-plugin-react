@@ -131,6 +131,7 @@ for (const key of [
   "reduceMotion",
   "tooltips",
   "accessibleTooltips",
+  "readingMode",
 ]) {
   builtins[key] = {
     defaultValue: false,

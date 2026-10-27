@@ -1545,3 +1545,312 @@
   background: var(--arap-selected, #eff6ff);
   color: var(--arap-text, #0f172a);
 }
+
+/* Reading Mode Overlay & Dialog (A11Y-307) */
+.arap-reading-mode-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 16px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.arap-reading-mode-backdrop[data-theme="sepia"] {
+  background: rgba(68, 51, 34, 0.45);
+}
+
+.arap-reading-mode-backdrop[data-theme="dark"] {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.arap-reading-mode-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  min-height: 50vh;
+  margin: 16px auto;
+  border-radius: 12px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  box-sizing: border-box;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans Sinhala",
+    "Noto Sans Tamil",
+    sans-serif;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Theme color schemes */
+.arap-reading-mode-backdrop[data-theme="light"] .arap-reading-mode-dialog {
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+}
+
+.arap-reading-mode-backdrop[data-theme="sepia"] .arap-reading-mode-dialog {
+  background: #fbf0d9;
+  color: #5f4b32;
+  border: 1px solid #ebd5b3;
+}
+
+.arap-reading-mode-backdrop[data-theme="dark"] .arap-reading-mode-dialog {
+  background: #18181b;
+  color: #f4f4f5;
+  border: 1px solid #27272a;
+}
+
+.arap-reading-mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.arap-reading-mode-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.arap-reading-mode-badge {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.arap-reading-mode-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.arap-reading-mode-theme-group,
+.arap-reading-mode-zoom-group {
+  display: inline-flex;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+
+.arap-reader-theme-btn,
+.arap-reader-zoom-btn {
+  min-height: 36px;
+  min-width: 44px;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.arap-reader-theme-btn:not(:last-child),
+.arap-reader-zoom-btn:not(:last-child) {
+  border-right: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.arap-reader-theme-btn.arap-active {
+  background: rgba(148, 163, 184, 0.25);
+  font-weight: 600;
+}
+
+.arap-reader-zoom-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.arap-reading-mode-close {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.arap-reading-mode-close:hover,
+.arap-reader-theme-btn:hover:not(:disabled),
+.arap-reader-zoom-btn:hover:not(:disabled) {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.arap-reading-mode-content {
+  padding: 32px 36px;
+  flex: 1 1 auto;
+}
+
+.arap-reading-mode-title {
+  margin: 0 0 12px 0;
+  font-size: 2.125rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.arap-reading-mode-byline {
+  margin: 0 0 24px 0;
+  font-size: 0.9375rem;
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.arap-reading-mode-body {
+  line-height: 1.8;
+  font-size: 1.0625rem;
+}
+
+.arap-reading-mode-body p {
+  margin: 0 0 1.5em 0;
+}
+
+.arap-reading-mode-body h2 {
+  font-size: 1.5rem;
+  margin: 1.75em 0 0.75em 0;
+  font-weight: 600;
+}
+
+.arap-reading-mode-body h3 {
+  font-size: 1.25rem;
+  margin: 1.5em 0 0.5em 0;
+  font-weight: 600;
+}
+
+.arap-reading-mode-body ul,
+.arap-reading-mode-body ol {
+  margin: 0 0 1.5em 0;
+  padding-left: 1.75em;
+}
+
+.arap-reading-mode-body li {
+  margin-bottom: 0.5em;
+}
+
+.arap-reading-mode-body a {
+  color: #0284c7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.arap-reading-mode-backdrop[data-theme="dark"] .arap-reading-mode-body a {
+  color: #38bdf8;
+}
+
+.arap-reading-mode-backdrop[data-theme="sepia"] .arap-reading-mode-body a {
+  color: #8c5b00;
+}
+
+.arap-reading-mode-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.5em 0;
+  display: block;
+}
+
+.arap-reading-mode-body figure {
+  margin: 1.5em 0;
+}
+
+.arap-reading-mode-body figcaption {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.arap-reading-mode-body blockquote {
+  margin: 1.5em 0;
+  padding: 12px 20px;
+  border-left: 4px solid currentColor;
+  opacity: 0.9;
+  font-style: italic;
+}
+
+.arap-reading-mode-body pre {
+  margin: 1.5em 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.15);
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.arap-reading-mode-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.arap-reading-mode-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+  justify-content: center;
+}
+
+.arap-reading-mode-exit-btn {
+  min-height: 44px;
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
+  color: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.arap-reading-mode-exit-btn:hover {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+@media (max-width: 640px) {
+  .arap-reading-mode-backdrop {
+    padding: 0;
+  }
+  .arap-reading-mode-dialog {
+    margin: 0;
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  .arap-reading-mode-content {
+    padding: 20px 16px;
+  }
+  .arap-reading-mode-title {
+    font-size: 1.75rem;
+  }
+}

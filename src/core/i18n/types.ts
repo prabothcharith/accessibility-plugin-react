@@ -74,6 +74,14 @@ export interface LocaleStrings {
   decreaseTextSize?: string;
   increaseTextSize?: string;
 
+  // Reading mode
+  readingModeDescription?: string;
+  readingModeOpen?: string;
+  readingModeClose?: string;
+  readingModeFailed?: string;
+  formatReadingWords?: (words: number) => string;
+  formatReadingTime?: (minutes: number) => string;
+
   // Feature names
   features?: FeatureLocaleLabels;
 }

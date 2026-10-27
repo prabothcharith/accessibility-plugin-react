@@ -62,6 +62,12 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
     `Preset "${presetName}" deleted.`,
   decreaseTextSize: "Decrease text size",
   increaseTextSize: "Increase text size",
+  readingModeDescription: "Distraction-free article view",
+  readingModeOpen: "Open Reading Mode",
+  readingModeClose: "Close Reading Mode",
+  readingModeFailed: "No readable article content found on this page.",
+  formatReadingWords: (words: number) => `${words} words`,
+  formatReadingTime: (minutes: number) => `${minutes} min read`,
   features: {
     textScale: "Bigger Text",
     lineHeight: "Line Height",

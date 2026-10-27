@@ -159,6 +159,12 @@ const drawings: Record<string, ReactNode> = {
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
     </>
   ),
+  readingMode: (
+    <>
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </>
+  ),
   reset: (
     <>
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
