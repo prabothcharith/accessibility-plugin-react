@@ -100,6 +100,29 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksTab: "Links",
   pageNavigatorLinksEmpty: "No links found on this page.",
   pageNavigatorLinksAmbiguous: "Ambiguous",
+
+  // Read Aloud TTS (A11Y-401)
+  readAloudDescription: "Listen to page content or selected text using text-to-speech",
+  readAloudPlay: "Read aloud",
+  readAloudPlaySelection: "Read selection",
+  readAloudPlayArticle: "Read article",
+  readAloudPause: "Pause reading",
+  readAloudResume: "Resume reading",
+  readAloudStop: "Stop reading",
+  readAloudRate: "Speed",
+  readAloudPitch: "Pitch",
+  readAloudVoice: "Voice",
+  readAloudDefaultVoice: "Default voice",
+  readAloudStatusReading: "Reading...",
+  readAloudStatusPaused: "Paused",
+  readAloudStatusStopped: "Stopped",
+  readAloudUnsupported: "Text-to-speech is not supported in this browser.",
+  readAloudNoText: "No readable content found on this page.",
+  readAloudSensitiveSkipped: "Private or sensitive form fields are excluded from read-aloud.",
+  readAloudSpeed: "Speed",
+  shortcutReadAloud: "Read aloud",
+  shortcutReadAloudDesc: "Start, pause, or stop text-to-speech read aloud",
+
   features: {
     textScale: "Bigger Text",
     lineHeight: "Line Height",
@@ -118,5 +141,6 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
     presets: "Saved Presets",
     readingMode: "Reading Mode",
     keyboardShortcuts: "Keyboard Shortcuts",
+    readAloud: "Read aloud",
   },
 });

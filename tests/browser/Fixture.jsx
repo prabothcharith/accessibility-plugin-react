@@ -142,6 +142,7 @@ export default function Fixture() {
             <A.PresetsController />
             <A.ReadingModeController />
             <A.KeyboardShortcutsController />
+            <A.ReadAloudController />
             <Custom />
             <A.ResetController />
           </A.AccessibilityList>

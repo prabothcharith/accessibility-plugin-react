@@ -103,6 +103,29 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksTab: "සබැඳි",
   pageNavigatorLinksEmpty: "මෙම පිටුවෙහි සබැඳි හමු නොවීය.",
   pageNavigatorLinksAmbiguous: "අවිනිශ්චිත",
+
+  // Read Aloud TTS (A11Y-401)
+  readAloudDescription: "පෙළ කියවීමේ තාක්ෂණය භාවිතයෙන් පිටුවේ අන්තර්ගතය හෝ තෝරාගත් පෙළට සවන් දෙන්න",
+  readAloudPlay: "හඬ නගා කියවන්න",
+  readAloudPlaySelection: "තේරීම කියවන්න",
+  readAloudPlayArticle: "ලිපිය කියවන්න",
+  readAloudPause: "මදක් නවත්වන්න",
+  readAloudResume: "නැවත අරඹන්න",
+  readAloudStop: "කියවීම නවත්වන්න",
+  readAloudRate: "වේගය",
+  readAloudPitch: "ස්වරය",
+  readAloudVoice: "හඬ",
+  readAloudDefaultVoice: "පෙරනිමි හඬ",
+  readAloudStatusReading: "කියවමින් පවතී...",
+  readAloudStatusPaused: "මදකට නවත්වා ඇත",
+  readAloudStatusStopped: "නවත්වා ඇත",
+  readAloudUnsupported: "මෙම බ්‍රවුසරයේ හඬ නගා කියවීමේ පහසුකම නොමැත.",
+  readAloudNoText: "කියවීමට සුදුසු අන්තර්ගතයක් හමු නොවීය.",
+  readAloudSensitiveSkipped: "පුද්ගලික හෝ සංවේදී ආකෘති පත්‍ර කොටස් කියවීමෙන් බැහැර කර ඇත.",
+  readAloudSpeed: "වේගය",
+  shortcutReadAloud: "හඬ නගා කියවන්න",
+  shortcutReadAloudDesc: "හඬ නගා කියවීම අරඹන්න, මදක් නවත්වන්න හෝ නවත්වන්න",
+
   features: {
     textScale: "විශාල අකුරු",
     lineHeight: "පේළි පරතරය",
@@ -121,5 +144,6 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
     presets: "සුරකින ලද පෙරසැකසුම්",
     readingMode: "කියවීමේ මාදිලිය",
     keyboardShortcuts: "යතුරුපුවරු කෙටිමං",
+    readAloud: "හඬ නගා කියවන්න",
   },
 });
