@@ -159,6 +159,20 @@ export {
   AccessibleTooltipsController,
   type TooltipsControllerProps,
 } from "./features/TooltipsController";
+export {
+  PageNavigatorController,
+  HeadingsNavigatorController,
+  PageStructureController,
+  type PageNavigatorControllerProps,
+} from "./features/PageNavigatorController";
+export {
+  scanHeadings,
+  scanLandmarks,
+  navigateToElement,
+  subscribePageStructure,
+  type HeadingItem,
+  type LandmarkItem,
+} from "./core/pageNavigator";
 export { ResetController } from "./features/ResetController";
 
 // Control Primitives & State UI

@@ -235,6 +235,46 @@ test("A11Y-302 accessible tooltips: hover displays authored alt, Escape dismisse
   await expect(tooltip).not.toHaveAttribute("data-visible", "true");
 });
 
+test("A11Y-303 page navigator: maps headings and landmarks, navigates safely and dismisses with Escape", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Open Page Navigator
+  const exploreBtn = page.locator(
+    "button[aria-controls='arap-page-navigator-dialog']",
+  );
+  await exploreBtn.click();
+  await expect(exploreBtn).toHaveAttribute("aria-expanded", "true");
+
+  const dialog = page.getByRole("region", { name: "Page Structure Explorer" });
+  await expect(dialog).toBeVisible();
+
+  // Check that Heading 1 ("Accessibility preferences") is discovered
+  await expect(dialog.getByText("Headings (1)")).toBeVisible();
+  const h1Jump = dialog.getByRole("button", {
+    name: /Accessibility preferences/i,
+  });
+  await expect(h1Jump).toBeVisible();
+
+  // Click jump button to navigate to heading
+  await h1Jump.click();
+  await expect(page.locator("h1")).toBeFocused();
+
+  // Switch to Landmarks tab
+  const landmarksTab = dialog.getByRole("tab", { name: /Landmarks/i });
+  await landmarksTab.click();
+  await expect(
+    dialog.getByRole("button", { name: /Main Content/i }),
+  ).toBeVisible();
+
+  // Escape closes dialog
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+});
+
 test("Next Pages Router and direct Server Component imports hydrate", async ({
   page,
 }, info) => {
