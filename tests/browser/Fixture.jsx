@@ -190,6 +190,7 @@ export default function Fixture() {
               <A.ReadAloudController />
               <A.DictionaryController />
               <A.VoiceNavigationController />
+              <A.TranslationController />
               <Custom />
               <A.ResetController />
             </A.AccessibilityList>

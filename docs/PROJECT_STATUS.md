@@ -1,9 +1,9 @@
 # Project status — 2026-10-27
 
-**Version 2.26.0 is merged into main and published.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.26.0
+**Version 2.27.0 is merged into main and published.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.27.0
 are implemented, tested, and published under `latest`. The repository currently
-prepares `2.27.0` for voice navigation research prototype (Issue #64).
+prepares `2.28.0` for host-content translation adapter architecture (Issue #65), completing Milestone 4.
 
 ## Status categories
 

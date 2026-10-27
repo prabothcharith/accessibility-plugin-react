@@ -114,3 +114,16 @@ The Voice Navigation Research Prototype (`VoiceNavigationController`, `createVoi
 - **Background Tab Protection**: Automatically stops speech recognition when `document.hidden` becomes true.
 - **Accessible Keyboard Alternatives**: Full set of native buttons for heading navigation and scrolling; 100% operational in unsupported browsers or upon permission denial.
 - **Reduced Motion Respect**: Automatically disables smooth scrolling in favor of instant jumps when reduced motion preferences are detected.
+
+## Host-Content Translation Adapter Architecture (A11Y-409)
+
+The Host-Content Translation Adapter Architecture (`TranslationController`, `translateHostContent`) provides a privacy-first, decoupled bridge for translating arbitrary host application text:
+
+- **Decoupled from Widget Localization**: Clear separation between bundled static widget strings (`src/core/i18n/`) and host content translation.
+- **Provider Interface Boundary**: Pluggable `TranslationAdapter` interface specifying data retention, residency, and privacy policies.
+- **Explicit User Consent**: Strictly user-initiated; requires explicit acknowledgment via consent modal before transmitting host document text.
+- **Strict Sensitive Content Exclusion**: Automatically detects and ignores form passwords, credit card/CVC fields, personal email/phone inputs, technical code blocks (`<code>`, `<pre>`), media boundaries (`<iframe>`, `<svg>`), opt-out attributes (`[translate="no"]`), hidden nodes, and the widget itself.
+- **Cross-Origin & iframe Safeguard**: Strictly excludes all `<iframe>` elements to protect Same-Origin Policy (SOP) boundaries.
+- **XSS & DOM Injection Prevention**: Translated text is strictly assigned via `Text.textContent`, never `innerHTML`.
+- **Clean Synchronous Restoration**: Synchronous `restore()` callback resets modified text nodes back to original host strings immediately.
+- **Offline Mock Translation Adapter**: `createOfflineMockTranslationAdapter` operates locally with zero network calls for testing and development.

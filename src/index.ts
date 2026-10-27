@@ -412,3 +412,32 @@ export {
   type VoiceNavigationSession,
   type VoiceExecutionContext,
 } from "./core/voiceNavigation";
+
+// Host-Content Translation Adapter Architecture (A11Y-409)
+export {
+  TranslationController,
+  type TranslationControllerProps,
+} from "./features/TranslationController";
+export {
+  TRANSLATION_ERROR_CODES,
+  TRANSLATION_DISCLAIMER,
+  MAX_NODES_PER_TRANSLATION_BATCH,
+  MAX_TEXT_LENGTH_PER_NODE,
+  isSensitiveElement,
+  extractTranslatableNodes,
+  sanitizeTranslationOutput,
+  applyTranslations,
+  createOfflineMockTranslationAdapter,
+  translateHostContent,
+  TranslationError,
+  type TranslationAdapter,
+  type TranslationRequest,
+  type TranslationResponse,
+  type TranslatedItem,
+  type DataRetentionPolicy,
+  type TranslationConsentStatus,
+  type TranslationConsentRecord,
+  type TranslatableNode,
+  type TranslationSession,
+  type TranslationErrorCode,
+} from "./core/translationAdapter";

@@ -58,7 +58,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [ ] [M1 — Safe core, accessible widget UI and stable state #23](https://github.com/prabothcharith/accessibility-react/issues/23) — Build the typed state, storage, effects, accessible widget shell, examples and CI needed for a safe foundation.
 - [x] [M2 — Core visual and typographic adjustments #24](https://github.com/prabothcharith/accessibility-react/issues/24) — Add reversible text, spacing, font, contrast, focus, motion and decorative-image preferences with fixture evidence.
 - [ ] [M3 — Reading support, profiles and localization #25](https://github.com/prabothcharith/accessibility-react/issues/25) — Add reading aids, semantic navigation, profiles, custom presets, import/export and reviewed regional localization.
-- [ ] [M4 — Opt-in advanced and browser-dependent controls #26](https://github.com/prabothcharith/accessibility-react/issues/26) — Isolate TTS, dictionary, color, diagnostics, callbacks, smart contrast, voice and translation work behind safe opt-in boundaries.
+- [x] [M4 — Opt-in advanced and browser-dependent controls #26](https://github.com/prabothcharith/accessibility-react/issues/26) — Isolate TTS, dictionary, color, diagnostics, callbacks, smart contrast, voice and translation work behind safe opt-in boundaries.
 - [ ] [M5 — Launch readiness and package hardening #27](https://github.com/prabothcharith/accessibility-react/issues/27) — Complete browser/AT, performance, documentation, security, licensing and packed-archive validation, then prepare a release proposal.
 
 ### M0 — Audit and compatibility safety net
@@ -112,7 +112,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-406 — Optional privacy-safe feature event callbacks #62](https://github.com/prabothcharith/accessibility-react/issues/62) — Add disabled-by-default local lifecycle callbacks with reviewed payloads that exclude page text, inputs, identifiers, transcripts and recordings.
 - [x] [A11Y-407 — Smart contrast research prototype #63](https://github.com/prabothcharith/accessibility-react/issues/63) — Research measured smart contrast for eligible elements with compositing, caching, unsupported reporting, performance evidence and full restoration.
 - [x] [A11Y-408 — Voice navigation research prototype #64](https://github.com/prabothcharith/accessibility-react/issues/64) — Research a small voice-command set with permission, visible listening, timeout, cleanup, privacy disclosure and keyboard alternatives.
-- [ ] [A11Y-409 — Host-content translation adapter architecture #65](https://github.com/prabothcharith/accessibility-react/issues/65) — Design an explicit host-translation provider boundary with consent, origin/privacy documentation, sanitization and cross-origin limitations.
+- [x] [A11Y-409 — Host-content translation adapter architecture #65](https://github.com/prabothcharith/accessibility-react/issues/65) — Design an explicit host-translation provider boundary with consent, origin/privacy documentation, sanitization and cross-origin limitations.
 
 ### M5 — Launch readiness and package hardening
 
@@ -321,8 +321,8 @@ These are not automatically stable release features:
 5. **A11Y-405, issue #61:** development-only diagnostics and test harness.
 6. **A11Y-406, issue #62:** privacy-safe opt-in event callbacks.
 7. **A11Y-407, issue #63:** measured smart-contrast research prototype.
-8. **A11Y-408, issue #64:** voice-navigation research prototype.
-9. **A11Y-409, issue #65:** host-content translation adapter architecture.
+8. **A11Y-408, issue #64:** voice-navigation research prototype (Completed).
+9. **A11Y-409, issue #65:** host-content translation adapter architecture (Completed).
 
 Each browser-dependent or privacy-sensitive feature requires an explicit
 support matrix, security/privacy review, stop/disable behavior, a safe
