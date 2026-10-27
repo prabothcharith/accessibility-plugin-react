@@ -36,7 +36,7 @@ export default function Fixture() {
     [lastEvent, setLastEvent] = useState(null);
   return (
     <>
-      <main id="host" className={dark ? "dark" : ""}>
+      <main id="host" tabIndex={-1} className={dark ? "dark" : ""}>
         <h1>Accessibility preferences</h1>
         <p id="sample">
           A paragraph with a <a href="#destination">useful link</a>.
