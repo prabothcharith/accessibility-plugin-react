@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.14.0 — 2026-10-27
+
+- Implement page headings and landmarks navigator (closes #51).
+- Introduce `PageNavigatorController`, `HeadingsNavigatorController`, and `PageStructureController` to explore, search, and jump to semantic headings (`h1`–`h6`) and named landmarks (`banner`, `navigation`, `main`, `region`, `complementary`, `contentinfo`, `search`, `form`) across the page.
+- Truthful page scanning:
+  - Scans genuine document headings in DOM document order and computes structural depth levels.
+  - Scans genuine top-level semantic HTML landmarks (`<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>`, `<section aria-labelledby/label>`, `<form aria-labelledby/label>`) and ARIA landmark roles (`role="banner"`, `role="navigation"`, etc.).
+  - Correctly ignores scoped `<header>` and `<footer>` elements inside `<article>`, `<aside>`, `<main>`, `<nav>`, or `<section>` per HTML-AAM specifications.
+  - Strictly ignores unnamed generic `<section>` and `<form>` elements and widget internals marked with `[data-arap-ui]`.
+  - Truthfully reports empty states when pages contain no headings or landmarks instead of fabricating synthetic hierarchy.
+- Safe keyboard focus & scroll navigation:
+  - Automatically scrolls target into view with `block: 'start'` and respects `prefers-reduced-motion` (`behavior: 'smooth'` or `'auto'`).
+  - Sets a temporary `tabindex="-1"` on non-focusable elements and installs a one-time `blur` listener that cleans up the temporary attribute immediately upon focus transfer, ensuring host document tab sequences are never permanently altered.
+- Dynamic SPA route change observation without loops:
+  - Employs `MutationObserver` debounced via `requestAnimationFrame` to detect DOM additions, removals, and attribute mutations.
+  - Filters out mutations occurring inside `[data-arap-ui]` to guarantee zero feedback loops while the navigator dialog is open and interactive.
+- Accessible modal dialog & tabbed navigation:
+  - Headings and Landmarks tab interface with Left/Right arrow key navigation, `aria-selected`, and `role="tabpanel"`.
+  - Accessible search filtering (`aria-label="Filter headings and landmarks"`) with live status announcements.
+  - Native dismiss button and `Escape` key shortcut support.
+- Export `scanHeadings`, `scanLandmarks`, `navigateToElement`, and `subscribePageStructure` utilities alongside `HeadingItem`, `LandmarkItem`, and `PageNavigatorControllerProps` types.
+- Add comprehensive documentation in `docs/PAGE_NAVIGATOR.md`.
+- Add unit test suite in `tests/pageNavigator.test.tsx` and automated browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.13.0 — 2026-10-27
 
 - Implement accessible tooltips from authored descriptions (closes #50).

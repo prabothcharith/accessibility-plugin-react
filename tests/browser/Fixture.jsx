@@ -107,6 +107,7 @@ export default function Fixture() {
             <A.ReadingMaskController />
             <A.ReadingGuideController />
             <A.TooltipsController />
+            <A.PageNavigatorController />
             <Custom />
             <A.ResetController />
           </A.AccessibilityList>

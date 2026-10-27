@@ -130,6 +130,23 @@ const drawings: Record<string, ReactNode> = {
       <path d="M8 9h8M8 13h5" />
     </>
   ),
+  pageNavigator: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <polygon points="12 3 15.5 10.5 12 9 8.5 10.5 12 3" fill="currentColor" />
+      <polygon points="12 21 8.5 13.5 12 15 15.5 13.5 12 21" />
+    </>
+  ),
+  headings: (
+    <>
+      <path d="M4 6v12M14 6v12M4 12h10M18 10h3M18 14h3M18 18h3" />
+    </>
+  ),
+  landmarks: (
+    <>
+      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7" />
+    </>
+  ),
   reset: (
     <>
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
