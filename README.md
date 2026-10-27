@@ -113,6 +113,7 @@ site, and choose their order in JSX.
 | `ProfilesController` / `ProfileController`                | Previews, applies, and reverts eight neutral presets (Motor, Blind, Color Blind, Dyslexia, etc.) with deterministic overrides.          |
 | `PresetsController` / `CustomPresetsController`           | Saves named custom presets and handles versioned JSON import/export with privacy exclusions.                                            |
 | `ReadAloudController`                                     | User-initiated native text-to-speech with play/pause/resume/stop, voice selection, rate/pitch steppers, and sensitive field protection. |
+| `DictionaryController`                                    | Accessible terminology dictionary dialog with 100% offline local glossaries (en, si, ta), sanitization, and focus restoration.         |
 | `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                                       |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,
@@ -133,6 +134,7 @@ Build custom accessible panels or custom features with modular primitives that i
 - **`ReadingModeController`**: Non-destructive article content reader with Light/Sepia/Dark themes, font scaling, and zero external transmission.
 - **`KeyboardShortcutsController`**: Discoverable keyboard shortcut cheat sheet, collision-checked remapping, protected browser commands (e.g. Ctrl+U), form typing protection, and full Link Explorer.
 - **`ReadAloudController`**: User-initiated native text-to-speech (TTS) with play, pause, resume, and stop controls, voice dropdown, rate and pitch steppers, persistent floating player bar, and sensitive field exclusion.
+- **`DictionaryController`**: Accessible terminology dictionary lookup with local offline glossaries in English, Sinhala, and Tamil, sensitive data rejection, and truthful non-hallucinating responses.
 
 ## Custom features
 

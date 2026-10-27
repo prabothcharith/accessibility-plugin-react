@@ -149,7 +149,24 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   forcedColorsActiveWarning:
     "இயக்க முறைமையின் உயர் மாறுபாடு பயன்முறை செயலில் உள்ளது. கணினி மாறுபாட்டைப் பாதுகாக்க வடிகட்டி விளைவுகள் தவிர்க்கப்படுகின்றன.",
   shortcutGrayscale: "சாம்பல் நிறம்",
-  shortcutGrayscaleDesc: "சாம்பல் நிற காட்சி பயன்முறையை மாற்றவும்",
+  // Dictionary
+  dictionaryTitle: "அகராதி",
+  dictionaryDescription: "சொல் விளக்கங்கள் மற்றும் அணுகல்தன்மை சொற்களஞ்சியத்தைத் தேடுங்கள்",
+  dictionarySearchPlaceholder: "விளக்கம் தேட ஒரு சொல்லைத் தட்டச்சு செய்க...",
+  dictionaryLookupButton: "தேடு",
+  dictionaryClearButton: "சொல்லை அழி",
+  dictionaryCloseDialog: "அகராதியை மூடு",
+  dictionaryStatusSearching: "தேடப்படுகிறது...",
+  dictionaryStatusFound: (word: string) => `"${word}" என்பதற்கான விளக்கம் கண்டறியப்பட்டது.`,
+  dictionaryStatusNotFound: (word: string) =>
+    `"${word}" என்பதற்கான விளக்கம் கிடைக்கவில்லை. எழுத்துப் பிழையைச் சரிபார்க்கவும் அல்லது பரிந்துரையைத் தேர்ந்தெடுக்கவும்.`,
+  dictionarySuggestionsTitle: "நீங்கள் தேடியது இதையா:",
+  dictionarySourceLocal: "உள்ளமைக்கப்பட்ட சொற்களஞ்சியம்",
+  dictionarySourceProvider: "கட்டமைக்கப்பட்ட வழங்குநர்",
+  dictionaryPartOfSpeech: "சொல் வகை",
+  dictionaryExampleLabel: "உதாரணம்",
+  shortcutDictionary: "அகராதி",
+  shortcutDictionaryDesc: "அணுகல்தன்மை அகராதி தேடலைத் திறக்கவும்",
 
   features: {
     textScale: "பெரிய உரை",
@@ -172,5 +189,6 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
     readAloud: "சத்தமாகப் படியுங்கள்",
     saturation: "நிறச்செறிவூட்டல்",
     grayscale: "சாம்பல் நிறம்",
+    dictionary: "அகராதி",
   },
 });

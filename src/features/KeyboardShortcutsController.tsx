@@ -187,6 +187,11 @@ export function KeyboardShortcutsController({
             context?.resetAll();
           } else if (item.id === "shortcutsHelp") {
             handleOpen();
+          } else if (item.id === "dictionary") {
+            const dictBtn = document.querySelector<HTMLButtonElement>(
+              'button[data-arap-feature="dictionary"]',
+            );
+            dictBtn?.click();
           } else if (item.id === "skipToMain") {
             const main = document.querySelector<HTMLElement>(
               "main, [role='main']",

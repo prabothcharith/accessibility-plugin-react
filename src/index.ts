@@ -221,6 +221,21 @@ export {
   type ReadAloudControllerProps,
 } from "./features/ReadAloudController";
 export {
+  DictionaryController,
+  type DictionaryControllerProps,
+} from "./features/DictionaryController";
+export {
+  type DictionaryEntry,
+  type DictionaryLookupResult,
+  type DictionaryProvider,
+  sanitizeLookupTerm,
+  lookupLocalDictionary,
+  lookupWord,
+  LOCAL_DICTIONARY_EN,
+  LOCAL_DICTIONARY_SI,
+  LOCAL_DICTIONARY_TA,
+} from "./core/dictionary";
+export {
   isSpeechSynthesisSupported,
   getSpeechVoices,
   subscribeSpeechVoices,

@@ -1503,3 +1503,58 @@ test("A11Y-402: Saturation and grayscale modes with chart/image advisory warning
     .toBe("none");
   await expect(page.locator(".arap-notice-warning")).not.toBeVisible();
 });
+
+test("accessible dictionary looks up local terms without network and restores focus after close", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Track any outgoing network requests
+  const networkRequests: string[] = [];
+  page.on("request", (req) => {
+    networkRequests.push(req.url());
+  });
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  const dictTrigger = page.locator('button[data-arap-feature="dictionary"]');
+  await expect(dictTrigger).toBeVisible();
+
+  // Open dictionary modal
+  await dictTrigger.click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+
+  // Search input is focused
+  const searchInput = page.getByRole("searchbox");
+  await expect(searchInput).toBeFocused();
+
+  // Look up "accessibility"
+  await searchInput.fill("accessibility");
+  await dialog.getByRole("button", { name: "Look up", exact: true }).click();
+
+  // Definition is displayed
+  await expect(dialog.getByRole("heading", { level: 3, name: "accessibility" })).toBeVisible();
+  await expect(dialog.getByText("Built-in Glossary")).toBeVisible();
+  await expect(dialog.getByText("The practice of designing software")).toBeVisible();
+
+  // Verify ZERO network requests were triggered during lookup
+  const dictNetworkRequests = networkRequests.filter((url) => !url.includes("7311") && !url.includes("vite"));
+  expect(dictNetworkRequests.length).toBe(0);
+
+  // Close dialog using Escape key
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+
+  // Acceptance requirement: focus returns to the trigger button after close
+  await expect(dictTrigger).toBeFocused();
+
+  // Open again and close using Close button
+  await dictTrigger.click();
+  await expect(dialog).toBeVisible();
+  const closeBtn = dialog.getByRole("button", { name: "Close dictionary" });
+  await closeBtn.click();
+  await expect(dialog).not.toBeVisible();
+  await expect(dictTrigger).toBeFocused();
+});
+

@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.22.0 — 2026-10-27
+
+- Implement accessible terminology dictionary and provider interface with 100% offline local static glossaries, sanitization policy, and focus restoration (closes #59).
+- Introduce `DictionaryController` (`src/features/DictionaryController.tsx`) and `src/core/dictionary.ts`:
+  - Explicit user action lookup: lookups only run upon deliberate user action (form submission or clicking "Look up"); never auto-queries on hover, focus, text selection, or route change.
+  - Zero network transmission by default: 100% offline static glossaries in English, Sinhala, and Tamil; `fetch()` and network requests are never called when provider is off.
+  - Strict input sanitization & privacy: strips HTML and control characters, caps search terms to 50 characters, preserves Unicode combining marks (`\p{M}`) for Indic scripts (Sinhala, Tamil), and rejects sensitive/private patterns (emails, credit cards, bearer/auth tokens, API keys, URLs).
+  - Truthful unknown results: never hallucinates or fabricates definitions for unknown words; returns `found: false` with honest messaging and clickable suggestions.
+  - Accessible modal dialog: `role="dialog"`, `aria-modal="true"`, focus trapping (`Tab` / `Shift+Tab`), search input autofocus, and `Escape` dismissal.
+  - Focus restoration guarantee: closing the dialog via `Escape` key or `Close dictionary` button returns keyboard focus back to the triggering button.
+  - Pluggable `DictionaryProvider` interface: supports custom remote backends with rate limiting (minimum 400ms interval) and automatic fallback to local dictionary on network error.
+  - Keyboard shortcut: registered `Alt+D` (`dictionary`) in `DEFAULT_SHORTCUTS` with collision checking and form field protection.
+  - Review-approved localizations: full English (`en`), Sinhala (`si`, `si-LK`), and Tamil (`ta`, `ta-LK`) strings for dictionary UI, statuses, and native glossary entries.
+  - Scoped styling: Clean light modal dialog, search input, clear button, definition card, part-of-speech badge, and suggestion chips meeting >=44px by 44px touch target guidelines with forced-colors and reduced-motion support.
+- Export `DictionaryController`, `DictionaryControllerProps`, `DictionaryEntry`, `DictionaryLookupResult`, `DictionaryProvider`, `sanitizeLookupTerm`, `lookupLocalDictionary`, `lookupWord`, `LOCAL_DICTIONARY_EN`, `LOCAL_DICTIONARY_SI`, and `LOCAL_DICTIONARY_TA` in `src/index.ts`.
+- Add documentation in `docs/DICTIONARY.md`, update `docs/FEATURES.md`, `docs/API.md`, `README.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add 24 unit and integration tests in `tests/dictionary.test.ts` and `tests/dictionaryWidget.test.tsx`, plus Playwright browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.21.0 — 2026-10-27
 
 - Implement opt-in saturation and grayscale modes with chart/image advisory warnings, forced-colors protection, and instant reset across Chromium, Firefox, and WebKit (closes #58).
