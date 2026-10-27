@@ -145,6 +145,25 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   shortcutGrayscaleDesc:
     "ඒකවර්ණ අළු පරිමාණ දර්ශන මාදිලිය සක්‍රිය හෝ අක්‍රිය කරන්න",
 
+  // Dictionary lookup
+  dictionaryTitle: "ශබ්දකෝෂය",
+  dictionaryDescription: "අර්ථ දැක්වීම් සහ ප්‍රවේශ්‍යතා පාරිභාෂික වචන සොයන්න",
+  dictionarySearchPlaceholder: "සෙවීමට වචනයක් ඇතුළත් කරන්න...",
+  dictionaryLookupButton: "සොයන්න",
+  dictionaryClearButton: "වචනය ඉවත් කරන්න",
+  dictionaryCloseDialog: "ශබ්දකෝෂය වසන්න",
+  dictionaryStatusSearching: "සොයමින් පවතී...",
+  dictionaryStatusFound: (word: string) => `"${word}" සඳහා අර්ථ දැක්වීම හමු විය.`,
+  dictionaryStatusNotFound: (word: string) =>
+    `"${word}" සඳහා අර්ථ දැක්වීමක් හමු නොවීය. අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න හෝ පහත යෝජනාවක් උත්සාහ කරන්න.`,
+  dictionarySuggestionsTitle: "ඔබ අදහස් කළේ මෙයද:",
+  dictionarySourceLocal: "පද්ධතියේ පාරිභාෂික ශබ්දකෝෂය",
+  dictionarySourceProvider: "වින්‍යාසගත සේවාව",
+  dictionaryPartOfSpeech: "ව්‍යාකරණ කාණ්ඩය",
+  dictionaryExampleLabel: "උදාහරණය",
+  shortcutDictionary: "ශබ්දකෝෂය",
+  shortcutDictionaryDesc: "ප්‍රවේශ්‍යතා පාරිභාෂික ශබ්දකෝෂ සෙවුම විවෘත කරන්න",
+
   features: {
     textScale: "විශාල අකුරු",
     lineHeight: "පේළි පරතරය",
@@ -166,5 +185,6 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
     readAloud: "හඬ නගා කියවන්න",
     saturation: "සන්තෘප්තිය",
     grayscale: "අළු පරිමාණය",
+    dictionary: "ශබ්දකෝෂය",
   },
 });

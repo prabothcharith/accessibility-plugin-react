@@ -93,6 +93,14 @@ export const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
     allowRemap: true,
   },
   {
+    id: "dictionary",
+    category: "reading",
+    labelKey: "shortcutDictionary",
+    descriptionKey: "shortcutDictionaryDesc",
+    defaultKey: "Alt+D",
+    allowRemap: true,
+  },
+  {
     id: "shortcutsHelp",
     category: "tools",
     labelKey: "shortcutHelp",

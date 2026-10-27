@@ -314,9 +314,9 @@ translation.
 Work through [M4 #26](https://github.com/prabothcharith/accessibility-react/issues/26).
 These are not automatically stable release features:
 
-1. **A11Y-401, issue #57:** read-aloud TTS.
-2. **A11Y-402, issue #58:** saturation and grayscale.
-3. **A11Y-403, issue #59:** dictionary interface and local fallback.
+1. **A11Y-401, issue #57:** read-aloud TTS (Completed).
+2. **A11Y-402, issue #58:** saturation and grayscale (Completed).
+3. **A11Y-403, issue #59:** dictionary interface and local fallback (Completed).
 4. **A11Y-404, issue #60:** per-site feature menu customization.
 5. **A11Y-405, issue #61:** development-only diagnostics and test harness.
 6. **A11Y-406, issue #62:** privacy-safe opt-in event callbacks.

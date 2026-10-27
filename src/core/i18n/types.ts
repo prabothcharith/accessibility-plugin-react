@@ -18,6 +18,7 @@ export interface FeatureLocaleLabels {
   readAloud?: string;
   saturation?: string;
   grayscale?: string;
+  dictionary?: string;
   [key: string]: string | undefined;
 }
 
@@ -151,6 +152,24 @@ export interface LocaleStrings {
   forcedColorsActiveWarning?: string;
   shortcutGrayscale?: string;
   shortcutGrayscaleDesc?: string;
+
+  // Dictionary lookup
+  dictionaryTitle?: string;
+  dictionaryDescription?: string;
+  dictionarySearchPlaceholder?: string;
+  dictionaryLookupButton?: string;
+  dictionaryClearButton?: string;
+  dictionaryCloseDialog?: string;
+  dictionaryStatusSearching?: string;
+  dictionaryStatusFound?: (word: string) => string;
+  dictionaryStatusNotFound?: (word: string) => string;
+  dictionarySuggestionsTitle?: string;
+  dictionarySourceLocal?: string;
+  dictionarySourceProvider?: string;
+  dictionaryPartOfSpeech?: string;
+  dictionaryExampleLabel?: string;
+  shortcutDictionary?: string;
+  shortcutDictionaryDesc?: string;
 
   // Feature names
   features?: FeatureLocaleLabels;
