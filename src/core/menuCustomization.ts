@@ -43,6 +43,7 @@ export const KNOWN_FEATURE_IDS = [
   "readAloud",
   "dictionary",
   "voiceNavigation",
+  "translation",
   "reset",
 ] as const;
 
@@ -225,6 +226,8 @@ export const DEFAULT_FEATURE_GROUP_MAP: Record<string, string> = {
   readingMode: "reading",
   readAloud: "reading",
   dictionary: "reading",
+  voiceNavigation: "reading",
+  translation: "reading",
 
   reduceMotion: "media",
   hideImages: "media",

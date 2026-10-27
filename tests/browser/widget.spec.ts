@@ -1719,3 +1719,56 @@ test("voice navigation research prototype renders with prototype badge, commands
     group.getByRole("region", { name: "Supported voice commands" }),
   ).toBeVisible();
 });
+
+test("host-content translation adapter architecture renders with consent prompt, translation, and restoration (A11Y-409)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Locate Translation controller
+  const ctrl = page.getByTestId("translation-controller");
+  await expect(ctrl).toBeVisible();
+
+  // Verify prototype pill and disclaimer notice
+  await expect(ctrl.getByText("Prototype", { exact: true })).toBeVisible();
+  await expect(
+    ctrl.getByText(/Host content translation is machine-assisted/i),
+  ).toBeVisible();
+
+  // Review & Grant Consent
+  const consentOpenBtn = ctrl.getByRole("button", {
+    name: "Review & Grant Consent",
+  });
+  await expect(consentOpenBtn).toBeVisible();
+  await consentOpenBtn.click();
+
+  // Grant Consent
+  const grantBtn = ctrl.getByRole("button", {
+    name: "Grant Consent",
+    exact: true,
+  });
+  await expect(grantBtn).toBeVisible();
+  await grantBtn.click();
+
+  // Verify active controls are now visible
+  const translateBtn = ctrl.getByRole("button", { name: "Translate Page" });
+  await expect(translateBtn).toBeVisible();
+
+  // Trigger translation
+  await translateBtn.click();
+
+  // Sample paragraph should contain translated text from local mock adapter
+  const sample = page.locator("#sample");
+  await expect(sample).toContainText("[TR]");
+
+  // Restore original
+  const restoreBtn = ctrl.getByRole("button", { name: "Restore Original" });
+  await expect(restoreBtn).toBeVisible();
+  await restoreBtn.click();
+
+  // Sample paragraph should no longer contain [TR]
+  await expect(sample).not.toContainText("[TR]");
+});

@@ -142,6 +142,7 @@ for (const key of [
   "shortcutsEnabled",
   "readAloud",
   "voiceNavigation",
+  "translation",
 ]) {
   builtins[key] = {
     defaultValue: false,
