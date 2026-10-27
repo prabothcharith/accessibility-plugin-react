@@ -148,7 +148,31 @@ export function AccessibilityPlugin({
       ),
     [definitions, getFeatureState],
   );
-  useBuiltinEffects(active);
+
+  const handleDisable = useCallback(
+    (key: string) => {
+      setFeatureState(key, builtins[key]?.defaultValue ?? false);
+    },
+    [setFeatureState],
+  );
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const custom = event as CustomEvent<string>;
+      if (
+        custom.detail &&
+        (custom.detail in builtins ||
+          custom.detail === "readingMask" ||
+          custom.detail === "readingGuide")
+      ) {
+        handleDisable(custom.detail);
+      }
+    };
+    document.addEventListener("arap:disable-feature", handler);
+    return () => document.removeEventListener("arap:disable-feature", handler);
+  }, [handleDisable]);
+
+  useBuiltinEffects(active, handleDisable);
   const value = useMemo(
     () => ({
       state: { isOpen, features },
