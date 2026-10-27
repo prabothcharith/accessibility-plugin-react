@@ -40,7 +40,6 @@ export function KeyboardShortcutsController({
   const strings = resolveLocaleStrings(context?.locale);
   const stringMap = strings as unknown as Record<string, string | undefined>;
 
-
   const { value: shortcutsEnabled, setValue: setShortcutsEnabled } =
     useAccessibility<boolean>("shortcutsEnabled", false);
 

@@ -1,10 +1,9 @@
-# Project status — 2026-10-20
+# Project status — 2026-10-27
 
-**Version 2 is published; human accessibility acceptance remains pending.** The
-tested archive from `1d4ab1c` is published as `accessibility-plugin-react@2.0.0`
-and documentation patch `2.0.1` is published under `latest`. The repository now
-prepares `2.0.2` as a patch release with automatic stylesheet injection and automated
-npm release workflows.
+**Version 2.22.0 is published on npm, GitHub Releases, and GitHub Packages.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.22.0
+are implemented, tested, and published under `latest`. The repository currently
+prepares `2.23.0` for per-site feature-menu customization (Issue #60).
 
 ## Status categories
 
@@ -103,3 +102,16 @@ The owner requested 2.0.0 without beta on 2026-10-13. Package/lock version and p
 The owner authorized merging PR #17 and PR #18 and dispatching publication. Main commit `1d4ab1c` contains package version 2.0.0, ISC and latest publishConfig. [Pre-merge final validation](https://github.com/prabothcharith/accessibility-react/actions/runs/38359055736) passed all jobs. After the trusted-publisher connection was saved, the failed publish job in [Action 38359604307](https://github.com/prabothcharith/accessibility-react/actions/runs/38359604307) was rerun on 2026-10-16. npm accepted the checksum-verified archive through OIDC.
 
 The action's immediate registry check raced npm's publish-time malware scan and therefore remained red even though upload succeeded. After the scan completed, registry metadata reported 2.0.0/latest with ISC and integrity `sha512-CQFzF0pNl/bb+YVauI35+GNK2PIgk4qoh8+PnEkj1HAeW2lLMM/LTV5fq0tigNRnmPVX0M7rpYR4XPo820CQWw==`. Clean public-registry React18, React19/Tailwind and Next16 consumers passed declarations, ESM/CJS, SSR and production builds. The registry-installed browser matrix passed 55 tests with five intentional Next-only skips across Chromium, Firefox, WebKit and mobile WebKit. Workflow follow-up adds propagation-aware verification; no Git release tag was created.
+
+## Milestone releases (v2.1.0 – v2.22.0)
+
+Subsequent minor releases expanded the library's capabilities while preserving stability, backward compatibility, and the zero-runtime-dependency architecture:
+
+1. **v2.3.0**: Modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), UI states (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), and automated multi-registry release workflow.
+2. **v2.4.0 – v2.9.0**: Enhanced typography controls (`TextScaleController`, `LineHeightController`, `LetterSpacingController`, `WordSpacingController`, `ParagraphSpacingController`) with reflow protection, script-aware safety (Arabic cursive and Sinhala/Tamil clamping), and stepwise enlargement.
+3. **v2.10.0 – v2.14.0**: Reading aids (`ReadingGuideController`, `ReadingMaskController`, `BigCursorController`), decorative image hiding (`HideDecorativeImagesController`), video suppression (`HideVideosController`), and motion reduction (`ReduceMotionController`).
+4. **v2.15.0 – v2.19.0**: Accessible tooltips (`TooltipsController`), DOM heading & landmark navigator (`PageNavigatorController`), profile presets (`ProfilesController`), custom preset backup & export (`PresetsController`), non-destructive reader mode (`ReadingModeController`), and keyboard shortcuts with link explorer (`KeyboardShortcutsController`).
+5. **v2.20.0 (Issue #57, PR #134)**: User-initiated read-aloud TTS via Web Speech API with sentence-level chunking, pause/resume/stop, voice dropdown, rate and pitch steppers, floating player bar, sensitive field exclusions, and zero network transmission.
+6. **v2.21.0 (Issue #58, PR #136)**: Opt-in saturation and grayscale modes with chart/image advisory warnings, Windows forced-colors protection, and instant non-destructive reset.
+7. **v2.22.0 (Issue #59, PR #138)**: Accessible terminology dictionary dialog with 100% offline local static glossaries (`en`, `si`, `ta`), zero network calls by default, truthful responses, strict input sanitization, and focus restoration.
+8. **v2.23.0 (Issue #60, in progress)**: Per-site feature-menu customization and reordering (`MenuCustomizationConfig`, `FeatureMenu`) with safe diagnostics and stable rerenders.

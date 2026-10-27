@@ -4,7 +4,7 @@ Composable React controls for display preferences and reading assistance. Choose
 the controls in JSX, keep the widget outside your application layout, and let
 the provider own state, persistence, effects, focus behavior, and cleanup.
 
-The `2.3.0` minor release introduces modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), state UI (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), locale and oversized control modes (`largeControls`), and automated releases across npm, GitHub Releases, and GitHub Packages.
+The library features modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), state UI (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), locale packs (English, Sinhala, Tamil), offline dictionary lookup, native speech read-aloud TTS, opt-in saturation/grayscale with advisory warnings, reading mode, keyboard shortcuts, per-site feature-menu customization, and automated releases across npm, GitHub Releases, and GitHub Packages.
 It supports React 18.3.1 and React 19.x, ships ESM, CommonJS, TypeScript declarations,
 and scoped plain CSS, and has no runtime dependency other than React and React DOM.
 
@@ -113,7 +113,7 @@ site, and choose their order in JSX.
 | `ProfilesController` / `ProfileController`                | Previews, applies, and reverts eight neutral presets (Motor, Blind, Color Blind, Dyslexia, etc.) with deterministic overrides.          |
 | `PresetsController` / `CustomPresetsController`           | Saves named custom presets and handles versioned JSON import/export with privacy exclusions.                                            |
 | `ReadAloudController`                                     | User-initiated native text-to-speech with play/pause/resume/stop, voice selection, rate/pitch steppers, and sensitive field protection. |
-| `DictionaryController`                                    | Accessible terminology dictionary dialog with 100% offline local glossaries (en, si, ta), sanitization, and focus restoration.         |
+| `DictionaryController`                                    | Accessible terminology dictionary dialog with 100% offline local glossaries (en, si, ta), sanitization, and focus restoration.          |
 | `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                                       |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,
@@ -135,6 +135,7 @@ Build custom accessible panels or custom features with modular primitives that i
 - **`KeyboardShortcutsController`**: Discoverable keyboard shortcut cheat sheet, collision-checked remapping, protected browser commands (e.g. Ctrl+U), form typing protection, and full Link Explorer.
 - **`ReadAloudController`**: User-initiated native text-to-speech (TTS) with play, pause, resume, and stop controls, voice dropdown, rate and pitch steppers, persistent floating player bar, and sensitive field exclusion.
 - **`DictionaryController`**: Accessible terminology dictionary lookup with local offline glossaries in English, Sinhala, and Tamil, sensitive data rejection, and truthful non-hallucinating responses.
+- **`FeatureMenu`**: Declarative per-site feature menu reordering, grouping, custom labels, and non-crashing safe diagnostics with stable rerenders. See [docs/MENU_CUSTOMIZATION.md](docs/MENU_CUSTOMIZATION.md).
 
 ## Custom features
 

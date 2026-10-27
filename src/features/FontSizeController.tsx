@@ -11,6 +11,9 @@ const STEP = 10;
 const DEFAULT_STEP_SCALE = [100, 112.5, 125, 150, 200] as const;
 
 export interface FontSizeControllerProps {
+  /** Optional custom label or title */
+  label?: string;
+  title?: string;
   /**
    * Optional custom scale steps (percentages or factors, e.g. [100, 112.5, 125, 150, 200] or [1.0, 1.125, 1.25, 1.5, 2.0]).
    * If provided, the stepper snaps to the nearest configured step.
@@ -23,9 +26,12 @@ export interface FontSizeControllerProps {
 }
 
 export function FontSizeController({
+  label,
+  title,
   steps: customSteps,
   stepScale,
 }: FontSizeControllerProps = {}) {
+  const displayTitle = label ?? title ?? "Font Size";
   const { value, setValue } = useAccessibility<number>(
     FEATURE_KEY,
     DEFAULT_VALUE,
@@ -73,11 +79,11 @@ export function FontSizeController({
     <div
       className="arap-feature arap-feature-stepper"
       role="group"
-      aria-label="Font Size"
+      aria-label={displayTitle}
     >
       <span className="arap-label">
         <FeatureIcon name={FEATURE_KEY} />
-        <span>Font Size</span>
+        <span>{displayTitle}</span>
       </span>
       <div className="arap-controls">
         <button

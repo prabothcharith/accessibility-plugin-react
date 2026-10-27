@@ -1534,12 +1534,18 @@ test("accessible dictionary looks up local terms without network and restores fo
   await dialog.getByRole("button", { name: "Look up", exact: true }).click();
 
   // Definition is displayed
-  await expect(dialog.getByRole("heading", { level: 3, name: "accessibility" })).toBeVisible();
+  await expect(
+    dialog.getByRole("heading", { level: 3, name: "accessibility" }),
+  ).toBeVisible();
   await expect(dialog.getByText("Built-in Glossary")).toBeVisible();
-  await expect(dialog.getByText("The practice of designing software")).toBeVisible();
+  await expect(
+    dialog.getByText("The practice of designing software"),
+  ).toBeVisible();
 
   // Verify ZERO network requests were triggered during lookup
-  const dictNetworkRequests = networkRequests.filter((url) => !url.includes("7311") && !url.includes("vite"));
+  const dictNetworkRequests = networkRequests.filter(
+    (url) => !url.includes("7311") && !url.includes("vite"),
+  );
   expect(dictNetworkRequests.length).toBe(0);
 
   // Close dialog using Escape key
@@ -1558,3 +1564,35 @@ test("accessible dictionary looks up local terms without network and restores fo
   await expect(dictTrigger).toBeFocused();
 });
 
+test("per-site feature menu customization renders ordered custom groups and labels (A11Y-404)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Toggle custom menu config
+  await page.locator("#toggle-custom-menu").click();
+
+  // Open accessibility widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  const panel = page.getByRole("region");
+  await expect(panel).toBeVisible();
+
+  // Custom groups should be rendered with their headings
+  const textGroup = panel.getByRole("group", { name: "Custom Text Group" });
+  await expect(textGroup).toBeVisible();
+  await expect(textGroup.getByText("Custom Font Sizer")).toBeVisible();
+
+  const visualGroup = panel.getByRole("group", {
+    name: "Custom Visuals Group",
+  });
+  await expect(visualGroup).toBeVisible();
+  await expect(visualGroup.getByText("Custom Black & White")).toBeVisible();
+
+  // Verify non-configured features are omitted
+  await expect(panel.getByText("Line Height")).not.toBeVisible();
+  await expect(panel.getByText("Saturation")).not.toBeVisible();
+
+  // Close widget
+  await page.getByLabel("Close accessibility settings").click();
+  await expect(panel).not.toBeVisible();
+});

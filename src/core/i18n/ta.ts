@@ -151,13 +151,15 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   shortcutGrayscale: "சாம்பல் நிறம்",
   // Dictionary
   dictionaryTitle: "அகராதி",
-  dictionaryDescription: "சொல் விளக்கங்கள் மற்றும் அணுகல்தன்மை சொற்களஞ்சியத்தைத் தேடுங்கள்",
+  dictionaryDescription:
+    "சொல் விளக்கங்கள் மற்றும் அணுகல்தன்மை சொற்களஞ்சியத்தைத் தேடுங்கள்",
   dictionarySearchPlaceholder: "விளக்கம் தேட ஒரு சொல்லைத் தட்டச்சு செய்க...",
   dictionaryLookupButton: "தேடு",
   dictionaryClearButton: "சொல்லை அழி",
   dictionaryCloseDialog: "அகராதியை மூடு",
   dictionaryStatusSearching: "தேடப்படுகிறது...",
-  dictionaryStatusFound: (word: string) => `"${word}" என்பதற்கான விளக்கம் கண்டறியப்பட்டது.`,
+  dictionaryStatusFound: (word: string) =>
+    `"${word}" என்பதற்கான விளக்கம் கண்டறியப்பட்டது.`,
   dictionaryStatusNotFound: (word: string) =>
     `"${word}" என்பதற்கான விளக்கம் கிடைக்கவில்லை. எழுத்துப் பிழையைச் சரிபார்க்கவும் அல்லது பரிந்துரையைத் தேர்ந்தெடுக்கவும்.`,
   dictionarySuggestionsTitle: "நீங்கள் தேடியது இதையா:",

@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { screen, fireEvent, cleanup, waitFor, within } from "@testing-library/react";
+import {
+  screen,
+  fireEvent,
+  cleanup,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import * as A from "../src";
 import { renderFeatures } from "./helpers";
 
@@ -94,16 +100,22 @@ describe("A11Y-403: DictionaryController Component", () => {
     fireEvent.click(trigger);
     const dialog = screen.getByRole("dialog");
     const input = screen.getByRole("searchbox");
-    const submitBtn = within(dialog).getByRole("button", { name: /^look up$/i });
+    const submitBtn = within(dialog).getByRole("button", {
+      name: /^look up$/i,
+    });
 
     fireEvent.change(input, { target: { value: "accessibility" } });
     fireEvent.click(submitBtn);
 
     // Verify definition is displayed
     await waitFor(() => {
-      expect(screen.getByRole("heading", { level: 3, name: /accessibility/i })).toBeDefined();
+      expect(
+        screen.getByRole("heading", { level: 3, name: /accessibility/i }),
+      ).toBeDefined();
       expect(screen.getByText(/Built-in Glossary/i)).toBeDefined();
-      expect(screen.getByText(/The practice of designing software/i)).toBeDefined();
+      expect(
+        screen.getByText(/The practice of designing software/i),
+      ).toBeDefined();
     });
 
     // Acceptance requirement: ZERO network requests when provider is off
@@ -126,15 +138,26 @@ describe("A11Y-403: DictionaryController Component", () => {
 
     await waitFor(() => {
       expect(within(dialog).getByRole("alert")).toBeDefined();
-      expect(within(dialog).getAllByText(/No definition found for "access"/i).length).toBeGreaterThan(0);
-      expect(within(dialog).getByRole("button", { name: "accessibility" })).toBeDefined();
+      expect(
+        within(dialog).getAllByText(/No definition found for "access"/i).length,
+      ).toBeGreaterThan(0);
+      expect(
+        within(dialog).getByRole("button", { name: "accessibility" }),
+      ).toBeDefined();
     });
 
     // Click suggestion chip
-    fireEvent.click(within(dialog).getByRole("button", { name: "accessibility" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "accessibility" }),
+    );
 
     await waitFor(() => {
-      expect(within(dialog).getByRole("heading", { level: 3, name: /accessibility/i })).toBeDefined();
+      expect(
+        within(dialog).getByRole("heading", {
+          level: 3,
+          name: /accessibility/i,
+        }),
+      ).toBeDefined();
     });
 
     expect(fetch).not.toHaveBeenCalled();
@@ -149,19 +172,25 @@ describe("A11Y-403: DictionaryController Component", () => {
     fireEvent.click(trigger);
     const dialog = screen.getByRole("dialog");
     const input = screen.getByRole("searchbox");
-    const submitBtn = within(dialog).getByRole("button", { name: /^look up$/i });
+    const submitBtn = within(dialog).getByRole("button", {
+      name: /^look up$/i,
+    });
 
     fireEvent.change(input, { target: { value: "focus" } });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(screen.getByRole("heading", { level: 3, name: /focus/i })).toBeDefined();
+      expect(
+        screen.getByRole("heading", { level: 3, name: /focus/i }),
+      ).toBeDefined();
     });
 
     const clearBtn = screen.getByRole("button", { name: /clear word/i });
     fireEvent.click(clearBtn);
 
     expect((input as HTMLInputElement).value).toBe("");
-    expect(screen.queryByRole("heading", { level: 3, name: /focus/i })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { level: 3, name: /focus/i }),
+    ).toBeNull();
   });
 });

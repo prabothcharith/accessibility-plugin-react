@@ -153,7 +153,8 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   dictionaryClearButton: "වචනය ඉවත් කරන්න",
   dictionaryCloseDialog: "ශබ්දකෝෂය වසන්න",
   dictionaryStatusSearching: "සොයමින් පවතී...",
-  dictionaryStatusFound: (word: string) => `"${word}" සඳහා අර්ථ දැක්වීම හමු විය.`,
+  dictionaryStatusFound: (word: string) =>
+    `"${word}" සඳහා අර්ථ දැක්වීම හමු විය.`,
   dictionaryStatusNotFound: (word: string) =>
     `"${word}" සඳහා අර්ථ දැක්වීමක් හමු නොවීය. අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න හෝ පහත යෝජනාවක් උත්සාහ කරන්න.`,
   dictionarySuggestionsTitle: "ඔබ අදහස් කළේ මෙයද:",

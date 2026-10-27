@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.23.0 — 2026-10-27
+
+- Implement declarative per-site feature-menu customization and reordering with safe diagnostics and stable rerenders (closes #60).
+- Introduce `FeatureMenu` (`src/features/FeatureMenu.tsx`) and `src/core/menuCustomization.ts`:
+  - Declarative menu configuration: configure enabled feature IDs, custom ordering, custom labels, custom descriptions, custom component overrides, and suggested defaults via `menuConfig`.
+  - Accessible grouped layout: supports visual categorizing into group sections with semantic `<section role="group" aria-labelledby="...">` and descriptive headings.
+  - Non-crashing diagnostic safety: invalid, malformed, null, or primitive configurations are validated without throwing runtime exceptions; produces structured `MenuValidationIssue[]` diagnostics and development `console.warn` notifications with safe default fallback.
+  - Unreachable accessibility action warnings: diagnoses and warns if `showReset === false`, or if close/reset/help actions become unreachable, ensuring end users can always restore baseline settings.
+  - Focus preservation & stable rerendering: memoizes normalized configuration based on deterministic signatures; assigns stable React keys (`key={item.id}`) preventing active input focus loss or control remounting during parent updates.
+  - Native integration with `AccessibilityList`: automatically renders `<FeatureMenu config={menuConfig} />` when `children` are omitted; respects `showPositionControls`, `showStatement`, and `showReset` toggles.
+  - Preserved canonical IDs: retains all 30 built-in canonical feature IDs mapped directly to their native controllers.
+  - Scoped styling: Clean light styles for `.arap-menu-customized`, `.arap-menu-grouped`, `.arap-menu-group`, `.arap-menu-group-heading`, and `.arap-menu-group-desc` with forced-colors support.
+- Export `FeatureMenu`, `FeatureMenuProps`, `validateMenuConfig`, `getMenuConfigSignature`, `KNOWN_FEATURE_IDS`, `DEFAULT_MENU_GROUPS`, `DEFAULT_FEATURE_GROUP_MAP`, and related types in `src/index.ts`.
+- Add documentation in `docs/MENU_CUSTOMIZATION.md`, update `docs/FEATURES.md`, `docs/API.md`, `README.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 20 unit and integration tests in `tests/menuCustomization.test.ts` and `tests/menuCustomizationWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.22.0 — 2026-10-27
 
 - Implement accessible terminology dictionary and provider interface with 100% offline local static glossaries, sanitization policy, and focus restoration (closes #59).
