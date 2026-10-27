@@ -108,6 +108,7 @@ site, and choose their order in JSX.
 | `BigCursorController`                                     | Applies a 40px high-contrast SVG pointer; capability-aware (requires `(pointer: fine)`).                                 |
 | `ReadingMaskController`                                   | Adjustable transparent reading window (40–400px, default 100px); pointer-transparent; follows pointer, touch, and focus. |
 | `ReadingGuideController`                                  | 4px pointer-transparent guide ruler; never blocks clicks/selection; follows pointer, touch, and focus.                   |
+| `TooltipsController` / `AccessibleTooltipsController`     | Accessible tooltips for authored descriptions (`aria-description`, `aria-describedby`, `alt`, etc.) with WCAG 1.4.13.    |
 | `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                        |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,

@@ -1500,6 +1500,383 @@ export function useBuiltinEffects(
     if (!values.readingGuide) return;
     return readingAid(false, 4, onDisable);
   }, [values.readingGuide, onDisable]);
+
+  useEffect(() => {
+    if (!values.tooltips && !values.accessibleTooltips) return;
+    return enableAccessibleTooltips();
+  }, [values.tooltips, values.accessibleTooltips]);
+}
+
+/**
+ * Sensitive field patterns that must NEVER disclose descriptions or values.
+ */
+const SENSITIVE_AUTOCOMPLETE_PATTERN =
+  /password|credit-card|cc-|card-|security-code|cvc|cvv|one-time-code/i;
+
+/**
+ * Extracts authored accessible description from an element.
+ * Respects author intent, protects private/sensitive fields, and avoids redundant tooltips.
+ */
+export function getAuthoredDescription(element: Element): string | null {
+  if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
+    return null;
+  }
+
+  // Never inspect internal accessibility plugin UI
+  if (element.closest("[data-arap-ui]")) {
+    return null;
+  }
+
+  // Skip non-rendered metadata tags
+  if (element.matches("script, style, link, meta, noscript, template")) {
+    return null;
+  }
+
+  // Privacy Protection: Never disclose sensitive fields
+  if (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement
+  ) {
+    if (element instanceof HTMLInputElement && element.type === "password") {
+      return null;
+    }
+    const ac = element.getAttribute("autocomplete");
+    if (ac && SENSITIVE_AUTOCOMPLETE_PATTERN.test(ac)) {
+      return null;
+    }
+  }
+  if (element.getAttribute("data-sensitive") === "true") {
+    return null;
+  }
+
+  // Hidden elements (aria-hidden or presentation role)
+  if (
+    element.getAttribute("aria-hidden") === "true" ||
+    element.getAttribute("role") === "presentation" ||
+    element.getAttribute("role") === "none"
+  ) {
+    return null;
+  }
+
+  // 1. Check aria-description (W3C ARIA 1.3)
+  const ariaDesc = element.getAttribute("aria-description")?.trim();
+
+  // 2. Check aria-describedby
+  let describedByText = "";
+  const describedBy = element.getAttribute("aria-describedby");
+  if (describedBy) {
+    const ids = describedBy.trim().split(/\s+/);
+    const parts: string[] = [];
+    for (const id of ids) {
+      const target = document.getElementById(id);
+      if (target) {
+        const text = target.textContent?.trim();
+        if (text) parts.push(text);
+      }
+    }
+    if (parts.length > 0) {
+      describedByText = parts.join(" ");
+    }
+  }
+
+  const explicitDesc = ariaDesc || describedByText || null;
+
+  // 3. Check aria-label
+  const ariaLabel = element.getAttribute("aria-label")?.trim() || null;
+
+  // Compute visible inner text of element (without child tooltips)
+  const visibleText = (element.textContent || "").trim();
+
+  // 4. Check alt attribute on img, area, input[type=image], svg
+  const alt =
+    element instanceof HTMLImageElement ||
+    element instanceof HTMLAreaElement ||
+    (element instanceof HTMLInputElement && element.type === "image")
+      ? element.getAttribute("alt")?.trim() || null
+      : null;
+
+  // 5. Check title attribute
+  const title = element.getAttribute("title")?.trim() || null;
+
+  // Composition logic:
+  // If explicit description exists:
+  if (explicitDesc) {
+    if (
+      ariaLabel &&
+      ariaLabel.toLowerCase() !== visibleText.toLowerCase() &&
+      ariaLabel.toLowerCase() !== explicitDesc.toLowerCase()
+    ) {
+      return `${ariaLabel} — ${explicitDesc}`;
+    }
+    if (explicitDesc.toLowerCase() !== visibleText.toLowerCase()) {
+      return explicitDesc;
+    }
+  }
+
+  // If aria-label exists and provides information not already visible in text:
+  if (ariaLabel && ariaLabel.toLowerCase() !== visibleText.toLowerCase()) {
+    return ariaLabel;
+  }
+
+  // If alt attribute exists and is non-empty (empty alt="" means decorative):
+  if (alt && alt !== "") {
+    return alt;
+  }
+
+  // If title attribute exists and differs from visible text:
+  if (title && title.toLowerCase() !== visibleText.toLowerCase()) {
+    return title;
+  }
+
+  return null;
+}
+
+export function positionTooltip(tooltip: HTMLElement, target: Element) {
+  const rect = target.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+  const tooltipWidth = tooltipRect.width || tooltip.offsetWidth || 180;
+  const tooltipHeight = tooltipRect.height || tooltip.offsetHeight || 32;
+  const gap = 8;
+  const vw =
+    (typeof window !== "undefined" && window.innerWidth) ||
+    document.documentElement.clientWidth ||
+    800;
+  const vh =
+    (typeof window !== "undefined" && window.innerHeight) ||
+    document.documentElement.clientHeight ||
+    600;
+
+  let placement: "top" | "bottom" = "top";
+  let top = rect.top - tooltipHeight - gap;
+
+  if (top < gap) {
+    top = rect.bottom + gap;
+    placement = "bottom";
+  }
+
+  if (top + tooltipHeight > vh - gap) {
+    top = Math.max(gap, vh - tooltipHeight - gap);
+  }
+
+  let left = rect.left + (rect.width - tooltipWidth) / 2;
+  left = Math.max(gap, Math.min(vw - tooltipWidth - gap, left));
+
+  tooltip.style.top = `${Math.round(top)}px`;
+  tooltip.style.left = `${Math.round(left)}px`;
+  tooltip.setAttribute("data-placement", placement);
+}
+
+export function enableAccessibleTooltips(): () => void {
+  if (typeof document === "undefined") return () => {};
+
+  let tooltipEl: HTMLDivElement | null = document.createElement("div");
+  tooltipEl.className = "arap-accessible-tooltip";
+  tooltipEl.setAttribute("role", "presentation");
+  tooltipEl.setAttribute("aria-hidden", "true");
+  tooltipEl.setAttribute("data-arap-ui", "true");
+  document.body.appendChild(tooltipEl);
+
+  let activeTarget: Element | null = null;
+  let dismissedTarget: Element | null = null;
+  let hideTimeout: ReturnType<typeof setTimeout> | null = null;
+  let isPointerOverTooltip = false;
+
+  function show(target: Element, text: string) {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
+    activeTarget = target;
+    if (!tooltipEl || !document.body.contains(tooltipEl)) {
+      tooltipEl = document.createElement("div");
+      tooltipEl.className = "arap-accessible-tooltip";
+      tooltipEl.setAttribute("role", "presentation");
+      tooltipEl.setAttribute("aria-hidden", "true");
+      tooltipEl.setAttribute("data-arap-ui", "true");
+      document.body.appendChild(tooltipEl);
+    }
+    tooltipEl.textContent = text;
+    tooltipEl.setAttribute("data-visible", "true");
+    positionTooltip(tooltipEl, target);
+  }
+
+  function hide(immediate = false) {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
+    const doHide = () => {
+      if (isPointerOverTooltip) return;
+      if (tooltipEl) {
+        tooltipEl.removeAttribute("data-visible");
+        tooltipEl.style.top = "-9999px";
+        tooltipEl.style.left = "-9999px";
+      }
+      activeTarget = null;
+    };
+    if (immediate) {
+      doHide();
+    } else {
+      hideTimeout = setTimeout(doHide, 100);
+    }
+  }
+
+  function findTargetWithDescription(
+    node: EventTarget | null,
+  ): { element: Element; text: string } | null {
+    if (!(node instanceof Element)) return null;
+    if (node.closest("[data-arap-ui]")) return null;
+    let curr: Element | null = node;
+    while (
+      curr &&
+      curr !== document.body &&
+      curr !== document.documentElement
+    ) {
+      const desc = getAuthoredDescription(curr);
+      if (desc) return { element: curr, text: desc };
+      curr = curr.parentElement;
+    }
+    return null;
+  }
+
+  const handlePointerOver = (event: MouseEvent | PointerEvent) => {
+    if (
+      tooltipEl &&
+      (event.target === tooltipEl || tooltipEl.contains(event.target as Node))
+    ) {
+      isPointerOverTooltip = true;
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+      return;
+    }
+
+    const match = findTargetWithDescription(event.target);
+    if (!match) {
+      if (activeTarget && !isPointerOverTooltip) {
+        hide();
+      }
+      return;
+    }
+
+    if (match.element === dismissedTarget) {
+      return;
+    }
+
+    if (match.element === activeTarget) {
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+      return;
+    }
+
+    show(match.element, match.text);
+  };
+
+  const handlePointerOut = (event: MouseEvent | PointerEvent) => {
+    if (dismissedTarget === event.target) {
+      dismissedTarget = null;
+    }
+
+    if (
+      tooltipEl &&
+      (event.target === tooltipEl || tooltipEl.contains(event.target as Node))
+    ) {
+      isPointerOverTooltip = false;
+      const related = event.relatedTarget as Node | null;
+      if (
+        activeTarget &&
+        (activeTarget === related || activeTarget.contains(related))
+      ) {
+        return;
+      }
+      hide();
+      return;
+    }
+
+    const match = findTargetWithDescription(event.target);
+    if (match && match.element === activeTarget) {
+      const related = event.relatedTarget as Node | null;
+      if (tooltipEl && (related === tooltipEl || tooltipEl.contains(related))) {
+        return;
+      }
+      hide();
+    }
+  };
+
+  const handleFocusIn = (event: FocusEvent) => {
+    const match = findTargetWithDescription(event.target);
+    if (!match) {
+      hide(true);
+      return;
+    }
+    if (match.element === dismissedTarget) {
+      return;
+    }
+    show(match.element, match.text);
+  };
+
+  const handleFocusOut = (event: FocusEvent) => {
+    if (dismissedTarget === event.target) {
+      dismissedTarget = null;
+    }
+    if (activeTarget && activeTarget === event.target) {
+      hide(true);
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && activeTarget) {
+      dismissedTarget = activeTarget;
+      hide(true);
+    }
+  };
+
+  const handleReposition = () => {
+    if (
+      activeTarget &&
+      tooltipEl &&
+      tooltipEl.getAttribute("data-visible") === "true"
+    ) {
+      if (!document.contains(activeTarget)) {
+        hide(true);
+        return;
+      }
+      positionTooltip(tooltipEl, activeTarget);
+    }
+  };
+
+  document.addEventListener("pointerover", handlePointerOver, {
+    passive: true,
+  });
+  document.addEventListener("mouseover", handlePointerOver, { passive: true });
+  document.addEventListener("pointerout", handlePointerOut, { passive: true });
+  document.addEventListener("mouseout", handlePointerOut, { passive: true });
+  document.addEventListener("focusin", handleFocusIn);
+  document.addEventListener("focusout", handleFocusOut);
+  document.addEventListener("keydown", handleKeyDown);
+  window.addEventListener("scroll", handleReposition, { passive: true });
+  window.addEventListener("resize", handleReposition, { passive: true });
+
+  return () => {
+    if (hideTimeout) clearTimeout(hideTimeout);
+    document.removeEventListener("pointerover", handlePointerOver);
+    document.removeEventListener("mouseover", handlePointerOver);
+    document.removeEventListener("pointerout", handlePointerOut);
+    document.removeEventListener("mouseout", handlePointerOut);
+    document.removeEventListener("focusin", handleFocusIn);
+    document.removeEventListener("focusout", handleFocusOut);
+    document.removeEventListener("keydown", handleKeyDown);
+    window.removeEventListener("scroll", handleReposition);
+    window.removeEventListener("resize", handleReposition);
+    if (tooltipEl) {
+      tooltipEl.remove();
+      tooltipEl = null;
+    }
+  };
 }
 
 export function CustomEffect({

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.13.0 — 2026-10-27
+
+- Implement accessible tooltips from authored descriptions (closes #50).
+- Introduce `TooltipsController` and `AccessibleTooltipsController` alias to toggle accessible tooltips on pointer hover and keyboard focus.
+- Extract authored descriptions only: supports `aria-description` (W3C ARIA 1.3), `aria-describedby` ID references, `aria-label` (on icon-only elements or when differing from visible text), `alt` text on images, and `title` attributes without ever inventing text or modifying host DOM attributes.
+- Privacy protection: strictly excludes password inputs (`type="password"`), sensitive autocomplete fields (`current-password`, `new-password`, `cc-number`, `cc-csc`, `one-time-code`), and elements marked with `data-sensitive="true"`.
+- Zero redundant AT announcements: marks visual tooltip overlay with `role="presentation"` and `aria-hidden="true"` to prevent double-announcement of accessible names and descriptions already spoken natively by screen readers.
+- Zero focus loss: tooltip overlay is non-focusable and never steals focus from the active host element.
+- Fully WCAG 2.1 SC 1.4.13 compliant (Content on Hover or Focus):
+  - **Dismissible**: `Escape` key immediately dismisses the active tooltip without moving pointer or keyboard focus.
+  - **Hoverable**: Pointer can move directly over the tooltip overlay itself without it closing.
+  - **Persistent**: Remains visible until pointer/focus leaves, user presses Escape, or element unmounts.
+- Viewport collision handling: horizontally clamped within viewport boundaries, automatically flips to bottom placement when top space is insufficient, and updates position smoothly on scroll and resize.
+- Export `getAuthoredDescription`, `positionTooltip`, and `enableAccessibleTooltips` utilities.
+- Add comprehensive documentation in `docs/TOOLTIPS.md`.
+- Add unit test suite in `tests/accessibleTooltips.test.tsx` and browser smoke verification in `tests/browser/widget.spec.ts`.
+
 ## 2.12.0 — 2026-10-27
 
 - Implement capability-aware cursor enlargement, pointer-transparent reading guide, and adjustable reading mask (closes #49).
