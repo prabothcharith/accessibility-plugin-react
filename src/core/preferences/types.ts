@@ -48,6 +48,12 @@ export interface ProfileDefinition {
   settings: Partial<AccessibilityPreferences>;
 }
 
+export interface ActiveProfileState {
+  profileId: ProfilePresetId;
+  baseSnapshot: Partial<AccessibilityPreferences>;
+  overrides: Partial<AccessibilityPreferences>;
+}
+
 export interface PreferencesState {
   /** Base preferences configured before any profile was selected. */
   base: AccessibilityPreferences;

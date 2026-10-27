@@ -159,6 +159,16 @@ builtins.readingMaskHeight = {
     v >= MIN_READING_MASK_HEIGHT &&
     v <= MAX_READING_MASK_HEIGHT,
 };
+
+builtins.activeProfile = {
+  defaultValue: null,
+  validate: (v: unknown) =>
+    v === null ||
+    (typeof v === "object" &&
+      v !== null &&
+      "profileId" in v &&
+      typeof (v as { profileId: unknown }).profileId === "string"),
+};
 export function validValue(
   key: string,
   value: unknown,

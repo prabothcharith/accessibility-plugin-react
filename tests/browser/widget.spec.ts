@@ -275,6 +275,55 @@ test("A11Y-303 page navigator: maps headings and landmarks, navigates safely and
   await expect(dialog).not.toBeVisible();
 });
 
+test("A11Y-304 accessibility profiles: previews eight suggestions, applies atomically, and preserves overrides on revert", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Open ProfilesController
+  const browseBtn = page.locator(
+    "button[aria-controls='arap-profiles-dialog']",
+  );
+  await browseBtn.click();
+  await expect(browseBtn).toHaveAttribute("aria-expanded", "true");
+
+  // Check that profiles are visible
+  await expect(page.getByText("Color Blind")).toBeVisible();
+  await expect(page.getByText("Dyslexia Friendly")).toBeVisible();
+
+  // Apply Color Blind profile
+  const applyColorBlind = page.getByRole("button", {
+    name: "Apply Color Blind profile",
+  });
+  await applyColorBlind.click();
+
+  // Verify active banner and contrast tokens applied to host
+  await expect(page.getByText(/Current Profile: Color Blind/i)).toBeVisible();
+  const host = page.locator("#host");
+  await expect(host).toHaveCSS("background-color", "rgb(0, 0, 0)");
+
+  // User independent override: change contrastMode to dark
+  const darkBtn = page
+    .getByRole("group", { name: "Contrast Mode" })
+    .getByRole("button", { name: /Dark/i });
+  await darkBtn.click();
+  await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
+
+  // Revert profile
+  const revertBtn = page.getByRole("button", {
+    name: "Revert Color Blind profile",
+  });
+  await revertBtn.click();
+
+  // Overridden contrast "dark" survives!
+  await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
+  await expect(
+    page.getByText(/Current Profile: Color Blind/i),
+  ).not.toBeVisible();
+});
+
 test("Next Pages Router and direct Server Component imports hydrate", async ({
   page,
 }, info) => {

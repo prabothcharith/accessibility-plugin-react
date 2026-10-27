@@ -48,12 +48,23 @@ export type { SupportedLocale } from "./core/i18n";
 export {
   DEFAULT_PREFERENCES,
   PROFILE_DEFINITIONS,
+  ALL_PROFILE_IDS,
   normalizePreferences,
   normalizePreferenceValue,
   resolveEffectivePreferences,
   preferencesReducer,
   createInitialPreferencesState,
 } from "./core/preferences";
+export {
+  getProfileDefinition,
+  mapProfileSettingsToFeatures,
+  mapFeaturesToProfileSettings,
+  applyProfileToStore,
+  revertProfileFromStore,
+  recordProfileOverride,
+  type ActiveProfileState,
+} from "./core/profiles";
+export { useProfiles, type UseProfilesResult } from "./core/useProfiles";
 
 // Prebuilt Features
 export {
@@ -173,6 +184,12 @@ export {
   type HeadingItem,
   type LandmarkItem,
 } from "./core/pageNavigator";
+export {
+  ProfilesController,
+  ProfileController,
+  AccessibilityProfilesController,
+  type ProfilesControllerProps,
+} from "./features/ProfilesController";
 export { ResetController } from "./features/ResetController";
 
 // Control Primitives & State UI

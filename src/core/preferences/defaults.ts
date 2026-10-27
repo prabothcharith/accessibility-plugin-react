@@ -24,6 +24,17 @@ export const DEFAULT_PREFERENCES: Readonly<AccessibilityPreferences> =
     tooltips: false,
   });
 
+export const ALL_PROFILE_IDS: readonly ProfilePresetId[] = [
+  "motor",
+  "blind",
+  "color-blind",
+  "dyslexia",
+  "low-vision",
+  "cognitive",
+  "seizure",
+  "adhd",
+] as const;
+
 export const PROFILE_DEFINITIONS: Record<ProfilePresetId, ProfileDefinition> = {
   motor: {
     id: "motor",

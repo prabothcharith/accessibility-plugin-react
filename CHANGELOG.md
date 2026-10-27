@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.15.0 — 2026-10-27
+
+- Implement eight accessibility profiles and deterministic override model (closes #52).
+- Introduce `ProfilesController`, `ProfileController`, and `AccessibilityProfilesController` to preview, apply, and revert eight neutral accessibility profile suggestions:
+  - **Motor Impaired** (`motor`): Enhanced focus rings (`highlightFocus`), richer tooltips (`tooltips`), and reduced motion (`reduceMotion`).
+  - **Blind & Screen Reader** (`blind`): Semantic assistance and accessible authored descriptions (`tooltips`) with zero speech synthesis or microphone prompts.
+  - **Color Blind** (`color-blind`): High contrast accents (`contrastMode: "high"`) and non-color-only link indicators (`highlightLinks`).
+  - **Dyslexia Friendly** (`dyslexia`): Legible typeface (`fontFamily: "dyslexia-option"`), reading guide line (`readerMode: "guide"`), and reduced motion (`reduceMotion`).
+  - **Low Vision** (`low-vision`): Enlarged text (`fontScale: 1.25`), large cursor pointer (`cursorSize: "large"`), and high-visibility focus (`highlightFocus`).
+  - **Cognitive & Learning** (`cognitive`): Mild text scaling (`fontScale: 1.125`), reading guide line (`readerMode: "guide"`), distraction reduction (`reduceMotion`), and tooltips (`tooltips`).
+  - **Seizure & Epileptic** (`seizure`): Pauses nonessential motion and reduces transition flashes (`reduceMotion: true`).
+  - **ADHD / Focus** (`adhd`): Reading mask spotlight (`readerMode: "mask"`) and reduced animation distraction (`reduceMotion: true`).
+- Deterministic override model & independent choice survival:
+  - Preserves baseline custom preferences in `baseSnapshot` when applying any profile.
+  - Transparently tracks explicit user adjustments made while a profile is active in `overrides`.
+  - When reverting to custom settings, untouched settings return to their pre-profile base values, while all explicit user adjustments survive intact.
+  - Supports direct atomic transitions between profiles.
+- Privacy & Safety Guardrails:
+  - Zero implicit audio, speech synthesis, or microphone activation.
+  - Neutral suggestions without medical efficacy claims.
+  - Never mutates native keyboard tab order or introduces modal traps.
+- Export `useProfiles()` hook, `ALL_PROFILE_IDS`, `mapProfileSettingsToFeatures`, `mapFeaturesToProfileSettings`, `applyProfileToStore`, `revertProfileFromStore`, `recordProfileOverride`, and `ActiveProfileState` types.
+- Add comprehensive documentation in `docs/PROFILES.md`.
+- Add unit test suite in `tests/profiles.test.tsx` and automated browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.14.0 — 2026-10-27
 
 - Implement page headings and landmarks navigator (closes #51).
