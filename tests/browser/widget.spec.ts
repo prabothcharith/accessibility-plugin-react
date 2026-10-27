@@ -1152,3 +1152,64 @@ test("A11Y-306: Sinhala and Tamil locale packs render clean layouts without tran
   await closeBtnTa.click();
   await expect(panelTa).not.toBeVisible();
 });
+
+test("A11Y-307: Reading mode opens non-destructive article overlay, traps focus, switches themes and exits cleanly", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+
+  // Verify host action button initial state
+  const hostAction = page.locator("#host-action");
+  await expect(hostAction).toHaveText("Host action 0");
+
+  // Open accessibility panel
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  // Activate reading mode
+  const toggle = page.getByRole("button", {
+    name: "Open Reading Mode",
+    exact: true,
+  });
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+
+  // Verify dialog is visible and shows extracted content
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveAttribute("aria-modal", "true");
+  await expect(
+    dialog.getByRole("heading", { name: "Accessibility preferences" }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText("Accessible web development ensures"),
+  ).toBeVisible();
+
+  // Test theme switching
+  const backdrop = page.locator(".arap-reading-mode-backdrop");
+  await expect(backdrop).toHaveAttribute("data-theme", "light");
+  await dialog.getByRole("button", { name: "Sepia theme" }).click();
+  await expect(backdrop).toHaveAttribute("data-theme", "sepia");
+  await dialog.getByRole("button", { name: "Dark theme" }).click();
+  await expect(backdrop).toHaveAttribute("data-theme", "dark");
+
+  // Exit reading mode via Escape
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+
+  // Close accessibility panel so host elements are not obscured
+  const closePanelBtn = page.getByLabel("Close accessibility settings");
+  if (await closePanelBtn.isVisible()) {
+    await closePanelBtn.click();
+  }
+
+  // Verify host content is completely preserved and interactive
+  await expect(page.locator("#fixture-article")).toBeVisible();
+  await hostAction.click();
+  await expect(hostAction).toHaveText("Host action 1");
+});

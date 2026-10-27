@@ -82,6 +82,19 @@ export default function Fixture() {
         <pre id="sample-pre">
           <code id="sample-code">const accessible = true;</code>
         </pre>
+        <article id="fixture-article">
+          <p id="fixture-article-p1">
+            Accessible web development ensures that digital applications and
+            services are inclusive, functional, and perceivable for everyone,
+            including people using screen readers, keyboard navigation, and
+            custom browser settings.
+          </p>
+          <p id="fixture-article-p2">
+            By designing with native HTML semantic elements, developers
+            eliminate artificial barriers and provide resilient multi-device
+            user experiences.
+          </p>
+        </article>
       </main>
       <div id="fixture-locale-wrapper">
         <label>
@@ -127,6 +140,7 @@ export default function Fixture() {
             <A.PageNavigatorController />
             <A.ProfilesController />
             <A.PresetsController />
+            <A.ReadingModeController />
             <Custom />
             <A.ResetController />
           </A.AccessibilityList>

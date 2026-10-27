@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.18.0 — 2026-10-27
+
+- Implement non-destructive reading mode proof of concept (closes #55).
+- Introduce `ReadingModeController` and `extractArticleContent`:
+  - Non-destructive article content extraction using in-memory candidate cloning without mutating, rewriting, or unmounting host React DOM elements.
+  - Automatically identifies substantive content from `<article>`, `[role="article"]`, `<main>`, `[itemprop="articleBody"]`, and text-dense content containers.
+  - Retains semantic structure: headings (`h1`–`h6`), paragraphs, clean links (`a[href]`), lists, blockquotes, code blocks, and images with `alt` text.
+  - Strictly filters out navigation headers, footers, sidebars, cookie banners, advertisements, dialogs, scripts, styles, and iframes.
+  - Sensitive field exclusion: strictly eliminates password inputs, credit card fields, tokens, and form controls to prevent private data leakage.
+  - Client-side confidentiality: 100% in-memory extraction with zero external network requests, third-party APIs, or telemetry.
+  - Honest fallback and error recovery: pages lacking readable articles communicate a polite status announcement without crashing or trapping keyboard focus.
+  - Accessible reading overlay dialog (`role="dialog"`, `aria-modal="true"`):
+    - Full keyboard trap and `Escape` key dismissal with focus restoration to the triggering control.
+    - Word count and estimated reading time calculation.
+    - Reader theme switcher: Light, Sepia (reduced blue light), and Dark modes.
+    - Reader text scaling: 90% to 160% zoom steppers (`A-` / `A+`).
+    - Full localization support in English, Sinhala (`කියවීමේ මාදිලිය`), and Tamil (`வாசிப்பு முறை`).
+- Register `readingMode` in `builtins` schema with versioned persistence and reset integration.
+- Export `ReadingModeController`, `ReadingModeControllerProps`, `extractArticleContent`, `findArticleCandidate`, `countWords`, `estimateReadingTime`, and `ArticleContent`.
+- Add documentation in `docs/READING_MODE.md`, updated `docs/FEATURES.md`, `docs/API.md`, `README.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add unit test suite in `tests/readingMode.test.ts`, integration tests in `tests/readingModeWidget.test.tsx`, and Playwright browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.17.0 — 2026-10-27
 
 - Implement reviewed Sinhala and Tamil locale packs with accessibility review (closes #54).
