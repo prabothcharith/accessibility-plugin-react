@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.25.0 — 2026-10-27
+
+- Implement optional privacy-safe feature event callbacks with reviewed payloads and data minimization (closes #62).
+- Introduce feature event definitions and sanitization (`src/core/events.ts`):
+  - Strictly opt-in and disabled by default: no events, telemetry, or network traffic emitted unless consumer explicitly passes `onFeatureEvent` to `<AccessibilityPlugin>`.
+  - Zero external network transmission: strictly local in-memory event dispatching inside the hosting application's React tree.
+  - Strict privacy protections: event payloads strictly exclude page text, user selections, form inputs, emails, credentials, user identifiers, cookies, device fingerprints, and Web Speech TTS audio recordings or transcripts.
+  - Reviewed event types: supports typed `feature-change`, `feature-reset`, `panel-toggle`, `placement-change`, `profile-apply`, and `preset-apply` with coarse categorical identifiers and numerical step levels.
+  - Frozen and sanitized payloads: `sanitizeFeatureEvent` validates all fields against an allowlist, strips extraneous properties, and deep-freezes (`Object.freeze`) payloads before dispatch.
+  - Consumer error boundary protection: `emitFeatureEvent` catches and silences exceptions thrown inside consumer event listeners to guarantee logging backends never interrupt plugin state updates or crash the application UI.
+- Export `sanitizeFeatureEvent`, `emitFeatureEvent`, `AccessibilityFeatureEvent`, `FeatureEventListener`, and related event types in `src/index.ts`.
+- Add documentation in `docs/PRIVACY_AND_EVENTS.md`, update `README.md`, `docs/FEATURES.md`, `docs/API.md`, `docs/BUILD_AND_RELEASE_PLAN.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 14 unit and integration tests in `tests/events.test.ts` and `tests/eventsWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.24.0 — 2026-10-27
 
 - Implement development-only integration diagnostics and test harness without private data or compliance claims (closes #61).

@@ -16,6 +16,7 @@ import { createPreferenceStore } from "./preferenceStore";
 import { builtins, validValue } from "./featureSchema";
 import { CustomEffect, useBuiltinEffects } from "./effects";
 import { type DiagnosticsConfig, runDiagnostics } from "./diagnostics";
+import { emitFeatureEvent } from "./events";
 import type { AccessibilityPluginProps, FeatureRegistration } from "./types";
 
 // Host-wide preferences have one owner. Fail explicitly rather than silently racing.
@@ -30,6 +31,7 @@ export function AccessibilityPlugin({
   statementUrl,
   largeControls,
   diagnostics,
+  onFeatureEvent,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [store] = useState(() =>
@@ -44,6 +46,11 @@ export function AccessibilityPlugin({
   const widgetPlacement = validPlacement(features[PLACEMENT_KEY])
     ? features[PLACEMENT_KEY]
     : null;
+  const onFeatureEventRef = useRef(onFeatureEvent);
+  useEffect(() => {
+    onFeatureEventRef.current = onFeatureEvent;
+  }, [onFeatureEvent]);
+
   const setWidgetPlacement = useCallback(
     (next: WidgetPlacement | null) => {
       if (next !== null && !validPlacement(next))
@@ -53,6 +60,12 @@ export function AccessibilityPlugin({
         if (next) copy[PLACEMENT_KEY] = next;
         else delete copy[PLACEMENT_KEY];
         return copy;
+      });
+      emitFeatureEvent(onFeatureEventRef.current, {
+        type: "placement-change",
+        timestamp: Date.now(),
+        source: "ui",
+        placement: next ? next.kind : "corner",
       });
     },
     [setFeatures],
@@ -135,6 +148,7 @@ export function AccessibilityPlugin({
         !validValue(key, value, definition.defaultValue, definition.validate)
       )
         throw new Error(`Invalid value or unregistered feature: ${key}`);
+      const previousValue = store.getSnapshot()[key];
       setFeatures((previous) => {
         const copy: Record<string, unknown> = { ...previous, [key]: value };
         if (
@@ -177,11 +191,36 @@ export function AccessibilityPlugin({
         }
         return copy;
       });
+      emitFeatureEvent(onFeatureEventRef.current, {
+        type: "feature-change",
+        timestamp: Date.now(),
+        source: "ui",
+        featureId: key,
+        value: value as boolean | number | string,
+        previousValue: previousValue as boolean | number | string | undefined,
+      });
+      if (
+        key === "activeProfile" &&
+        value &&
+        typeof value === "object" &&
+        "profileId" in value
+      ) {
+        emitFeatureEvent(onFeatureEventRef.current, {
+          type: "profile-apply",
+          timestamp: Date.now(),
+          source: "profile",
+          profileId: String((value as { profileId: string }).profileId),
+        });
+      }
     },
-    [setFeatures],
+    [setFeatures, store],
   );
   const resetAll = useCallback(() => {
     resetFns.current.forEach((fn) => fn());
+    const currentFeatures = store.getSnapshot();
+    const clearedCount = Object.keys(currentFeatures).filter(
+      (k) => k !== PLACEMENT_KEY && k !== "customPresets",
+    ).length;
     setFeatures((previous) => {
       const preserved: Record<string, unknown> = {};
       if (validPlacement(previous[PLACEMENT_KEY])) {
@@ -192,15 +231,44 @@ export function AccessibilityPlugin({
       }
       return preserved;
     });
-  }, [setFeatures]);
+    emitFeatureEvent(onFeatureEventRef.current, {
+      type: "feature-reset",
+      timestamp: Date.now(),
+      source: "reset",
+      clearedFeaturesCount: clearedCount,
+    });
+  }, [setFeatures, store]);
   const registerReset = useCallback((key: string, fn: () => void) => {
     resetFns.current.set(key, fn);
   }, []);
   const unregisterReset = useCallback((key: string) => {
     resetFns.current.delete(key);
   }, []);
-  const toggleOpen = useCallback(() => setIsOpen((previous) => !previous), []);
-  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const toggleOpen = useCallback(() => {
+    setIsOpen((previous) => {
+      const next = !previous;
+      emitFeatureEvent(onFeatureEventRef.current, {
+        type: "panel-toggle",
+        timestamp: Date.now(),
+        source: "ui",
+        isOpen: next,
+      });
+      return next;
+    });
+  }, []);
+  const closeMenu = useCallback(() => {
+    setIsOpen((previous) => {
+      if (previous) {
+        emitFeatureEvent(onFeatureEventRef.current, {
+          type: "panel-toggle",
+          timestamp: Date.now(),
+          source: "ui",
+          isOpen: false,
+        });
+      }
+      return false;
+    });
+  }, []);
   const active = useMemo(
     () =>
       Object.fromEntries(

@@ -91,3 +91,13 @@ The integration diagnostics suite (`runDiagnostics`, `DiagnosticsHarness`, `useD
 - **Boundaries**: Flags embedded `<iframe>` elements (cross-origin styling boundaries) and custom elements with `ShadowRoot`.
 - **Zero Compliance Claims**: All reports carry an explicit disclaimer stating that automated diagnostics do not constitute official WCAG certification or replace manual audits.
 
+## Optional Privacy-Safe Feature Event Callbacks (A11Y-406)
+
+The optional lifecycle callback (`onFeatureEvent` on `<AccessibilityPlugin>`) provides local, in-memory event notifications for host application telemetry:
+- **Strictly Opt-In**: Disabled by default; zero events or network requests are emitted unless an explicit listener callback is supplied.
+- **Reviewed Payloads**: Emits coarse event types (`feature-change`, `feature-reset`, `panel-toggle`, `placement-change`, `profile-apply`, `preset-apply`) with scalar values and canonical feature IDs.
+- **Strict Privacy Exclusions**: Never includes page text, user text selections, form inputs, emails, user IDs, cookies, device fingerprints, or Web Speech transcripts/audio recordings.
+- **Sanitized and Frozen**: All payloads are validated against an allowlist and deep-frozen (`Object.freeze`).
+- **Resilient**: Exceptions thrown in consumer listeners are safely caught and silenced, ensuring application functionality is never interrupted.
+
+

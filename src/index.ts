@@ -348,3 +348,21 @@ export {
 } from "./core/DiagnosticsHarness";
 export { useDiagnostics } from "./core/useDiagnostics";
 
+// Optional Privacy-Safe Feature Event Callbacks (A11Y-406)
+export {
+  sanitizeFeatureEvent,
+  emitFeatureEvent,
+  type AccessibilityEventType,
+  type EventTriggerSource,
+  type BaseAccessibilityEvent,
+  type FeatureChangeEvent,
+  type FeatureResetEvent,
+  type PanelToggleEvent,
+  type PlacementChangeEvent,
+  type ProfileApplyEvent,
+  type PresetApplyEvent,
+  type AccessibilityFeatureEvent,
+  type FeatureEventListener,
+} from "./core/events";
+
+
