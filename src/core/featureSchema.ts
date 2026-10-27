@@ -129,6 +129,8 @@ for (const key of [
   "highlightFocus",
   "focusHighlight",
   "reduceMotion",
+  "tooltips",
+  "accessibleTooltips",
 ]) {
   builtins[key] = {
     defaultValue: false,

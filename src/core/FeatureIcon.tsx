@@ -118,6 +118,18 @@ const drawings: Record<string, ReactNode> = {
       <path d="M2 15h20" strokeWidth="3" />
     </>
   ),
+  tooltips: (
+    <>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      <path d="M8 9h8M8 13h5" />
+    </>
+  ),
+  accessibleTooltips: (
+    <>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      <path d="M8 9h8M8 13h5" />
+    </>
+  ),
   reset: (
     <>
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
