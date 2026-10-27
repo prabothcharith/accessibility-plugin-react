@@ -84,6 +84,9 @@ export {
   subscribeReducedMotion,
   isEligibleDecorativeImage,
   isFunctionalOrMeaningfulImage,
+  hasFinePointer,
+  subscribeFinePointer,
+  nudgeReadingAid,
   CONTRAST_PROTECTED_SELECTOR,
   isProtectedFromContrast,
   CONTRAST_PALETTES,
@@ -96,6 +99,10 @@ export {
   type ContrastModeValue,
   LINE_HEIGHT_STEPS,
   LINE_HEIGHT_RATIOS,
+  DEFAULT_READING_MASK_HEIGHT,
+  MIN_READING_MASK_HEIGHT,
+  MAX_READING_MASK_HEIGHT,
+  READING_MASK_HEIGHT_PRESETS,
 } from "./core/featureSchema";
 export {
   LineHeightController,
@@ -127,9 +134,18 @@ export {
   type HideImagesControllerProps,
 } from "./features/HideImagesController";
 export { HideVideosController } from "./features/HideVideosController";
-export { BigCursorController } from "./features/BigCursorController";
-export { ReadingMaskController } from "./features/ReadingMaskController";
-export { ReadingGuideController } from "./features/ReadingGuideController";
+export {
+  BigCursorController,
+  type BigCursorControllerProps,
+} from "./features/BigCursorController";
+export {
+  ReadingMaskController,
+  type ReadingMaskControllerProps,
+} from "./features/ReadingMaskController";
+export {
+  ReadingGuideController,
+  type ReadingGuideControllerProps,
+} from "./features/ReadingGuideController";
 export {
   HighlightFocusController,
   FocusHighlightController,

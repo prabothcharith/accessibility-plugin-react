@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.12.0 — 2026-10-27
+
+- Implement capability-aware cursor enlargement, pointer-transparent reading guide, and adjustable reading mask (closes #49).
+- Add capability awareness to `BigCursorController` and `hasFinePointer()` / `subscribeFinePointer()` utilities: detects `(pointer: fine)` hardware and suppresses cursor styles on touch-only devices to avoid non-functional CSS artifacts.
+- Enforce strict pointer transparency (`pointer-events: none !important`, `user-select: none !important`, `touch-action: none !important`) on reading guide and reading mask overlays, ensuring clicks, selections, context menus, and focus pass unimpeded to underlying host elements.
+- Enhance reading guide and reading mask with multi-input tracking: tracks mouse and pointer movements, touch drag gestures (`touchstart`, `touchmove`), active keyboard focus (`focusin`), and viewport scroll.
+- Add adjustable reading aperture window for `ReadingMaskController` via stepper buttons (`−` / `+`) and `readingMaskHeight` feature schema (40–400px range, default 100px), with `DEFAULT_READING_MASK_HEIGHT` and `READING_MASK_HEIGHT_PRESETS`.
+- Support keyboard alternatives: `Escape` immediately dismisses active reading aids and synchronizes store state; `Alt+ArrowUp` and `Alt+ArrowDown` (as well as controller nudge buttons) move reading aids up or down by 30px.
+- Export `nudgeReadingAid` utility and controller prop interfaces (`BigCursorControllerProps`, `ReadingMaskControllerProps`, `ReadingGuideControllerProps`).
+- Add comprehensive documentation in `docs/READING_AIDS.md`.
+- Add unit test suite in `tests/readingAids.test.tsx` and automated browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.11.0 — 2026-10-27
 
 - Visual regression, cross-feature composition, and performance sweep across Milestone 2 features (closes #48).

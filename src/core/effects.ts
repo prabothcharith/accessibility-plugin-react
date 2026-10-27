@@ -48,6 +48,31 @@ export function subscribeReducedMotion(callback: () => void): () => void {
   }
 }
 
+/** Detects whether the device supports a fine pointer (mouse, trackpad, pen). */
+export function hasFinePointer(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return true;
+  try {
+    const fine = window.matchMedia("(pointer: fine)");
+    if (fine.matches) return true;
+    const coarse = window.matchMedia("(pointer: coarse)");
+    if (coarse.matches && !fine.matches) return false;
+    return true;
+  } catch {
+    return true;
+  }
+}
+
+export function subscribeFinePointer(callback: () => void): () => void {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  try {
+    const mql = window.matchMedia("(pointer: fine)");
+    mql.addEventListener("change", callback);
+    return () => mql.removeEventListener("change", callback);
+  } catch {
+    return () => {};
+  }
+}
+
 export interface ContrastPalette {
   text: string;
   background: string;
@@ -1149,8 +1174,13 @@ function applyPage(values: Record<string, unknown>): () => void {
     });
   }
 
+  const isFinePointer = hasFinePointer();
+  if (values.bigCursor && isFinePointer) {
+    set(document.body, "cursor", cursor);
+  }
+
   for (const el of elements) {
-    if (values.bigCursor) set(el, "cursor", cursor);
+    if (values.bigCursor && isFinePointer) set(el, "cursor", cursor);
     if (values.hideImages) {
       if (isEligibleDecorativeImage(el)) {
         set(el, "visibility", "hidden");
@@ -1218,7 +1248,30 @@ function applyPage(values: Record<string, unknown>): () => void {
   };
 }
 
-function readingAid(mask: boolean) {
+export function nudgeReadingAid(
+  feature: "readingGuide" | "readingMask",
+  delta: number,
+) {
+  if (typeof document !== "undefined") {
+    try {
+      document.dispatchEvent(
+        new CustomEvent("arap:nudge-reading-aid", {
+          detail: { feature, delta },
+        }),
+      );
+    } catch {
+      // CustomEvent dispatch failed in unsupported environment
+    }
+  }
+}
+
+function readingAid(
+  mask: boolean,
+  height: number = 100,
+  onDisable?: (key: string) => void,
+) {
+  const featureKey = mask ? "readingMask" : "readingGuide";
+
   // Ensure any existing reading aid element of this type is cleaned up first
   const existing = document.body.querySelectorAll(
     mask ? ".arap-reading-mask" : ".arap-reading-guide",
@@ -1229,31 +1282,159 @@ function readingAid(mask: boolean) {
   el.dataset.arapUi = "";
   el.className = mask ? "arap-reading-mask" : "arap-reading-guide";
   el.setAttribute("aria-hidden", "true");
-  el.style.cssText = `position:fixed;left:0;right:0;top:50%;height:${mask ? "100px" : "4px"};pointer-events:none;z-index:2147482999;${mask ? "background:transparent;box-shadow:0 0 0 200vmax rgba(0,0,0,.65)" : "background:#2563eb;border:1px solid white"}`;
+
+  const aidHeight = mask ? Math.max(40, Math.min(400, height)) : 4;
+  const halfHeight = mask ? aidHeight / 2 : 0;
+
+  el.style.cssText = `position:fixed;left:0;right:0;top:50%;height:${aidHeight}px;pointer-events:none;z-index:2147482999;${
+    mask
+      ? "background:transparent;box-shadow:0 0 0 200vmax rgba(0,0,0,.65)"
+      : "background:#2563eb;border:1px solid white"
+  }`;
+  el.style.setProperty("pointer-events", "none", "important");
+  el.style.setProperty("user-select", "none", "important");
+  el.style.setProperty("-webkit-user-select", "none", "important");
+  el.style.setProperty("touch-action", "none", "important");
+
   document.body.appendChild(el);
-  const move = (y: number) => {
-    el.style.top = `${Math.max(0, y - (mask ? 50 : 0))}px`;
+
+  let currentY =
+    typeof window !== "undefined" && window.innerHeight
+      ? window.innerHeight / 2
+      : 300;
+  let trackedFocusEl: HTMLElement | null = null;
+
+  const clampY = (y: number) => {
+    const vh =
+      typeof window !== "undefined" && window.innerHeight
+        ? window.innerHeight
+        : 600;
+    return Math.max(halfHeight, Math.min(vh - halfHeight, y));
   };
-  const pointer = (event: PointerEvent) => move(event.clientY);
+
+  const move = (y: number) => {
+    currentY = clampY(y);
+    el.style.top = `${Math.max(0, currentY - halfHeight)}px`;
+  };
+
+  // Center immediately
+  move(currentY);
+
+  const pointer = (event: MouseEvent | PointerEvent) => {
+    if (typeof event.clientY === "number" && !isNaN(event.clientY)) {
+      trackedFocusEl = null;
+      move(event.clientY);
+    }
+  };
+
+  const touch = (event: TouchEvent) => {
+    if (event.touches && event.touches.length > 0) {
+      trackedFocusEl = null;
+      move(event.touches[0].clientY);
+    }
+  };
+
   const focus = (event: FocusEvent) => {
     if (
       event.target instanceof HTMLElement &&
       !event.target.closest("[data-arap-ui]")
     ) {
+      trackedFocusEl = event.target;
       const rect = event.target.getBoundingClientRect();
       move(rect.top + rect.height / 2);
     }
   };
+
+  const scroll = () => {
+    if (trackedFocusEl && document.contains(trackedFocusEl)) {
+      const rect = trackedFocusEl.getBoundingClientRect();
+      move(rect.top + rect.height / 2);
+    }
+  };
+
+  const keydown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      if (
+        document.activeElement &&
+        document.activeElement.closest("[data-arap-ui]")
+      ) {
+        return;
+      }
+      event.preventDefault();
+      try {
+        document.dispatchEvent(
+          new CustomEvent("arap:disable-feature", { detail: featureKey }),
+        );
+      } catch {
+        // Event dispatch failed
+      }
+      onDisable?.(featureKey);
+      el.remove();
+      return;
+    }
+
+    if (
+      event.altKey &&
+      (event.key === "ArrowUp" || event.key === "ArrowDown")
+    ) {
+      event.preventDefault();
+      const delta = event.key === "ArrowUp" ? -30 : 30;
+      move(currentY + delta);
+    }
+  };
+
+  const nudge = (event: Event) => {
+    const custom = event as CustomEvent<{ feature: string; delta: number }>;
+    if (custom.detail && custom.detail.feature === featureKey) {
+      move(currentY + (custom.detail.delta || 0));
+    }
+  };
+
+  const viewport = () => {
+    move(currentY);
+  };
+
   document.addEventListener("pointermove", pointer, { passive: true });
+  document.addEventListener("mousemove", pointer, { passive: true });
+  document.addEventListener("touchmove", touch, { passive: true });
+  document.addEventListener("touchstart", touch, { passive: true });
   document.addEventListener("focusin", focus);
+  document.addEventListener("arap:nudge-reading-aid", nudge);
+  document.addEventListener("keydown", keydown);
+  window.addEventListener("scroll", scroll, { passive: true });
+  window.addEventListener("resize", viewport, { passive: true });
+  window.addEventListener("keydown", keydown);
+
+  if (typeof window !== "undefined" && window.visualViewport) {
+    window.visualViewport.addEventListener("resize", viewport);
+    window.visualViewport.addEventListener("scroll", viewport);
+  }
+
   return () => {
     document.removeEventListener("pointermove", pointer);
+    document.removeEventListener("mousemove", pointer);
+    document.removeEventListener("touchmove", touch);
+    document.removeEventListener("touchstart", touch);
     document.removeEventListener("focusin", focus);
+    document.removeEventListener("arap:nudge-reading-aid", nudge);
+    document.removeEventListener("keydown", keydown);
+    window.removeEventListener("scroll", scroll);
+    window.removeEventListener("resize", viewport);
+    window.removeEventListener("keydown", keydown);
+
+    if (typeof window !== "undefined" && window.visualViewport) {
+      window.visualViewport.removeEventListener("resize", viewport);
+      window.visualViewport.removeEventListener("scroll", viewport);
+    }
+
     el.remove();
   };
 }
 
-export function useBuiltinEffects(values: Record<string, unknown>) {
+export function useBuiltinEffects(
+  values: Record<string, unknown>,
+  onDisable?: (featureKey: string) => void,
+) {
   useEffect(() => {
     if (
       !Object.entries(values).some(
@@ -1303,14 +1484,22 @@ export function useBuiltinEffects(values: Record<string, unknown>) {
       undo();
     };
   }, [values]);
-  useEffect(
-    () => (values.readingMask ? readingAid(true) : undefined),
-    [values.readingMask],
-  );
-  useEffect(
-    () => (values.readingGuide ? readingAid(false) : undefined),
-    [values.readingGuide],
-  );
+
+  useEffect(() => {
+    if (!values.readingMask) return;
+    const height =
+      typeof values.readingMaskHeight === "number"
+        ? values.readingMaskHeight
+        : typeof values.readingMask === "number"
+          ? values.readingMask
+          : 100;
+    return readingAid(true, height, onDisable);
+  }, [values.readingMask, values.readingMaskHeight, onDisable]);
+
+  useEffect(() => {
+    if (!values.readingGuide) return;
+    return readingAid(false, 4, onDisable);
+  }, [values.readingGuide, onDisable]);
 }
 
 export function CustomEffect({

@@ -93,7 +93,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 
 ### M3 — Reading support, profiles and localization
 
-- [ ] [A11Y-301 — Cursor enlargement, reading mask and reading guide #49](https://github.com/prabothcharith/accessibility-react/issues/49) — Add capability-aware large cursor, pointer-transparent reading guide and adjustable reading mask with keyboard/touch alternatives and cleanup.
+- [x] [A11Y-301 — Cursor enlargement, reading mask and reading guide #49](https://github.com/prabothcharith/accessibility-react/issues/49) — Add capability-aware large cursor, pointer-transparent reading guide and adjustable reading mask with keyboard/touch alternatives and cleanup.
 - [ ] [A11Y-302 — Accessible tooltips from authored descriptions #50](https://github.com/prabothcharith/accessibility-react/issues/50) — Show keyboard/pointer tooltips only from authored accessible descriptions, with Escape dismissal, safe positioning and no private-field disclosure.
 - [ ] [A11Y-303 — Page headings and landmarks navigator #51](https://github.com/prabothcharith/accessibility-react/issues/51) — Build a read-only headings/landmarks navigator that scrolls and focuses safely, updates dynamic routes and never invents semantics.
 - [ ] [A11Y-304 — Eight profiles and deterministic override model #52](https://github.com/prabothcharith/accessibility-react/issues/52) — Implement eight neutral editable profiles with previews, atomic application, explicit override layering and no implicit speech or microphone activation.
