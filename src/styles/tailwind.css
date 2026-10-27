@@ -1093,3 +1093,31 @@
   border-color: #fde68a;
   color: #92400e;
 }
+
+/* Reading aids and overlays */
+.arap-reading-mask {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  touch-action: none !important;
+  z-index: 2147482999 !important;
+}
+
+.arap-reading-guide {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  touch-action: none !important;
+  z-index: 2147482999 !important;
+}
+
+.arap-feature-expandable {
+  flex-direction: column !important;
+  align-items: stretch !important;
+}

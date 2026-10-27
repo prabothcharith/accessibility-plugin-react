@@ -125,7 +125,6 @@ for (const key of [
   "hideImages",
   "hideVideos",
   "bigCursor",
-  "readingMask",
   "readingGuide",
   "highlightFocus",
   "focusHighlight",
@@ -136,6 +135,28 @@ for (const key of [
     validate: (v) => typeof v === "boolean",
   };
 }
+
+export const DEFAULT_READING_MASK_HEIGHT = 100;
+export const MIN_READING_MASK_HEIGHT = 40;
+export const MAX_READING_MASK_HEIGHT = 400;
+export const READING_MASK_HEIGHT_PRESETS = [60, 100, 160, 240] as const;
+
+builtins.readingMask = {
+  defaultValue: false,
+  validate: (v) =>
+    typeof v === "boolean" ||
+    (typeof v === "number" &&
+      v >= MIN_READING_MASK_HEIGHT &&
+      v <= MAX_READING_MASK_HEIGHT),
+};
+
+builtins.readingMaskHeight = {
+  defaultValue: DEFAULT_READING_MASK_HEIGHT,
+  validate: (v) =>
+    typeof v === "number" &&
+    v >= MIN_READING_MASK_HEIGHT &&
+    v <= MAX_READING_MASK_HEIGHT,
+};
 export function validValue(
   key: string,
   value: unknown,

@@ -857,3 +857,58 @@ test("regression and performance sweep: rapid toggles and 1,000-node DOM benchma
     document.getElementById("browser-perf-1000")?.remove();
   });
 });
+
+test("reading guide and mask overlays never block clicks and clean up on Escape and reset", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // 1. Enable Reading Guide
+  const guideToggle = page.getByRole("button", {
+    name: "Reading Guide",
+    exact: true,
+  });
+  await guideToggle.click();
+  const guide = page.locator(".arap-reading-guide");
+  await expect(guide).toBeVisible();
+  expect(await guide.evaluate((el) => getComputedStyle(el).pointerEvents)).toBe(
+    "none",
+  );
+
+  // Close panel and verify host button is clickable through the guide
+  await page.getByLabel("Close accessibility settings").click();
+  const hostAction = page.getByRole("button", { name: "Host action 0" });
+  await hostAction.click();
+  await expect(
+    page.getByRole("button", { name: "Host action 1" }),
+  ).toBeVisible();
+
+  // Escape key dismisses the guide
+  await page.keyboard.press("Escape");
+  await expect(guide).toHaveCount(0);
+
+  // 2. Enable Reading Mask
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  const maskToggle = page.getByRole("button", {
+    name: "Reading Mask",
+    exact: true,
+  });
+  await maskToggle.click();
+  const mask = page.locator(".arap-reading-mask");
+  await expect(mask).toBeVisible();
+  expect(await mask.evaluate((el) => getComputedStyle(el).pointerEvents)).toBe(
+    "none",
+  );
+
+  // Adjust mask height
+  const increaseHeight = page.getByRole("button", {
+    name: "Increase reading mask height",
+  });
+  await increaseHeight.click();
+  expect(await mask.evaluate((el) => el.style.height)).toBe("120px");
+
+  // Reset All cleans up mask
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(mask).toHaveCount(0);
+});
