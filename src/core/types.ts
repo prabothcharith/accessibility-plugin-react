@@ -50,7 +50,7 @@ import type {
   StorageMode,
   TextAlignPreference,
 } from "./preferences";
-import type { LocaleStrings } from "./i18n";
+import type { FeatureLocaleLabels, LocaleStrings } from "./i18n";
 
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
@@ -101,6 +101,7 @@ export type {
   ContrastMode,
   CursorSizePreference,
   FontFamilyPreference,
+  FeatureLocaleLabels,
   LocaleStrings,
   ProfileDefinition,
   ProfilePresetId,

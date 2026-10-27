@@ -218,6 +218,13 @@ export function AccessibilityPlugin({
     return () => document.removeEventListener("arap:disable-feature", handler);
   }, [handleDisable]);
 
+  const effectiveLocale =
+    locale ||
+    (typeof document !== "undefined"
+      ? document.documentElement.lang
+      : undefined) ||
+    undefined;
+
   useBuiltinEffects(active, handleDisable);
   const value = useMemo(
     () => ({
@@ -235,7 +242,7 @@ export function AccessibilityPlugin({
       resetAll,
       registerReset,
       unregisterReset,
-      locale,
+      locale: effectiveLocale,
       statementUrl,
       largeControls,
     }),
@@ -254,7 +261,7 @@ export function AccessibilityPlugin({
       resetAll,
       registerReset,
       unregisterReset,
-      locale,
+      effectiveLocale,
       statementUrl,
       largeControls,
     ],

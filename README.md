@@ -283,6 +283,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Feature behavior and bounds](docs/FEATURES.md)
 - [Link highlighting, focus visibility, and landmark skip links](docs/LINKS_AND_FOCUS.md)
 - [Reduce motion and media controls](docs/REDUCE_MOTION.md)
+- [Internationalization and locale packs](docs/LOCALES.md)
 - [Contrast modes and forced-colors protection](docs/CONTRAST.md)
 - [Legible and dyslexia font stacks](docs/FONTS.md)
 - [Installation and Next.js](docs/INSTALLATION.md)

@@ -26,7 +26,13 @@ function Panel({
   locale,
 }: AccessibilityListProps) {
   const ctx = useContext(AccessibilityContext)!;
-  const effectiveLocale = locale ?? ctx.locale;
+  const effectiveLocale =
+    locale ||
+    ctx.locale ||
+    (typeof document !== "undefined"
+      ? document.documentElement.lang
+      : undefined) ||
+    "en";
   const strings = resolveLocaleStrings(effectiveLocale);
   const panelTitle = title ?? strings.title;
   const panelDescription =

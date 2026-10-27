@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.17.0 — 2026-10-27
+
+- Implement reviewed Sinhala and Tamil locale packs with accessibility review (closes #54).
+- Introduce built-in `siLocale` (Sinhala: `si`, `si-LK`) and `taLocale` (Tamil: `ta`, `ta-LK`):
+  - Native-speaker and accessibility-reviewed translations for panel titles, hints, options, and actions.
+  - Natural localized coordinate strings (`formatPointPosition`) and corner labels (`formatCornerPosition`, `cornerNames`).
+  - Localized search input placeholders, search clear buttons, and live polite count announcements (`formatSearchCount`).
+  - Localized polite status announcements for profile switching and preset save/apply/delete actions.
+  - Default localized feature names for controllers (`විශාල අකුරු` / `பெரிய உரை`, `ප්‍රවේශ්‍යතා පැතිකඩ` / `அணுகல்தன்மை சுயவிவரங்கள்`, `සුරකින ලද පෙරසැකසුම්` / `சேமிக்கப்பட்ட முன்னமைவுகள்`).
+- Untranslated host content boundary:
+  - Widget localization strictly covers its own controls, hints, and announcements.
+  - Host application content, headings, and forms remain completely untouched and are never modified.
+  - Root widget panel tagged with `translate="no"` to prevent browser auto-translation mangling of ARIA semantics.
+- Automatic HTML `lang` detection:
+  - When `locale` prop is omitted, automatically resolves `document.documentElement.lang` (e.g. `<html lang="si-LK">` or `<html lang="ta-LK">`) without requiring manual configuration.
+- Right-to-Left (RTL) Writing Direction Infrastructure:
+  - Bidirectional alignment (`text-align: start`) for all controls.
+  - Automatically applies `dir="rtl"` when RTL locales (`ar`, `he`, `fa`, `ur`) are detected via `isRtlLocale`.
+  - Preserves Left-to-Right (`dir="ltr"`) for Sinhala and Tamil Indic scripts.
+  - Logical positioning properties (`inset-inline-end`) for search clear button.
+  - Physical spatial direction retained for keyboard movement arrows.
+- Typography & Complex Script Fallbacks:
+  - Enhanced `.arap-root` scoped font stack with `"Noto Sans Sinhala"`, `"Iskoola Pota"`, `"Noto Sans Tamil"`, `"Latha"`, `"Nirmala UI"` fallbacks to prevent glyph clipping and missing glyph boxes.
+- Export `siLocale`, `taLocale`, `SupportedLocale`, and `FeatureLocaleLabels`.
+- Add documentation in `docs/LOCALES.md`, updated `docs/FEATURES.md`, `docs/API.md`, `README.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add unit test suites in `tests/i18n.test.ts` and `tests/localeWidget.test.tsx`, and automated browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.16.0 — 2026-10-27
 
 - Implement custom saved presets and settings import/export (closes #53).

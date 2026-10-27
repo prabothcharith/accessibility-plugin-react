@@ -1,7 +1,10 @@
 "use client";
 
+import { useContext } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
 import { useAccessibility } from "../core/useAccessibility";
+import { AccessibilityContext } from "../core/AccessibilityContext";
+import { resolveLocaleStrings } from "../core/i18n";
 import { TEXT_SCALE_STEPS } from "../core/featureSchema";
 
 const FEATURE_KEY = "fontScale";
@@ -13,15 +16,19 @@ export interface TextScaleControllerProps {
    */
   steps?: readonly number[];
   /**
-   * Accessible group label and visible title. Default: "Bigger Text".
+   * Accessible group label and visible title. Default: "Bigger Text" (or localized).
    */
   label?: string;
 }
 
 export function TextScaleController({
   steps = TEXT_SCALE_STEPS,
-  label = "Bigger Text",
+  label,
 }: TextScaleControllerProps = {}) {
+  const ctx = useContext(AccessibilityContext);
+  const strings = resolveLocaleStrings(ctx?.locale);
+  const effectiveLabel = label ?? strings.features?.textScale ?? "Bigger Text";
+
   const { value, setValue } = useAccessibility<number>(
     FEATURE_KEY,
     DEFAULT_VALUE,
@@ -56,18 +63,18 @@ export function TextScaleController({
     <div
       className="arap-feature arap-feature-stepper"
       role="group"
-      aria-label={label}
+      aria-label={effectiveLabel}
     >
       <span className="arap-label">
         <FeatureIcon name="fontSize" />
-        <span>{label}</span>
+        <span>{effectiveLabel}</span>
       </span>
       <div className="arap-controls">
         <button
           className="arap-btn-sm"
           onClick={handleDecrease}
           disabled={isMin}
-          aria-label="Decrease text size"
+          aria-label={strings.decreaseTextSize ?? "Decrease text size"}
           type="button"
         >
           −
@@ -79,7 +86,7 @@ export function TextScaleController({
           className="arap-btn-sm"
           onClick={handleIncrease}
           disabled={isMax}
-          aria-label="Increase text size"
+          aria-label={strings.increaseTextSize ?? "Increase text size"}
           type="button"
         >
           +
