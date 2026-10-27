@@ -794,3 +794,66 @@ test("reduce motion applies animation duration overrides and cleans up on reset"
   );
   expect(hasMotionStyleAfterReset).toBe(false);
 });
+
+test("regression and performance sweep: rapid toggles and 1,000-node DOM benchmarking", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Test 1: Rapid toggling (stress testing) in real browser
+  const fontIncrease = page.getByLabel("Increase font size");
+  const fontDecrease = page.getByLabel("Decrease font size");
+  const sample = page.locator("#sample");
+  const initialFontSize = await sample.evaluate((el) => el.style.fontSize);
+
+  for (let i = 0; i < 5; i++) {
+    await fontIncrease.click();
+    await fontDecrease.click();
+  }
+
+  // Verify font-size returned cleanly to initial baseline
+  expect(await sample.evaluate((el) => el.style.fontSize)).toBe(
+    initialFontSize,
+  );
+
+  // Test 2: 1,000-node DOM benchmark in real browser
+  const benchmarkResult = await page.evaluate(() => {
+    const host = document.createElement("div");
+    host.id = "browser-perf-1000";
+    for (let i = 0; i < 100; i++) {
+      const card = document.createElement("div");
+      for (let j = 0; j < 10; j++) {
+        const p = document.createElement("p");
+        p.textContent = `P ${i}-${j}`;
+        card.appendChild(p);
+      }
+      host.appendChild(card);
+    }
+    document.body.appendChild(host);
+
+    const totalNodes = host.querySelectorAll("*").length;
+    return { totalNodes };
+  });
+
+  expect(benchmarkResult.totalNodes).toBeGreaterThanOrEqual(1000);
+
+  // Trigger font scaling across the 1,000-node DOM
+  const t0 = Date.now();
+  await fontIncrease.click();
+  const applyTimeMs = Date.now() - t0;
+
+  // Verify performance in real Chromium: update on 1,000 nodes takes under 2.5 seconds
+  expect(applyTimeMs).toBeLessThan(2500);
+
+  // Clean reset restores everything
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  expect(await sample.evaluate((el) => el.style.fontSize)).toBe(
+    initialFontSize,
+  );
+
+  // Cleanup benchmark host
+  await page.evaluate(() => {
+    document.getElementById("browser-perf-1000")?.remove();
+  });
+});
