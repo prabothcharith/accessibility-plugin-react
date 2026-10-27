@@ -203,6 +203,38 @@ test("media, reading aids, pointer movement and unmount cleanup", async ({
     "visible",
   );
 });
+
+test("A11Y-302 accessible tooltips: hover displays authored alt, Escape dismisses", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Enable Accessible Tooltips
+  const tooltipsToggle = page.getByRole("button", {
+    name: "Accessible Tooltips",
+  });
+  await tooltipsToggle.click();
+  await expect(tooltipsToggle).toHaveAttribute("aria-pressed", "true");
+
+  await page.getByLabel("Close accessibility settings").click();
+
+  // Hover over the image with alt="Example landscape"
+  const img = page.getByAltText("Example landscape");
+  await img.hover();
+
+  const tooltip = page.locator(".arap-accessible-tooltip");
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toHaveText("Example landscape");
+  await expect(tooltip).toHaveAttribute("role", "presentation");
+  await expect(tooltip).toHaveAttribute("aria-hidden", "true");
+
+  // Press Escape to dismiss
+  await page.keyboard.press("Escape");
+  await expect(tooltip).not.toHaveAttribute("data-visible", "true");
+});
+
 test("Next Pages Router and direct Server Component imports hydrate", async ({
   page,
 }, info) => {

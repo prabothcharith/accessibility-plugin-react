@@ -87,6 +87,9 @@ export {
   hasFinePointer,
   subscribeFinePointer,
   nudgeReadingAid,
+  getAuthoredDescription,
+  positionTooltip,
+  enableAccessibleTooltips,
   CONTRAST_PROTECTED_SELECTOR,
   isProtectedFromContrast,
   CONTRAST_PALETTES,
@@ -151,6 +154,11 @@ export {
   FocusHighlightController,
 } from "./features/HighlightFocusController";
 export { ReduceMotionController } from "./features/ReduceMotionController";
+export {
+  TooltipsController,
+  AccessibleTooltipsController,
+  type TooltipsControllerProps,
+} from "./features/TooltipsController";
 export { ResetController } from "./features/ResetController";
 
 // Control Primitives & State UI

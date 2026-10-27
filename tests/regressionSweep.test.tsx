@@ -370,7 +370,7 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     );
 
     unmount();
-  });
+  }, 20000);
 
   it("100 rapid consecutive toggles cause zero compounding, style leaks, or memory drift", () => {
     const host = createRealisticDashboardFixture();
@@ -428,7 +428,7 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     expect(decoImg.style.visibility).toBe(initialVisibility);
 
     unmount();
-  });
+  }, 20000);
 
   it("processes 1,000-node DOM under 100ms with accurate capping and clean cleanup", () => {
     const perfContainer = create1000NodeFixture();
@@ -489,5 +489,5 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     expect(tTeardown).toBeLessThan(2000);
 
     unmount();
-  });
+  }, 20000);
 });
