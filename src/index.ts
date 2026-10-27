@@ -138,6 +138,7 @@ export {
 } from "./features/ParagraphSpacingController";
 export { ContrastController } from "./features/ContrastController";
 export { ContrastModeController } from "./features/ContrastModeController";
+export { SmartContrastController } from "./features/SmartContrastController";
 export {
   SaturationController,
   type SaturationControllerProps,
@@ -364,5 +365,30 @@ export {
   type AccessibilityFeatureEvent,
   type FeatureEventListener,
 } from "./core/events";
+
+// Smart Contrast Research Prototype (A11Y-407)
+export {
+  SMART_CONTRAST_DISCLAIMER,
+  TARGET_RATIOS,
+  HIGH_CONTRAST_TOKENS,
+  parseColor,
+  calculateRelativeLuminance,
+  calculateContrastRatio,
+  compositeRgba,
+  isLargeText,
+  resolveEffectiveBackdrop,
+  isEligibleForSmartContrast,
+  evaluateSmartContrast,
+  applySmartContrast,
+  type SmartContrastLevel,
+  type UnsupportedReason,
+  type RgbColor,
+  type RgbaColor,
+  type UnsupportedElementInfo,
+  type SmartContrastReport,
+  type SmartContrastOptions,
+  type AppliedSmartContrast,
+  type BackdropResolution,
+} from "./core/smartContrast";
 
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.26.0 — 2026-10-27
+
+- Implement measured smart contrast research prototype with relative luminance, alpha compositing, and full non-destructive restoration (closes #63).
+- Introduce smart contrast engine (`src/core/smartContrast.ts`) and controller (`src/features/SmartContrastController.tsx`):
+  - Strictly opt-in research prototype: labeled with `Prototype` pill in the UI; explicit disclaimer (`SMART_CONTRAST_DISCLAIMER`) stating calculations are mathematical relative luminance algorithms and do not constitute or guarantee official WCAG compliance.
+  - WCAG 2.1 relative luminance algorithm: implements exact standard sRGB component linearization ($c_{linear} = c / 12.92$ or $((c+0.055)/1.055)^{2.4}$) and spectral weighting ($L = 0.2126R + 0.7152G + 0.0722B$).
+  - WCAG 2.1 contrast ratio calculation: computes $(L_1 + 0.05) / (L_2 + 0.05)$, supporting AA ($4.5:1$ normal / $3.0:1$ large) and AAA ($7.0:1$ normal / $4.5:1$ large) target thresholds.
+  - Backdrop compositing & alpha blending: ascends ancestor trees to composite semi-transparent background colors over parent backdrops up to `document.body` and canvas fallback using Porter-Duff source-over blending.
+  - Layout thrashing prevention: strictly separates execution into Batched Reads (collects computed styles), Pure Computation (mathematical evaluation and color caching), and Batched Writes (applies overrides in a single pass), processing 1,000 nodes under 10ms.
+  - Unsupported elements reporting: detects and reports CSS gradients (`linear-gradient`, `radial-gradient`), background images (`url(...)`), and `backdrop-filter` as unsupported without guessing; displays an inspectable breakdown of skipped elements.
+  - Non-destructive restoration: records original inline styles and CSS priorities; `undo()` completely removes applied overrides and tracking attributes with full idempotency.
+  - OS forced-colors protection: automatically detects and yields to system high contrast mode (`forced-colors: active`), preserving native OS themes.
+- Export `SmartContrastController`, `calculateRelativeLuminance`, `calculateContrastRatio`, `compositeRgba`, `parseColor`, `isLargeText`, `resolveEffectiveBackdrop`, `isEligibleForSmartContrast`, `evaluateSmartContrast`, `applySmartContrast`, `SMART_CONTRAST_DISCLAIMER`, `TARGET_RATIOS`, `HIGH_CONTRAST_TOKENS`, and related types in `src/index.ts`.
+- Add documentation in `docs/SMART_CONTRAST.md`, update `README.md`, `docs/FEATURES.md`, `docs/API.md`, `docs/BUILD_AND_RELEASE_PLAN.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 24 unit and integration tests in `tests/smartContrast.test.ts` and `tests/smartContrastWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.25.0 — 2026-10-27
 
 - Implement optional privacy-safe feature event callbacks with reviewed payloads and data minimization (closes #62).

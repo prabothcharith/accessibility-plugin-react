@@ -167,6 +167,7 @@ export default function Fixture() {
               <A.ParagraphSpacingController />
               <A.ContrastController />
               <A.ContrastModeController />
+              <A.SmartContrastController />
               <A.SaturationController />
               <A.InvertColorsController />
               <A.GrayscaleController />

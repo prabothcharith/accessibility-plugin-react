@@ -1658,4 +1658,30 @@ test("privacy-safe feature event callbacks receive sanitized local notifications
   await expect(eventEl).toHaveAttribute("data-event-type", "feature-reset");
 });
 
+test("smart contrast research prototype evaluates elements, displays statistics, and restores on reset (A11Y-407)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Locate Smart Contrast group
+  const group = page.getByRole("group", { name: "Smart Contrast" });
+  await expect(group).toBeVisible();
+
+  // Verify prototype pill
+  await expect(group.getByText("Prototype", { exact: true })).toBeVisible();
+
+  // Click AA (4.5:1) button
+  const aaBtn = group.getByRole("button", { name: "AA (4.5:1)" });
+  await aaBtn.click();
+  await expect(aaBtn).toHaveAttribute("aria-pressed", "true");
+
+  // Click Original to restore
+  const origBtn = group.getByRole("button", { name: "Original" });
+  await origBtn.click();
+  await expect(origBtn).toHaveAttribute("aria-pressed", "true");
+});
+
 

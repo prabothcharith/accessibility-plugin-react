@@ -97,6 +97,7 @@ site, and choose their order in JSX.
 | `WordSpacingController`                                   | Applies 0–10px word spacing while protecting tables, code, forms, and widget internals.                                                 |
 | `ContrastController`                                      | Adjusts contrast levels, palettes, or semantic modes while preserving images, video, charts, and validation.                            |
 | `ContrastModeController`                                  | Applies light, dark, high contrast, or media-safe invert tokens with native forced-colors protection.                                   |
+| `SmartContrastController`                                 | Opt-in smart contrast research prototype; evaluates relative luminance against computed backdrop without layout thrashing; reports unsupported elements; non-destructive restoration. |
 | `SaturationController`                                    | Reduces or increases saturation.                                                                                                        |
 | `InvertColorsController`                                  | Inverts eligible page content.                                                                                                          |
 | `GrayscaleController`                                     | Removes color while preserving the selected saturation value for later.                                                                 |
@@ -303,6 +304,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Per-site feature-menu customization](docs/MENU_CUSTOMIZATION.md)
 - [Development-only integration diagnostics and test harness](docs/DIAGNOSTICS.md)
 - [Optional privacy-safe feature event callbacks](docs/PRIVACY_AND_EVENTS.md)
+- [Smart contrast research prototype](docs/SMART_CONTRAST.md)
 - [Design foundation](docs/DESIGN.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Project status and verification evidence](docs/PROJECT_STATUS.md)
