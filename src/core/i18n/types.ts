@@ -82,6 +82,39 @@ export interface LocaleStrings {
   formatReadingWords?: (words: number) => string;
   formatReadingTime?: (minutes: number) => string;
 
+  // Keyboard Shortcuts & Link Explorer (A11Y-308)
+  shortcutsTitle?: string;
+  shortcutsDescription?: string;
+  shortcutsOpen?: string;
+  shortcutsClose?: string;
+  shortcutsEnabledLabel?: string;
+  shortcutsSearchPlaceholder?: string;
+  shortcutsRemap?: string;
+  shortcutsReset?: string;
+  shortcutsPressKey?: string;
+  shortcutsCancel?: string;
+  shortcutToggleWidget?: string;
+  shortcutToggleWidgetDesc?: string;
+  shortcutResetAll?: string;
+  shortcutResetAllDesc?: string;
+  shortcutPageNavigator?: string;
+  shortcutPageNavigatorDesc?: string;
+  shortcutSkipToMain?: string;
+  shortcutSkipToMainDesc?: string;
+  shortcutReadingMode?: string;
+  shortcutReadingModeDesc?: string;
+  shortcutProfiles?: string;
+  shortcutProfilesDesc?: string;
+  shortcutPresets?: string;
+  shortcutPresetsDesc?: string;
+  shortcutHelp?: string;
+  shortcutHelpDesc?: string;
+  shortcutCloseDialog?: string;
+  shortcutCloseDialogDesc?: string;
+  pageNavigatorLinksTab?: string;
+  pageNavigatorLinksEmpty?: string;
+  pageNavigatorLinksAmbiguous?: string;
+
   // Feature names
   features?: FeatureLocaleLabels;
 }

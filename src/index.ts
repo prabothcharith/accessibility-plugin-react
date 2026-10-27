@@ -181,10 +181,12 @@ export {
 export {
   scanHeadings,
   scanLandmarks,
+  scanLinks,
   navigateToElement,
   subscribePageStructure,
   type HeadingItem,
   type LandmarkItem,
+  type LinkItem,
 } from "./core/pageNavigator";
 export {
   ProfilesController,
@@ -205,12 +207,27 @@ export {
   type ReadingModeControllerProps,
 } from "./features/ReadingModeController";
 export {
+  KeyboardShortcutsController,
+  type KeyboardShortcutsControllerProps,
+} from "./features/KeyboardShortcutsController";
+export {
   extractArticleContent,
   findArticleCandidate,
   countWords,
   estimateReadingTime,
   type ArticleContent,
 } from "./core/readingMode";
+export {
+  DEFAULT_SHORTCUTS,
+  RESERVED_BROWSER_SHORTCUTS,
+  normalizeKeyCombo,
+  parseKeyboardEventToCombo,
+  isFormFieldOrEditable,
+  validateShortcutRemap,
+  resolveActiveShortcut,
+  type ShortcutDefinition,
+  type ValidationResult,
+} from "./core/shortcuts";
 
 // Custom Presets, Backup & JSON Import/Export
 export { usePresets, type UsePresetsResult } from "./core/usePresets";

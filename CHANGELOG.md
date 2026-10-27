@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.19.0 — 2026-10-27
+
+- Implement discoverable keyboard shortcut help, collision-safe remapping, and Link Explorer (closes #56).
+- Introduce `KeyboardShortcutsController` and `src/core/shortcuts.ts`:
+  - Discoverable shortcut cheat sheet with category filters (`All`, `Widget`, `Navigation`, `Reading`, `Tools`) and search box.
+  - Global shortcuts kept off by default (`shortcutsEnabled: false`) to avoid interfering with screen readers and page commands per WCAG 2.1.4.
+  - Optional user-controlled global shortcuts switch with accessible toggle.
+  - Reserved browser command protection: strictly blacklists hijacking `Ctrl+U` (view source), `Ctrl+R` (reload), `Ctrl+T`, `Ctrl+W`, `Ctrl+N`, `Ctrl+P`, `Ctrl+F`, `Ctrl+S`, `F5`, `F12`, etc.
+  - Form field protection guard (`isFormFieldOrEditable`): suppresses global hotkeys when focus is inside text inputs, textareas, selects, comboboxes, or `contenteditable` elements.
+  - Collision-checked remapping: validates proposed shortcuts against other active plugin commands and enforces modifier key requirements.
+  - Persistent custom remappings stored under `customShortcuts` with one-click "Reset to Defaults".
+  - Persistent button alternatives: 100% of shortcut actions are directly accessible via interactive focusable buttons.
+  - Modal reader overlay with `role="dialog"`, `aria-modal="true"`, focus trap, and Escape dismissal.
+- Enhance `PageNavigatorController` and `src/core/pageNavigator.ts` with Link Explorer:
+  - Add `scanLinks` utility to discover all visible links (`a[href]`) on the page in true DOM order.
+  - Add dedicated `Links` tab alongside `Headings` and `Landmarks`.
+  - Badges for `LINK` (internal), `ANCHOR` (hash jump), and `EXT` (external destination / new tab).
+  - Uninformative link text warning badge (`Ambiguous`) for links with non-descriptive text (e.g. "click here", "read more").
+  - Safe focus and smooth scroll navigation via temporary `tabindex="-1"` without modifying host markup.
+- Add full Sinhala (`si`, `si-LK`) and Tamil (`ta`, `ta-LK`) localizations for all shortcut titles, descriptions, categories, and collision messages.
+- Export `KeyboardShortcutsController`, `KeyboardShortcutsControllerProps`, `scanLinks`, `LinkItem`, `DEFAULT_SHORTCUTS`, `RESERVED_BROWSER_SHORTCUTS`, `normalizeKeyCombo`, `parseKeyboardEventToCombo`, `isFormFieldOrEditable`, `validateShortcutRemap`, `resolveActiveShortcut`, `ShortcutDefinition`, and `ValidationResult`.
+- Add documentation in `docs/KEYBOARD_SHORTCUTS.md`, updated `docs/FEATURES.md`, `docs/API.md`, `README.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add 16 unit tests in `tests/shortcuts.test.ts`, 5 unit tests in `tests/linkExplorer.test.ts`, 8 integration tests in `tests/shortcutsWidget.test.tsx`, and Playwright browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.18.0 — 2026-10-27
 
 - Implement non-destructive reading mode proof of concept (closes #55).

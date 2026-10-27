@@ -132,12 +132,18 @@ for (const key of [
   "tooltips",
   "accessibleTooltips",
   "readingMode",
+  "shortcutsEnabled",
 ]) {
   builtins[key] = {
     defaultValue: false,
     validate: (v) => typeof v === "boolean",
   };
 }
+
+builtins.customShortcuts = {
+  defaultValue: {},
+  validate: (v) => typeof v === "object" && v !== null,
+};
 
 export const DEFAULT_READING_MASK_HEIGHT = 100;
 export const MIN_READING_MASK_HEIGHT = 40;

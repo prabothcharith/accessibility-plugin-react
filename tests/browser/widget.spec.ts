@@ -1213,3 +1213,97 @@ test("A11Y-307: Reading mode opens non-destructive article overlay, traps focus,
   await hostAction.click();
   await expect(hostAction).toHaveText("Host action 1");
 });
+
+test("A11Y-308: Keyboard shortcut help, collision-checked remapping and link explorer", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+
+  // Open accessibility panel
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  // Test 1: Page Navigator Link Explorer tab
+  const exploreBtn = page.locator(
+    "button[aria-controls='arap-page-navigator-dialog']",
+  );
+  await exploreBtn.click();
+  const navDialog = page.getByRole("region", {
+    name: "Page Structure Explorer",
+  });
+  await expect(navDialog).toBeVisible();
+
+  // Switch to Links tab
+  const linksTab = navDialog.getByRole("tab", { name: /Links/i });
+  await expect(linksTab).toBeVisible();
+  await linksTab.click();
+
+  // Verify host link discovered
+  await expect(navDialog.getByText("useful link")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(navDialog).not.toBeVisible();
+
+  // Test 2: Keyboard Shortcuts dialog
+  const shortcutsBtn = page.getByRole("button", {
+    name: "Open Keyboard Shortcuts",
+  });
+  await expect(shortcutsBtn).toBeVisible();
+  await shortcutsBtn.click();
+
+  const shortcutsDialog = page.getByRole("dialog");
+  await expect(shortcutsDialog).toBeVisible();
+  await expect(shortcutsDialog).toHaveAttribute("aria-modal", "true");
+
+  // Verify default shortcuts
+  await expect(
+    shortcutsDialog.getByText("Toggle accessibility panel"),
+  ).toBeVisible();
+  await expect(shortcutsDialog.getByLabel("Current key: Alt+A")).toBeVisible();
+
+  // Category filtering
+  await shortcutsDialog.getByRole("tab", { name: "Navigation" }).click();
+  await expect(
+    shortcutsDialog.getByText("Page Structure & Links"),
+  ).toBeVisible();
+  await expect(
+    shortcutsDialog.getByText("Toggle accessibility panel"),
+  ).not.toBeVisible();
+
+  // Switch back to All
+  await shortcutsDialog.getByRole("tab", { name: "All" }).click();
+
+  // Remap test: Attempt reserved browser command Ctrl+U
+  const remapBtn = shortcutsDialog.getByRole("button", {
+    name: "Remap Toggle accessibility panel",
+  });
+  await remapBtn.click();
+
+  const remapInput = shortcutsDialog.getByLabel(
+    "Press key combination to remap",
+  );
+  await remapInput.press("Control+u");
+  await expect(shortcutsDialog.getByRole("status")).toContainText(
+    "reserved browser command",
+  );
+
+  // Remap to valid combo Alt+Shift+Z
+  await remapInput.press("Alt+Shift+z");
+  await expect(
+    shortcutsDialog.getByLabel("Current key: Alt+Shift+Z"),
+  ).toBeVisible();
+
+  // Reset to Defaults
+  await shortcutsDialog
+    .getByRole("button", { name: "Reset to Defaults" })
+    .click();
+  await expect(shortcutsDialog.getByLabel("Current key: Alt+A")).toBeVisible();
+
+  // Escape closes dialog
+  await page.keyboard.press("Escape");
+  await expect(shortcutsDialog).not.toBeVisible();
+});

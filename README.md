@@ -129,6 +129,8 @@ Build custom accessible panels or custom features with modular primitives that i
 - **`StepperControl`**: Bounded decrement/increment buttons, `<output aria-live="polite">`, and optional range slider.
 - **`SearchCount` & `EmptyState`**: Polite live announcements for feature filtering and search zero-results states.
 - **`ProfilePreviewCard`**: Previews affected accessibility profile settings (e.g. low-vision, dyslexia, cognitive) and provides one-click reversal back to custom settings.
+- **`ReadingModeController`**: Non-destructive article content reader with Light/Sepia/Dark themes, font scaling, and zero external transmission.
+- **`KeyboardShortcutsController`**: Discoverable keyboard shortcut cheat sheet, collision-checked remapping, protected browser commands (e.g. Ctrl+U), form typing protection, and full Link Explorer.
 
 ## Custom features
 
