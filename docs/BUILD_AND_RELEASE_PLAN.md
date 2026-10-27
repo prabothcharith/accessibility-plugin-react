@@ -100,7 +100,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-305 — Custom saved presets and settings import/export #53](https://github.com/prabothcharith/accessibility-react/issues/53) — Add named custom presets and validated versioned JSON import/export that excludes personal content and handles malformed data clearly.
 - [x] [A11Y-306 — Sinhala and Tamil locale packs with accessibility review #54](https://github.com/prabothcharith/accessibility-react/issues/54) — Add reviewed Sinhala and Tamil widget locale packs and verify glyphs, long labels, search, announcements, fallback and assistive use.
 - [x] [A11Y-307 — Non-destructive reading mode proof of concept #55](https://github.com/prabothcharith/accessibility-react/issues/55) — Prototype safe article-focused reading mode without rewriting host DOM, losing content, breaking focus or sending content externally.
-- [ ] [A11Y-308 — Keyboard shortcut help, remapping and link explorer #56](https://github.com/prabothcharith/accessibility-react/issues/56) — Add discoverable shortcut and heading-navigation help, collision-safe remapping and link exploration without hijacking browser or host commands.
+- [x] [A11Y-308 — Keyboard shortcut help, remapping and link explorer #56](https://github.com/prabothcharith/accessibility-react/issues/56) — Add discoverable shortcut and heading-navigation help, collision-safe remapping and link exploration without hijacking browser or host commands.
 
 ### M4 — Advanced and experimental controls
 

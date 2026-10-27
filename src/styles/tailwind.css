@@ -1320,6 +1320,30 @@
   color: #b45309;
 }
 
+.arap-navigator-badge-link {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.arap-navigator-badge-ext {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.arap-navigator-badge-warning {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.arap-navigator-subtext {
+  display: block;
+  font-size: 10px;
+  color: var(--arap-muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .arap-navigator-item-text {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1853,4 +1877,288 @@
   .arap-reading-mode-title {
     font-size: 1.75rem;
   }
+}
+
+/* Keyboard Shortcuts & Remapping (A11Y-308) */
+.arap-shortcuts-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 16px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.arap-shortcuts-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  margin: 16px auto;
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.arap-shortcuts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--arap-border, #e2e8f0);
+}
+
+.arap-shortcuts-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arap-shortcuts-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  color: var(--arap-muted, #64748b);
+}
+
+.arap-shortcuts-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--arap-muted, #64748b);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.arap-shortcuts-close-btn:hover {
+  color: var(--arap-text, #0f172a);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.arap-shortcuts-global-toggle {
+  padding: 12px 24px;
+  background: var(--arap-control, #f8fafc);
+  border-bottom: 1px solid var(--arap-border, #e2e8f0);
+}
+
+.arap-shortcuts-toggle-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.arap-shortcuts-toggle-desc {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--arap-muted, #64748b);
+  margin-top: 2px;
+}
+
+.arap-shortcuts-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--arap-border, #e2e8f0);
+}
+
+.arap-shortcuts-categories {
+  display: flex;
+  gap: 6px;
+}
+
+.arap-category-pill {
+  padding: 4px 10px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: var(--arap-control, #f1f5f9);
+  color: var(--arap-muted, #64748b);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.arap-category-pill:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.arap-category-pill-active {
+  background: var(--arap-selected, #f0fdf4);
+  color: var(--arap-accent, #008060);
+  border-color: var(--arap-accent, #008060);
+  font-weight: 600;
+}
+
+.arap-shortcuts-status {
+  margin: 12px 24px 0 24px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.arap-shortcuts-status-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.arap-shortcuts-remap-card {
+  margin: 12px 24px 0 24px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arap-shortcuts-remap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.arap-remap-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+  background: #ffffff;
+  color: #0f172a;
+  border: 2px solid var(--arap-accent, #008060);
+  border-radius: 6px;
+  outline: none;
+}
+
+.arap-shortcuts-remap-help {
+  font-size: 0.75rem;
+  color: var(--arap-muted, #64748b);
+}
+
+.arap-shortcuts-list-container {
+  padding: 12px 24px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.arap-shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arap-shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--arap-border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--arap-surface, #ffffff);
+  gap: 16px;
+}
+
+.arap-shortcut-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.arap-shortcut-label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arap-badge-custom {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.arap-shortcut-desc {
+  font-size: 0.8125rem;
+  color: var(--arap-muted, #64748b);
+}
+
+.arap-shortcut-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.arap-shortcut-keys {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.arap-kbd {
+  display: inline-block;
+  padding: 2px 7px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: var(--arap-control, #f1f5f9);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+}
+
+.arap-shortcuts-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--arap-border, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.arap-btn-link {
+  background: transparent;
+  border: none;
+  color: var(--arap-accent, #008060);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  padding: 0;
 }

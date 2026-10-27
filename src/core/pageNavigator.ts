@@ -14,6 +14,17 @@ export interface LandmarkItem {
   element: HTMLElement;
 }
 
+export interface LinkItem {
+  id: string;
+  text: string;
+  href: string;
+  target?: string;
+  isExternal: boolean;
+  isHash: boolean;
+  isAmbiguous: boolean;
+  element: HTMLElement;
+}
+
 const EXCLUDED_TAGS = new Set([
   "SCRIPT",
   "STYLE",
@@ -189,6 +200,88 @@ export function scanLandmarks(root?: Document | Element): LandmarkItem[] {
       id: node.id || `arap-landmark-${++index}`,
       type,
       label,
+      element: node,
+    });
+  });
+
+  return items;
+}
+
+const AMBIGUOUS_TEXT_PATTERNS =
+  /^(click\s*here|here|read\s*more|more|learn\s*more|link|details|view|go|continue|open|arrow)$/i;
+
+/**
+ * Discovers all visible links (a[href] or [role='link']) in true DOM tree order,
+ * strictly excluding elements within the plugin UI.
+ * Identifies external destinations, hash jumps, and uninformative / ambiguous link text.
+ */
+export function scanLinks(root?: Document | Element): LinkItem[] {
+  const doc = root || (typeof document !== "undefined" ? document : null);
+  if (!doc) return [];
+
+  const candidates = doc.querySelectorAll("a[href], [role='link'][href]");
+  const items: LinkItem[] = [];
+  let index = 0;
+
+  const currentOrigin =
+    typeof window !== "undefined" && window.location
+      ? window.location.origin
+      : "";
+
+  candidates.forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (EXCLUDED_TAGS.has(node.tagName)) return;
+    if (node.closest("[data-arap-ui]")) return;
+    if (!isElementVisible(node)) return;
+
+    const href = node.getAttribute("href")?.trim() || "";
+    if (!href || href.startsWith("javascript:")) {
+      return;
+    }
+
+    // Accessible name calculation
+    let text =
+      node.getAttribute("aria-label")?.trim() ||
+      node.getAttribute("title")?.trim() ||
+      "";
+
+    if (!text) {
+      const img = node.querySelector<HTMLImageElement>("img[alt]");
+      if (img && img.alt.trim()) {
+        text = img.alt.trim();
+      } else {
+        text = node.textContent?.trim() || "";
+      }
+    }
+
+    const isHash = href.startsWith("#");
+    let isExternal = false;
+    const target = node.getAttribute("target") || undefined;
+
+    if (target === "_blank") {
+      isExternal = true;
+    } else if (href.startsWith("http://") || href.startsWith("https://")) {
+      try {
+        const url = new URL(href, currentOrigin || "http://localhost");
+        if (currentOrigin && url.origin !== currentOrigin) {
+          isExternal = true;
+        }
+      } catch {
+        // Fallback for relative or malformed URLs
+      }
+    }
+
+    const isAmbiguous =
+      !text || AMBIGUOUS_TEXT_PATTERNS.test(text.toLowerCase());
+
+    items.push({
+      id: node.id || `arap-link-${++index}`,
+      text: text || href,
+      href,
+      target,
+      isExternal,
+      isHash,
+      isAmbiguous,
       element: node,
     });
   });
