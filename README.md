@@ -139,6 +139,7 @@ Build custom accessible panels or custom features with modular primitives that i
 - **`DictionaryController`**: Accessible terminology dictionary lookup with local offline glossaries in English, Sinhala, and Tamil, sensitive data rejection, and truthful non-hallucinating responses.
 - **`SmartContrastController`**: Measured relative luminance contrast enhancement research prototype with Porter-Duff compositing, LRU caching, and unsupported background reporting. See [docs/SMART_CONTRAST.md](docs/SMART_CONTRAST.md).
 - **`VoiceNavigationController`**: Client-side speech navigation research prototype for headings and scrolling with inactivity watchdog, background tab protection, and keyboard alternatives. See [docs/VOICE_NAVIGATION.md](docs/VOICE_NAVIGATION.md).
+- **`TranslationController`**: Host-content translation adapter architecture research prototype with explicit consent, privacy threat model, sensitive element exclusion, and DOM restoration. See [docs/TRANSLATION.md](docs/TRANSLATION.md).
 - **`FeatureMenu`**: Declarative per-site feature menu reordering, grouping, custom labels, and non-crashing safe diagnostics with stable rerenders. See [docs/MENU_CUSTOMIZATION.md](docs/MENU_CUSTOMIZATION.md).
 
 ## Custom features

@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.28.0 — 2026-10-27
+
+- Implement host-content translation adapter architecture with explicit consent, privacy threat model, sensitive element exclusion, and DOM restoration (closes #65). Completes Milestone 4 ([M4 #26](https://github.com/prabothcharith/accessibility-react/issues/26)).
+- Introduce translation adapter architecture (`src/core/translationAdapter.ts`) and controller (`src/features/TranslationController.tsx`):
+  - Strictly opt-in research prototype: labeled with `Prototype` pill in the UI; explicit disclaimer (`TRANSLATION_DISCLAIMER`) stating machine translation is an assistive convenience without official WCAG or legal guarantees.
+  - Decoupled from widget UI localization: clear architectural boundary between static bundled widget strings (`src/core/i18n/`, `docs/LOCALES.md`) and host document content translation (`docs/TRANSLATION.md`).
+  - Strict privacy threat model & sensitive element exclusion: automatically scans and excludes passwords (`input[type="password"]`), credential and financial inputs (`[autocomplete*="password"]`, `[autocomplete*="cc-"]`), email/phone inputs, technical code (`<code>`, `<pre>`, `<kbd>`, `<script>`, `<style>`), media/embedded boundaries (`<iframe>`, `<svg>`, `<canvas>`), explicit opt-out tags (`[translate="no"]`, `.notranslate`, `[data-no-translate]`), hidden elements (`[aria-hidden="true"]`), and the widget UI itself.
+  - Cross-origin and iframe boundary protection: strictly excludes `<iframe>` elements to prevent Same-Origin Policy (SOP) violations and cross-frame leakage.
+  - Zero default requests: never executes translation on page load or widget opening; requires explicit user consent via "Review & Grant Consent" modal before transmitting text.
+  - DOM injection & XSS prevention: updates text nodes exclusively through `Text.textContent`, never `innerHTML`, completely eliminating markup injection and script execution vectors.
+  - Idempotent restoration & teardown: provides a synchronous `session.restore()` callback that restores original host text immediately upon user request, consent revocation, or component unmount.
+  - Built-in offline mock adapter: `createOfflineMockTranslationAdapter` enables 100% offline development and testing with zero network requests.
+- Export `TranslationController`, `TRANSLATION_ERROR_CODES`, `TRANSLATION_DISCLAIMER`, `isSensitiveElement`, `extractTranslatableNodes`, `sanitizeTranslationOutput`, `applyTranslations`, `createOfflineMockTranslationAdapter`, `translateHostContent`, and related types in `src/index.ts`.
+- Add documentation in `docs/TRANSLATION.md`, update `README.md`, `docs/FEATURES.md`, `docs/API.md`, `docs/BUILD_AND_RELEASE_PLAN.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 22 unit and integration tests in `tests/translationAdapter.test.ts` and `tests/translationWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.27.0 — 2026-10-27
 
 - Implement voice navigation research prototype with local Web Speech API recognition, strict privacy boundaries, and keyboard alternatives (closes #64).
