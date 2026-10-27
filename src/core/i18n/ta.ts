@@ -66,6 +66,13 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
     `"${presetName}" முன்னமைவு நீக்கப்பட்டது.`,
   decreaseTextSize: "உரை அளவைக் குறைக்கவும்",
   increaseTextSize: "உரை அளவை அதிகரிக்கவும்",
+  readingModeDescription: "கவனச்சிதறலற்ற கட்டுரை வாசிப்பு",
+  readingModeOpen: "வாசிப்பு பயன்முறையைத் திற",
+  readingModeClose: "வாசிப்பு பயன்முறையை மூடு",
+  readingModeFailed:
+    "இப்பக்கத்தில் படிக்கக்கூடிய கட்டுரை உள்ளடக்கம் எதுவும் இல்லை.",
+  formatReadingWords: (words: number) => `${words} வார்த்தைகள்`,
+  formatReadingTime: (minutes: number) => `${minutes} நிமிட வாசிப்பு`,
   features: {
     textScale: "பெரிய உரை",
     lineHeight: "வரி இடைவெளி",

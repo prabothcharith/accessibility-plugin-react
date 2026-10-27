@@ -200,6 +200,17 @@ export {
   PresetsBackupController,
   type PresetsControllerProps,
 } from "./features/PresetsController";
+export {
+  ReadingModeController,
+  type ReadingModeControllerProps,
+} from "./features/ReadingModeController";
+export {
+  extractArticleContent,
+  findArticleCandidate,
+  countWords,
+  estimateReadingTime,
+  type ArticleContent,
+} from "./core/readingMode";
 
 // Custom Presets, Backup & JSON Import/Export
 export { usePresets, type UsePresetsResult } from "./core/usePresets";

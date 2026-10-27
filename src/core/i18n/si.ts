@@ -65,6 +65,12 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
     `"${presetName}" පෙරසැකසුම ඉවත් කරන ලදී.`,
   decreaseTextSize: "අකුරු ප්‍රමාණය අඩු කරන්න",
   increaseTextSize: "අකුරු ප්‍රමාණය වැඩි කරන්න",
+  readingModeDescription: "බාධාවකින් තොර ලිපි කියවීම",
+  readingModeOpen: "කියවීමේ ප්‍රකාරය අරඹන්න",
+  readingModeClose: "කියවීමේ ප්‍රකාරය වසන්න",
+  readingModeFailed: "මෙම පිටුවෙහි කියවිය හැකි ලිපි අන්තර්ගතයක් හමු නොවීය.",
+  formatReadingWords: (words: number) => `වචන ${words}ක්`,
+  formatReadingTime: (minutes: number) => `මිනිත්තු ${minutes}ක කියවීමක්`,
   features: {
     textScale: "විශාල අකුරු",
     lineHeight: "පේළි පරතරය",
