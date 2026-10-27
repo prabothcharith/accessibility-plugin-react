@@ -92,6 +92,10 @@ export const builtins: Record<
     defaultValue: "off",
     validate: oneOf("off", "original", "light", "dark", "high", "invert"),
   },
+  smartContrast: {
+    defaultValue: "off",
+    validate: oneOf(false, true, "off", "aa", "aaa"),
+  },
   saturation: {
     defaultValue: 0,
     validate: oneOf(0, 1, 2, 3, "original", "low", "high", "grayscale"),

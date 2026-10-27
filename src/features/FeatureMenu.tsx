@@ -17,6 +17,7 @@ import { WordSpacingController } from "./WordSpacingController";
 import { ParagraphSpacingController } from "./ParagraphSpacingController";
 import { ContrastController } from "./ContrastController";
 import { ContrastModeController } from "./ContrastModeController";
+import { SmartContrastController } from "./SmartContrastController";
 import { SaturationController } from "./SaturationController";
 import { InvertColorsController } from "./InvertColorsController";
 import { GrayscaleController } from "./GrayscaleController";
@@ -52,6 +53,7 @@ const CONTROLLER_COMPONENT_MAP: Record<string, ControllerComponent> = {
   paragraphSpacing: ParagraphSpacingController,
   contrast: ContrastController,
   contrastMode: ContrastModeController,
+  smartContrast: SmartContrastController,
   saturation: SaturationController,
   invertColors: InvertColorsController,
   grayscale: GrayscaleController,
