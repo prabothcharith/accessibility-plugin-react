@@ -326,7 +326,9 @@ export function navigateToElement(
   const behavior: ScrollBehavior =
     options.behavior ?? (isReduced ? "auto" : "smooth");
 
-  element.scrollIntoView({ behavior, block: "start" });
+  if (typeof element.scrollIntoView === "function") {
+    element.scrollIntoView({ behavior, block: "start" });
+  }
   element.focus();
 
   if (!isNaturallyFocusable) {

@@ -390,3 +390,25 @@ export {
   type AppliedSmartContrast,
   type BackdropResolution,
 } from "./core/smartContrast";
+
+// Voice Navigation Research Prototype (A11Y-408)
+export {
+  VoiceNavigationController,
+  type VoiceNavigationControllerProps,
+} from "./features/VoiceNavigationController";
+export {
+  VOICE_COMMANDS,
+  VOICE_NAVIGATION_DISCLAIMER,
+  isSpeechRecognitionSupported,
+  normalizeTranscript,
+  matchVoiceCommand,
+  executeVoiceCommand,
+  createVoiceNavigationSession,
+  type VoiceNavigationStatus,
+  type VoiceCommandId,
+  type VoiceCommandDefinition,
+  type VoiceNavigationResult,
+  type VoiceNavigationOptions,
+  type VoiceNavigationSession,
+  type VoiceExecutionContext,
+} from "./core/voiceNavigation";
