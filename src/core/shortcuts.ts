@@ -61,6 +61,14 @@ export const DEFAULT_SHORTCUTS: ShortcutDefinition[] = [
     allowRemap: true,
   },
   {
+    id: "readAloud",
+    category: "reading",
+    labelKey: "shortcutReadAloud",
+    descriptionKey: "shortcutReadAloudDesc",
+    defaultKey: "Alt+L",
+    allowRemap: true,
+  },
+  {
     id: "profiles",
     category: "tools",
     labelKey: "shortcutProfiles",

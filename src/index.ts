@@ -211,6 +211,22 @@ export {
   type KeyboardShortcutsControllerProps,
 } from "./features/KeyboardShortcutsController";
 export {
+  ReadAloudController,
+  type ReadAloudControllerProps,
+} from "./features/ReadAloudController";
+export {
+  isSpeechSynthesisSupported,
+  getSpeechVoices,
+  subscribeSpeechVoices,
+  getActiveSelectionText,
+  extractReadAloudText,
+  splitTextIntoChunks,
+  ReadAloudSession,
+  type ReadAloudOptions,
+  type ReadAloudState,
+  READ_ALOUD_EXCLUDED_SELECTORS,
+} from "./core/readAloud";
+export {
   extractArticleContent,
   findArticleCandidate,
   countWords,

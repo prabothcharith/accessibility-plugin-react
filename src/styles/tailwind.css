@@ -2162,3 +2162,284 @@
   text-decoration: underline;
   padding: 0;
 }
+
+/* Read Aloud TTS (A11Y-401) */
+.arap-read-aloud-card {
+  border: 1px solid var(--arap-border, #e2e8f0);
+  background: var(--arap-surface, #ffffff);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease;
+}
+
+.arap-read-aloud-header {
+  margin-bottom: 10px;
+}
+
+.arap-read-aloud-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--arap-text, #0f172a);
+}
+
+.arap-read-aloud-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.arap-read-aloud-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.8125rem;
+  color: var(--arap-muted, #64748b);
+  line-height: 1.35;
+}
+
+.arap-read-aloud-unsupported {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.8125rem;
+  color: var(--arap-text, #0f172a);
+}
+
+.arap-read-aloud-status-banner {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.8125rem;
+  color: var(--arap-text, #0f172a);
+  margin-bottom: 8px;
+}
+
+.arap-read-aloud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 128, 96, 0.12);
+  color: var(--arap-accent, #008060);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.arap-read-aloud-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 2px rgba(0, 128, 96, 0.25);
+}
+
+.arap-read-aloud-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.arap-read-aloud-play-btn,
+.arap-read-aloud-pause-btn,
+.arap-read-aloud-resume-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--arap-accent, #008060);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: opacity 0.15s ease;
+}
+
+.arap-read-aloud-play-btn:hover,
+.arap-read-aloud-pause-btn:hover,
+.arap-read-aloud-resume-btn:hover {
+  opacity: 0.9;
+}
+
+.arap-read-aloud-stop-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--arap-control, #f1f5f9);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.arap-read-aloud-stop-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.arap-read-aloud-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid var(--arap-border, #f1f5f9);
+}
+
+.arap-read-aloud-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--arap-text, #0f172a);
+}
+
+.arap-read-aloud-pills {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--arap-control, #f8fafc);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--arap-border, #e2e8f0);
+}
+
+.arap-read-aloud-pill {
+  border: none;
+  background: transparent;
+  color: var(--arap-muted, #64748b);
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.arap-read-aloud-pill-active {
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-accent, #008060);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.arap-read-aloud-voice-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.arap-read-aloud-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+  border: 1px solid var(--arap-border, #cbd5e1);
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-text, #0f172a);
+  text-overflow: ellipsis;
+}
+
+/* Floating Mini-Player Bar */
+.arap-read-aloud-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483645;
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  padding: 8px 14px;
+  max-width: 90vw;
+  width: 440px;
+  animation: arapFadeSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arap-read-aloud-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.arap-read-aloud-bar-icon {
+  color: var(--arap-accent, #008060);
+  display: flex;
+  align-items: center;
+}
+
+.arap-read-aloud-bar-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.arap-read-aloud-bar-chunk {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--arap-text, #0f172a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arap-read-aloud-bar-meta {
+  font-size: 0.6875rem;
+  color: var(--arap-muted, #64748b);
+}
+
+.arap-read-aloud-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arap-read-aloud-bar-btn {
+  background: var(--arap-control, #f1f5f9);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s ease;
+}
+
+.arap-read-aloud-bar-btn:hover {
+  background: var(--arap-border, #e2e8f0);
+}
+
+.arap-read-aloud-bar-btn.astop:hover {
+  color: #ef4444;
+}
+
+@keyframes arapFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+

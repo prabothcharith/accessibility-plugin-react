@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.20.0 — 2026-10-27
+
+- Implement user-initiated read-aloud TTS with voice, rate, pitch, and stop controls (closes #57).
+- Introduce `ReadAloudController` and `src/core/readAloud.ts`:
+  - 100% native Web Speech API (`window.speechSynthesis`) integration with zero network transmission, external servers, telemetry, transcripts, or recordings.
+  - Strictly opt-in user initiation requiring explicit activation (button click or `Alt+L`); never automatically speaks on mount, route changes, or profile activation per WCAG 1.4.2 Audio Control.
+  - Natural text chunking: splits continuous prose into sentence / breath group chunks (~60–180 chars) to prevent Chromium's 15-second utterance lockup bug while maintaining seamless playback across paragraphs.
+  - Sensitive field exclusion: strictly eliminates `<input>`, `<textarea>`, `<select>`, `<button>`, passwords, credit card fields (`[autocomplete*="cc-"]`), `[data-sensitive]`, hidden elements (`aria-hidden="true"`, `display: none`), and widget internals (`[data-arap-ui]`, `.arap-widget`, `.arap-panel`).
+  - Selection priority: reads active user text selection if present; otherwise extracts clean article content from `<article>`, `<main>`, or the document body.
+  - Full playback controls: Play, Pause, Resume, and Stop controls with live status updates (`role="status"`, `aria-live="polite"`).
+  - Floating player bar portal (`.arap-read-aloud-bar`): remains accessible when the widget panel is closed, providing instant access to Pause/Resume and Stop.
+  - Voice selection dropdown dynamically populated from `speechSynthesis.getVoices()` with automatic change detection.
+  - Stepper controls for rate (`0.5x`–`2.0x` with 0.25x steps) and pitch (`Low`, `Normal`, `High`) meeting >=44px by 44px touch target guidelines across all viewports.
+  - Lifecycle safety: stops speech synthesis on `Escape` key (window capture phase), component unmount, `pagehide`, `beforeunload`, and tab hiding (`visibilitychange`).
+- Add full Sinhala (`si`, `si-LK`) and Tamil (`ta`, `ta-LK`) localizations for all read-aloud controls, statuses, and pitch/speed labels.
+- Register `readAloud`, `readAloudRate`, `readAloudPitch`, and `readAloudVoice` in `builtins` schema with versioned persistence.
+- Export `ReadAloudController`, `ReadAloudControllerProps`, `isSpeechSynthesisSupported`, `getSpeechVoices`, `subscribeSpeechVoices`, `getActiveSelectionText`, `extractReadAloudText`, `splitTextIntoChunks`, `ReadAloudSession`, and `READ_ALOUD_EXCLUDED_SELECTORS`.
+- Add documentation in `docs/READ_ALOUD.md`, update `docs/FEATURES.md`, `docs/API.md`, `README.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add 14 unit tests in `tests/readAloud.test.ts`, 9 integration tests in `tests/readAloudWidget.test.tsx`, and Playwright browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.19.0 — 2026-10-27
 
 - Implement discoverable keyboard shortcut help, collision-safe remapping, and Link Explorer (closes #56).

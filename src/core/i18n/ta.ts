@@ -109,6 +109,29 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksTab: "இணைப்புகள்",
   pageNavigatorLinksEmpty: "இப்பக்கத்தில் இணைப்புகள் எதுவும் இல்லை.",
   pageNavigatorLinksAmbiguous: "தெளிவற்றது",
+
+  // Read Aloud TTS (A11Y-401)
+  readAloudDescription: "உரையை பேச்சாக மாற்றும் தொழில்நுட்பத்தைப் பயன்படுத்தி பக்க உள்ளடக்கத்தைக் கேளுங்கள்",
+  readAloudPlay: "சத்தமாகப் படியுங்கள்",
+  readAloudPlaySelection: "தேர்வை வாசி",
+  readAloudPlayArticle: "கட்டுரையை வாசி",
+  readAloudPause: "இடைநிறுத்து",
+  readAloudResume: "மீண்டும் தொடங்கு",
+  readAloudStop: "வாசிப்பை நிறுத்து",
+  readAloudRate: "வேகம்",
+  readAloudPitch: "சுருதி",
+  readAloudVoice: "குரல்",
+  readAloudDefaultVoice: "இயல்புநிலை குரல்",
+  readAloudStatusReading: "வாசிக்கப்படுகிறது...",
+  readAloudStatusPaused: "இடைநிறுத்தப்பட்டுள்ளது",
+  readAloudStatusStopped: "நிறுத்தப்பட்டது",
+  readAloudUnsupported: "இந்த உலாவியில் உரை-பேச்சு வசதி ஆதரிக்கப்படவில்லை.",
+  readAloudNoText: "படிக்கக்கூடிய உரை எதுவும் கிடைக்கவில்லை.",
+  readAloudSensitiveSkipped: "தனிப்பட்ட அல்லது முக்கியமான படிவ புலங்கள் வாசிப்பில் இருந்து தவிர்க்கப்படுகின்றன.",
+  readAloudSpeed: "வேகம்",
+  shortcutReadAloud: "சத்தமாகப் படியுங்கள்",
+  shortcutReadAloudDesc: "சத்தமாகப் படிப்பதைத் தொடங்கவும், இடைநிறுத்தவும் அல்லது நிறுத்தவும்",
+
   features: {
     textScale: "பெரிய உரை",
     lineHeight: "வரி இடைவெளி",
@@ -127,5 +150,6 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
     presets: "சேமிக்கப்பட்ட முன்னமைவுகள்",
     readingMode: "வாசிப்பு முறை",
     keyboardShortcuts: "விசைப்பலகை குறுக்குவழிகள்",
+    readAloud: "சத்தமாகப் படியுங்கள்",
   },
 });

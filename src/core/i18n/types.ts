@@ -15,6 +15,7 @@ export interface FeatureLocaleLabels {
   profiles?: string;
   presets?: string;
   readingMode?: string;
+  readAloud?: string;
   [key: string]: string | undefined;
 }
 
@@ -114,6 +115,28 @@ export interface LocaleStrings {
   pageNavigatorLinksTab?: string;
   pageNavigatorLinksEmpty?: string;
   pageNavigatorLinksAmbiguous?: string;
+
+  // Read Aloud TTS (A11Y-401)
+  readAloudDescription?: string;
+  readAloudPlay?: string;
+  readAloudPlaySelection?: string;
+  readAloudPlayArticle?: string;
+  readAloudPause?: string;
+  readAloudResume?: string;
+  readAloudStop?: string;
+  readAloudRate?: string;
+  readAloudPitch?: string;
+  readAloudVoice?: string;
+  readAloudDefaultVoice?: string;
+  readAloudStatusReading?: string;
+  readAloudStatusPaused?: string;
+  readAloudStatusStopped?: string;
+  readAloudUnsupported?: string;
+  readAloudNoText?: string;
+  readAloudSensitiveSkipped?: string;
+  readAloudSpeed?: string;
+  shortcutReadAloud?: string;
+  shortcutReadAloudDesc?: string;
 
   // Feature names
   features?: FeatureLocaleLabels;

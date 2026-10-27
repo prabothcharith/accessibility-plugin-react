@@ -182,6 +182,28 @@ const drawings: Record<string, ReactNode> = {
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
     </>
   ),
+  readAloud: (
+    <>
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+    </>
+  ),
+  play: (
+    <>
+      <polygon points="6 4 19 12 6 20 6 4" fill="currentColor" />
+    </>
+  ),
+  pause: (
+    <>
+      <rect x="6" y="4" width="4" height="16" fill="currentColor" />
+      <rect x="14" y="4" width="4" height="16" fill="currentColor" />
+    </>
+  ),
+  stop: (
+    <>
+      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" />
+    </>
+  ),
 };
 
 /** Decorative only: each control keeps its existing visible and accessible name. */
