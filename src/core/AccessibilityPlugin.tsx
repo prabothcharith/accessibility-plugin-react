@@ -116,7 +116,48 @@ export function AccessibilityPlugin({
         !validValue(key, value, definition.defaultValue, definition.validate)
       )
         throw new Error(`Invalid value or unregistered feature: ${key}`);
-      setFeatures((previous) => ({ ...previous, [key]: value }));
+      setFeatures((previous) => {
+        const copy: Record<string, unknown> = { ...previous, [key]: value };
+        if (
+          key !== "activeProfile" &&
+          key !== PLACEMENT_KEY &&
+          previous.activeProfile &&
+          typeof previous.activeProfile === "object"
+        ) {
+          const profileState = previous.activeProfile as {
+            profileId: string;
+            baseSnapshot: Record<string, unknown>;
+            overrides: Record<string, unknown>;
+          };
+          const targetKey =
+            key === "fontSize" || key === "textScale"
+              ? "fontScale"
+              : key === "focusHighlight"
+                ? "highlightFocus"
+                : key === "linkHighlight"
+                  ? "highlightLinks"
+                  : key === "bigCursor"
+                    ? "cursorSize"
+                    : key === "readingGuide" || key === "readingMask"
+                      ? "readerMode"
+                      : key;
+          if (
+            profileState.baseSnapshot &&
+            (targetKey in profileState.baseSnapshot ||
+              key in profileState.baseSnapshot)
+          ) {
+            copy.activeProfile = {
+              ...profileState,
+              overrides: {
+                ...profileState.overrides,
+                [targetKey]: value,
+                [key]: value,
+              },
+            };
+          }
+        }
+        return copy;
+      });
     },
     [setFeatures],
   );
