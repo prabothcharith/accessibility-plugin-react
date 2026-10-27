@@ -138,9 +138,15 @@ export {
 } from "./features/ParagraphSpacingController";
 export { ContrastController } from "./features/ContrastController";
 export { ContrastModeController } from "./features/ContrastModeController";
-export { SaturationController } from "./features/SaturationController";
+export {
+  SaturationController,
+  type SaturationControllerProps,
+} from "./features/SaturationController";
 export { InvertColorsController } from "./features/InvertColorsController";
-export { GrayscaleController } from "./features/GrayscaleController";
+export {
+  GrayscaleController,
+  type GrayscaleControllerProps,
+} from "./features/GrayscaleController";
 export { LinkHighlightController } from "./features/LinkHighlightController";
 export { TextAlignController } from "./features/TextAlignController";
 export { FontFamilyController } from "./features/FontFamilyController";

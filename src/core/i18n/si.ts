@@ -105,7 +105,8 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksAmbiguous: "අවිනිශ්චිත",
 
   // Read Aloud TTS (A11Y-401)
-  readAloudDescription: "පෙළ කියවීමේ තාක්ෂණය භාවිතයෙන් පිටුවේ අන්තර්ගතය හෝ තෝරාගත් පෙළට සවන් දෙන්න",
+  readAloudDescription:
+    "පෙළ කියවීමේ තාක්ෂණය භාවිතයෙන් පිටුවේ අන්තර්ගතය හෝ තෝරාගත් පෙළට සවන් දෙන්න",
   readAloudPlay: "හඬ නගා කියවන්න",
   readAloudPlaySelection: "තේරීම කියවන්න",
   readAloudPlayArticle: "ලිපිය කියවන්න",
@@ -121,10 +122,28 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   readAloudStatusStopped: "නවත්වා ඇත",
   readAloudUnsupported: "මෙම බ්‍රවුසරයේ හඬ නගා කියවීමේ පහසුකම නොමැත.",
   readAloudNoText: "කියවීමට සුදුසු අන්තර්ගතයක් හමු නොවීය.",
-  readAloudSensitiveSkipped: "පුද්ගලික හෝ සංවේදී ආකෘති පත්‍ර කොටස් කියවීමෙන් බැහැර කර ඇත.",
+  readAloudSensitiveSkipped:
+    "පුද්ගලික හෝ සංවේදී ආකෘති පත්‍ර කොටස් කියවීමෙන් බැහැර කර ඇත.",
   readAloudSpeed: "වේගය",
   shortcutReadAloud: "හඬ නගා කියවන්න",
   shortcutReadAloudDesc: "හඬ නගා කියවීම අරඹන්න, මදක් නවත්වන්න හෝ නවත්වන්න",
+
+  // Saturation & grayscale modes
+  saturationOff: "අක්‍රියයි",
+  saturationLow: "අඩු",
+  saturationHigh: "ඉහළ",
+  saturationGrayscale: "අළු පැහැ",
+  saturationLowWarning:
+    "අඩු සන්තෘප්තිය වර්ණ වෙනස්කම් අඩු කරයි. ප්‍රස්තාර සහ වර්ණ සංකේත වෙන්කර හඳුනා ගැනීම අපහසු විය හැක.",
+  saturationHighWarning:
+    "ඉහළ සන්තෘප්තිය වර්ණ තීව්‍රතාව (200%) වැඩි කරයි, එමඟින් ඇස්වලට අපහසුතාව හෝ වර්ණ විකෘති වීම් සිදුවිය හැක.",
+  grayscaleWarning:
+    "අළු පරිමාණය සියලු වර්ණ ඉවත් කරයි. වර්ණ මත පමණක් පදනම් වූ ප්‍රස්තාර සඳහා වෙනත් ලේබල් අවශ්‍ය විය හැක.",
+  forcedColorsActiveWarning:
+    "මෙහෙයුම් පද්ධතියේ ඉහළ ප්‍රතිවිරෝධතා ප්‍රකාරය සක්‍රියයි. පද්ධති ප්‍රතිවිරෝධතාව සුරැකීමට පෙරහන් බලපෑම් මඟහරිනු ලැබේ.",
+  shortcutGrayscale: "අළු පරිමාණය",
+  shortcutGrayscaleDesc:
+    "ඒකවර්ණ අළු පරිමාණ දර්ශන මාදිලිය සක්‍රිය හෝ අක්‍රිය කරන්න",
 
   features: {
     textScale: "විශාල අකුරු",
@@ -145,5 +164,7 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
     readingMode: "කියවීමේ මාදිලිය",
     keyboardShortcuts: "යතුරුපුවරු කෙටිමං",
     readAloud: "හඬ නගා කියවන්න",
+    saturation: "සන්තෘප්තිය",
+    grayscale: "අළු පරිමාණය",
   },
 });

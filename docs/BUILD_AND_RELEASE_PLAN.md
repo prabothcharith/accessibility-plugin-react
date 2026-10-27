@@ -105,7 +105,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 ### M4 — Advanced and experimental controls
 
 - [x] [A11Y-401 — Read-aloud TTS with voice, rate and stop controls #57](https://github.com/prabothcharith/accessibility-react/issues/57) — Add user-initiated read-aloud with voice/rate/pitch/language, pause/resume/stop, sensitive-content exclusions and lifecycle cleanup.
-- [ ] [A11Y-402 — Saturation and grayscale modes #58](https://github.com/prabothcharith/accessibility-react/issues/58) — Add opt-in saturation and grayscale modes with chart/image warnings, forced-color protection, browser coverage and exact reset.
+- [x] [A11Y-402 — Saturation and grayscale modes #58](https://github.com/prabothcharith/accessibility-react/issues/58) — Add opt-in saturation and grayscale modes with chart/image warnings, forced-color protection, browser coverage and exact reset.
 - [ ] [A11Y-403 — Dictionary provider interface and local fallback #59](https://github.com/prabothcharith/accessibility-react/issues/59) — Define local and optional remote dictionary providers with explicit consent, origin/rate/sanitization rules, private-data protection and truthful unknown results.
 - [ ] [A11Y-404 — Per-site feature-menu customization and reorder #60](https://github.com/prabothcharith/accessibility-react/issues/60) — Add validated feature visibility, ordering, grouping, labels and default customization while keeping close, reset and help reachable.
 - [ ] [A11Y-405 — Development-only integration diagnostics and harness #61](https://github.com/prabothcharith/accessibility-react/issues/61) — Build development-only diagnostics and fixtures for supported features, effect ownership, storage, host CSS, CSP, portals, iframes and dynamic content.

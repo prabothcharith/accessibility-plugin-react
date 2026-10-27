@@ -111,7 +111,8 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   pageNavigatorLinksAmbiguous: "தெளிவற்றது",
 
   // Read Aloud TTS (A11Y-401)
-  readAloudDescription: "உரையை பேச்சாக மாற்றும் தொழில்நுட்பத்தைப் பயன்படுத்தி பக்க உள்ளடக்கத்தைக் கேளுங்கள்",
+  readAloudDescription:
+    "உரையை பேச்சாக மாற்றும் தொழில்நுட்பத்தைப் பயன்படுத்தி பக்க உள்ளடக்கத்தைக் கேளுங்கள்",
   readAloudPlay: "சத்தமாகப் படியுங்கள்",
   readAloudPlaySelection: "தேர்வை வாசி",
   readAloudPlayArticle: "கட்டுரையை வாசி",
@@ -127,10 +128,28 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   readAloudStatusStopped: "நிறுத்தப்பட்டது",
   readAloudUnsupported: "இந்த உலாவியில் உரை-பேச்சு வசதி ஆதரிக்கப்படவில்லை.",
   readAloudNoText: "படிக்கக்கூடிய உரை எதுவும் கிடைக்கவில்லை.",
-  readAloudSensitiveSkipped: "தனிப்பட்ட அல்லது முக்கியமான படிவ புலங்கள் வாசிப்பில் இருந்து தவிர்க்கப்படுகின்றன.",
+  readAloudSensitiveSkipped:
+    "தனிப்பட்ட அல்லது முக்கியமான படிவ புலங்கள் வாசிப்பில் இருந்து தவிர்க்கப்படுகின்றன.",
   readAloudSpeed: "வேகம்",
   shortcutReadAloud: "சத்தமாகப் படியுங்கள்",
-  shortcutReadAloudDesc: "சத்தமாகப் படிப்பதைத் தொடங்கவும், இடைநிறுத்தவும் அல்லது நிறுத்தவும்",
+  shortcutReadAloudDesc:
+    "சத்தமாகப் படிப்பதைத் தொடங்கவும், இடைநிறுத்தவும் அல்லது நிறுத்தவும்",
+
+  // Saturation & grayscale modes
+  saturationOff: "முடக்கு",
+  saturationLow: "குறைந்த",
+  saturationHigh: "அதிக",
+  saturationGrayscale: "சாம்பல் நிறம்",
+  saturationLowWarning:
+    "குறைந்த நிறச்செறிவூட்டல் நிற வேறுபாடுகளைக் குறைக்கிறது. வரைபடங்கள் மற்றும் நிறக் குறியீடுகளை வேறுபடுத்துவது கடினமாகலாம்.",
+  saturationHighWarning:
+    "அதிக நிறச்செறிவூட்டல் வண்ணத் தீவிரத்தை (200%) அதிகரிக்கிறது, இது கண் கூச்சம் அல்லது நிறச் சிதைவை ஏற்படுத்தலாம்.",
+  grayscaleWarning:
+    "சாம்பல் நிறம் அனைத்து வண்ணங்களையும் நீக்குகிறது. வண்ணங்களை மட்டுமே நம்பியிருக்கும் வரைபடங்களுக்கு மாற்று லேபிள்கள் தேவைப்படலாம்.",
+  forcedColorsActiveWarning:
+    "இயக்க முறைமையின் உயர் மாறுபாடு பயன்முறை செயலில் உள்ளது. கணினி மாறுபாட்டைப் பாதுகாக்க வடிகட்டி விளைவுகள் தவிர்க்கப்படுகின்றன.",
+  shortcutGrayscale: "சாம்பல் நிறம்",
+  shortcutGrayscaleDesc: "சாம்பல் நிற காட்சி பயன்முறையை மாற்றவும்",
 
   features: {
     textScale: "பெரிய உரை",
@@ -151,5 +170,7 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
     readingMode: "வாசிப்பு முறை",
     keyboardShortcuts: "விசைப்பலகை குறுக்குவழிகள்",
     readAloud: "சத்தமாகப் படியுங்கள்",
+    saturation: "நிறச்செறிவூட்டல்",
+    grayscale: "சாம்பல் நிறம்",
   },
 });

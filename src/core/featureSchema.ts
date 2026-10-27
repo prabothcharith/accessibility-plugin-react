@@ -92,7 +92,10 @@ export const builtins: Record<
     defaultValue: "off",
     validate: oneOf("off", "original", "light", "dark", "high", "invert"),
   },
-  saturation: { defaultValue: 0, validate: oneOf(0, 1, 2) },
+  saturation: {
+    defaultValue: 0,
+    validate: oneOf(0, 1, 2, 3, "original", "low", "high", "grayscale"),
+  },
   textAlign: {
     defaultValue: "default",
     validate: oneOf("default", "left", "center", "right", "justify"),

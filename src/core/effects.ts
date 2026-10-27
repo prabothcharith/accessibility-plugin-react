@@ -148,12 +148,19 @@ export function composeFilter(values: Record<string, unknown>): string {
     values.contrast === "invert" ||
     values.contrastMode === "invert";
 
+  const isLowSat = values.saturation === 1 || values.saturation === "low";
+  const isHighSat = values.saturation === 2 || values.saturation === "high";
+  const isGrayscale =
+    Boolean(values.grayscale) ||
+    values.saturation === 3 ||
+    values.saturation === "grayscale";
+
   return [
     contrast !== 1 && `contrast(${contrast})`,
-    values.saturation === 1 && "saturate(0.2)",
-    values.saturation === 2 && "saturate(2)",
+    isLowSat && "saturate(0.2)",
+    isHighSat && "saturate(2)",
     isInvert && "invert(1)",
-    values.grayscale && "grayscale(1)",
+    isGrayscale && "grayscale(1)",
   ]
     .filter(Boolean)
     .join(" ");
