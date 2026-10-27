@@ -34,16 +34,13 @@ export type AccessibilityEventType =
   | "preset-apply";
 
 export type EventTriggerSource =
-  | "ui"
-  | "shortcut"
-  | "profile"
-  | "preset"
-  | "reset"
-  | "api";
+  "ui" | "shortcut" | "profile" | "preset" | "reset" | "api";
 ```
 
 ### 1. `feature-change`
+
 Emitted when a user adjusts an individual accessibility preference:
+
 ```json
 {
   "type": "feature-change",
@@ -56,7 +53,9 @@ Emitted when a user adjusts an individual accessibility preference:
 ```
 
 ### 2. `panel-toggle`
+
 Emitted when the accessibility settings panel opens or closes:
+
 ```json
 {
   "type": "panel-toggle",
@@ -67,7 +66,9 @@ Emitted when the accessibility settings panel opens or closes:
 ```
 
 ### 3. `feature-reset`
+
 Emitted when the user resets settings to baseline defaults:
+
 ```json
 {
   "type": "feature-reset",
@@ -78,7 +79,9 @@ Emitted when the user resets settings to baseline defaults:
 ```
 
 ### 4. `placement-change`
+
 Emitted when the widget button position is moved:
+
 ```json
 {
   "type": "placement-change",
@@ -89,7 +92,9 @@ Emitted when the widget button position is moved:
 ```
 
 ### 5. `profile-apply`
+
 Emitted when an accessibility profile is activated:
+
 ```json
 {
   "type": "profile-apply",

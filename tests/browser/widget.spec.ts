@@ -1620,7 +1620,9 @@ test("development-only diagnostics harness opens and displays actionable integra
 
   // Disclaimer and summary bar should be visible
   await expect(
-    panel.getByText("Automated diagnostics evaluate host environment compatibility"),
+    panel.getByText(
+      "Automated diagnostics evaluate host environment compatibility",
+    ),
   ).toBeVisible();
   await expect(panel.getByText("Total")).toBeVisible();
 
@@ -1683,5 +1685,3 @@ test("smart contrast research prototype evaluates elements, displays statistics,
   await origBtn.click();
   await expect(origBtn).toHaveAttribute("aria-pressed", "true");
 });
-
-

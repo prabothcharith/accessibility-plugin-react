@@ -69,7 +69,12 @@ export function DiagnosticsHarness({
       ? issues
       : issues.filter((issue) => issue.category === activeCategory);
 
-  const summary = report?.summary ?? { total: 0, errors: 0, warnings: 0, info: 0 };
+  const summary = report?.summary ?? {
+    total: 0,
+    errors: 0,
+    warnings: 0,
+    info: 0,
+  };
 
   const categories: { id: string; label: string }[] = [
     { id: "all", label: `All (${summary.total})` },
@@ -144,7 +149,10 @@ export function DiagnosticsHarness({
           </div>
 
           <div className="arap-diagnostics-disclaimer">
-            <span className="arap-diagnostics-disclaimer-icon" aria-hidden="true">
+            <span
+              className="arap-diagnostics-disclaimer-icon"
+              aria-hidden="true"
+            >
               ℹ️
             </span>
             <span className="arap-diagnostics-disclaimer-text">

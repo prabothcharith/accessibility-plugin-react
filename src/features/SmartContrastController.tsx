@@ -67,7 +67,8 @@ export function SmartContrastController() {
       <div className="arap-segmented">
         {OPTIONS.map((option) => {
           const isOptionActive =
-            (option.value === "off" && (value === "off" || value === false || !value)) ||
+            (option.value === "off" &&
+              (value === "off" || value === false || !value)) ||
             (option.value === "aa" && (value === "aa" || value === true)) ||
             (option.value === "aaa" && value === "aaa");
 
@@ -91,7 +92,11 @@ export function SmartContrastController() {
       </div>
 
       {isActive && report && !forcedColors && (
-        <div className="arap-smart-contrast-stats" role="status" aria-live="polite">
+        <div
+          className="arap-smart-contrast-stats"
+          role="status"
+          aria-live="polite"
+        >
           <div className="arap-stats-summary">
             <span>
               <strong>{report.adjustedCount}</strong> adjusted
@@ -117,12 +122,17 @@ export function SmartContrastController() {
               onClick={() => setShowDetails((prev) => !prev)}
               aria-expanded={showDetails}
             >
-              {showDetails ? "Hide unsupported details" : "Show unsupported elements"}
+              {showDetails
+                ? "Hide unsupported details"
+                : "Show unsupported elements"}
             </button>
           )}
 
           {showDetails && report.unsupportedElements.length > 0 && (
-            <ul className="arap-unsupported-list" aria-label="Unsupported elements">
+            <ul
+              className="arap-unsupported-list"
+              aria-label="Unsupported elements"
+            >
               {report.unsupportedElements.map((item, idx) => (
                 <li key={idx} className="arap-unsupported-item">
                   <code>&lt;{item.tag}&gt;</code>:{" "}
@@ -143,7 +153,8 @@ export function SmartContrastController() {
 
       {forcedColors && (
         <div className="arap-notice" role="status" aria-live="polite">
-          Operating system high contrast (forced colors) is active. Filter and contrast modifications are bypassed.
+          Operating system high contrast (forced colors) is active. Filter and
+          contrast modifications are bypassed.
         </div>
       )}
     </div>

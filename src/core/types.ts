@@ -166,5 +166,3 @@ export type {
   AccessibilityFeatureEvent,
   FeatureEventListener,
 } from "./events";
-
-
