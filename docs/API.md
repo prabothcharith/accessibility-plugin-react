@@ -210,3 +210,44 @@ Batched evaluation and non-destructive application of high-contrast replacement 
 - `parseColor(colorStr: string): RgbaColor | null`: CSS color string parser with LRU memoization.
 - `resolveEffectiveBackdrop(element: HTMLElement): BackdropResolution`: Resolves effective background color by climbing ancestor chain, detecting unsupported gradients, background images, and backdrop filters.
 - `SMART_CONTRAST_DISCLAIMER`: Constant string disclaimer emphasizing prototype status and zero automatic WCAG compliance claims.
+
+## Voice Navigation Research Prototype (A11Y-408)
+
+### `<VoiceNavigationController />`
+
+Opt-in research prototype controller enabling browser-native speech commands:
+
+- Start/Stop toggle button with pulsating microphone indicator.
+- Polite live status region (`aria-live="polite"`) announcing active listening and recognized commands.
+- 30-second silence watchdog timeout and background tab (`document.hidden`) protection.
+- Collapsible supported commands cheat sheet detailing spoken phrases.
+- Fully operational accessible keyboard fallback buttons ("Next Heading", "Prev Heading", "Scroll Down", "Scroll Up", "Scroll Top", "Scroll Bottom").
+- Prototype badge and `VOICE_NAVIGATION_DISCLAIMER` notice.
+
+### `isSpeechRecognitionSupported(): boolean`
+
+Returns whether native Web Speech Recognition (`SpeechRecognition` or `webkitSpeechRecognition`) is available in the current browser.
+
+### `createVoiceNavigationSession(options?: VoiceNavigationOptions): VoiceNavigationSession`
+
+Creates a managed speech recognition session with lifecycle, timeout, and privacy management:
+
+- `start()`: Initiates speech recognition session.
+- `stop()`: Halts session cleanly.
+- `abort()`: Aborts session immediately.
+- `destroy()`: Removes all event listeners, watchdog timers, and references.
+- `getStatus(): VoiceNavigationStatus`: Current status (`idle`, `listening`, `processing`, `unsupported`, `denied`, `timeout`, `error`).
+- `getLastResult(): VoiceNavigationResult | null`: Transient last recognized command and feedback.
+
+### `matchVoiceCommand(transcript: string): { command: VoiceCommandDefinition | null; normalized: string }`
+
+Matches a raw speech transcript against the supported command vocabulary with punctuation stripping and multi-word phrase boundary checking.
+
+### `executeVoiceCommand(commandId: VoiceCommandId, context?: VoiceExecutionContext): { success: boolean; feedback: string }`
+
+Executes a voice command safely without destructive operations, respecting user reduced motion preferences (`prefers-reduced-motion`).
+
+### Constants
+
+- `VOICE_COMMANDS`: Array of supported `VoiceCommandDefinition` objects (`open_widget`, `close_widget`, `next_heading`, `previous_heading`, `first_heading`, `scroll_down`, `scroll_up`, `scroll_top`, `scroll_bottom`, `stop_listening`, `help`).
+- `VOICE_NAVIGATION_DISCLAIMER`: Constant string disclaimer stating voice commands are experimental with zero audio/transcript storage.

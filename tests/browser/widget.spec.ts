@@ -1685,3 +1685,37 @@ test("smart contrast research prototype evaluates elements, displays statistics,
   await origBtn.click();
   await expect(origBtn).toHaveAttribute("aria-pressed", "true");
 });
+
+test("voice navigation research prototype renders with prototype badge, commands table, and keyboard alternatives (A11Y-408)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Open widget
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Locate Voice Navigation group
+  const group = page.getByRole("group", { name: "Voice Navigation" });
+  await expect(group).toBeVisible();
+
+  // Verify prototype pill and disclaimer
+  await expect(group.getByText("Prototype", { exact: true })).toBeVisible();
+  await expect(
+    group.getByText(/Voice navigation is an experimental research prototype/i),
+  ).toBeVisible();
+
+  // Verify keyboard fallback alternatives
+  const nextHeadingBtn = group.getByRole("button", { name: "Next Heading" });
+  await expect(nextHeadingBtn).toBeVisible();
+  await nextHeadingBtn.click();
+  await expect(group.getByText(/Navigated to heading/i)).toBeVisible();
+
+  // Toggle commands cheat sheet
+  const toggleCommandsBtn = group.getByRole("button", {
+    name: "Show commands",
+  });
+  await toggleCommandsBtn.click();
+  await expect(
+    group.getByRole("region", { name: "Supported voice commands" }),
+  ).toBeVisible();
+});

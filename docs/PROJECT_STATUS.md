@@ -1,9 +1,9 @@
 # Project status — 2026-10-27
 
-**Version 2.25.0 is merged into main and published.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.25.0
+**Version 2.26.0 is merged into main and published.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.26.0
 are implemented, tested, and published under `latest`. The repository currently
-prepares `2.26.0` for measured smart contrast research prototype (Issue #63).
+prepares `2.27.0` for voice navigation research prototype (Issue #64).
 
 ## Status categories
 
@@ -103,7 +103,7 @@ The owner authorized merging PR #17 and PR #18 and dispatching publication. Main
 
 The action's immediate registry check raced npm's publish-time malware scan and therefore remained red even though upload succeeded. After the scan completed, registry metadata reported 2.0.0/latest with ISC and integrity `sha512-CQFzF0pNl/bb+YVauI35+GNK2PIgk4qoh8+PnEkj1HAeW2lLMM/LTV5fq0tigNRnmPVX0M7rpYR4XPo820CQWw==`. Clean public-registry React18, React19/Tailwind and Next16 consumers passed declarations, ESM/CJS, SSR and production builds. The registry-installed browser matrix passed 55 tests with five intentional Next-only skips across Chromium, Firefox, WebKit and mobile WebKit. Workflow follow-up adds propagation-aware verification; no Git release tag was created.
 
-## Milestone releases (v2.1.0 – v2.26.0)
+## Milestone releases (v2.1.0 – v2.27.0)
 
 Subsequent minor releases expanded the library's capabilities while preserving stability, backward compatibility, and the zero-runtime-dependency architecture:
 
@@ -117,4 +117,5 @@ Subsequent minor releases expanded the library's capabilities while preserving s
 8. **v2.23.0 (Issue #60, PR #140)**: Per-site feature-menu customization and reordering (`MenuCustomizationConfig`, `FeatureMenu`) with safe diagnostics and stable rerenders.
 9. **v2.24.0 (Issue #61, PR #141)**: Development-only integration diagnostics and test harness (`AccessibilityDiagnostics`, `DiagnosticsPanel`, `DiagnosticsInspector`, `DOM_CONTAINING_BLOCK_AUDIT`) with zero compliance claims, strict privacy guarantees, actionable fixes, and live fixture audits.
 10. **v2.25.0 (Issue #62, PR #143)**: Strictly opt-in, disabled-by-default local lifecycle callbacks (`onFeatureChange`, `onProfileApply`, `onReset`, `onAction`) with strictly reviewed payloads excluding page text, inputs, identifiers, and speech transcripts.
-11. **v2.26.0 (Issue #63, in progress)**: Measured smart contrast research prototype (`SmartContrastController`, `smartContrast` engine) evaluating eligible text foreground luminance against computed backdrops with Porter-Duff compositing, LRU caching, unsupported backdrop detection, non-destructive restoration, and zero WCAG compliance claims.
+11. **v2.26.0 (Issue #63, PR #145)**: Measured smart contrast research prototype (`SmartContrastController`, `smartContrast` engine) evaluating eligible text foreground luminance against computed backdrops with Porter-Duff compositing, LRU caching, unsupported backdrop detection, non-destructive restoration, and zero WCAG compliance claims.
+12. **v2.27.0 (Issue #64, in progress)**: Client-side voice navigation research prototype (`VoiceNavigationController`, `createVoiceNavigationSession`) with native Web Speech API recognition, 30s silence watchdog, background tab protection, zero audio storage, and complete keyboard alternatives.
