@@ -112,3 +112,37 @@ Coordinates are clamped on resizing and account for the trigger's measured dimen
 Only `.arap-tools` scrolls. The heading, Close, “Move button” and fixed action area stay accessible. A ResetController placed anywhere inside AccessibilityList (including nested composition) renders its button in that area without changing its effect ownership. It remains opt-in; no reset button is injected when it is omitted. Keyboard users can Tab from Close to “Jump to quick actions”, then activate it to focus reset/the first footer action. An open movement menu consumes Escape before the panel does.
 
 Use `footer` for additional fixed actions. Keep actions concise and independently keyboard accessible. `draggable={false}` disables pointer/Alt+arrow movement on the trigger; the panel's explicit movement controls remain available. Consumer inline positioning styles override library geometry and should be tested with movement.
+
+## Integration Diagnostics and Harness (A11Y-405)
+
+### `AccessibilityPluginProps.diagnostics`
+- Type: `boolean | DiagnosticsConfig`
+- In development (`NODE_ENV === "development"`), when set to `true` or configured via `DiagnosticsConfig`, executes integration diagnostics on mount and logs findings to the developer console.
+
+### `<DiagnosticsHarness />`
+Floating developer panel component for inspecting diagnostics findings:
+```tsx
+import { DiagnosticsHarness } from "accessibility-plugin-react";
+
+<DiagnosticsHarness
+  force={false} // Set to true to force display even in production
+  defaultOpen={false} // Whether drawer starts open
+  config={{ categories: ["provider", "host-css", "csp", "dom"] }}
+/>
+```
+
+### `runDiagnostics(config?: DiagnosticsConfig): DiagnosticsReport`
+Synchronous diagnostics runner returning a structured report:
+```ts
+interface DiagnosticsReport {
+  timestamp: number;
+  environment: "development" | "production" | "test";
+  disclaimer: string;
+  summary: { total: number; errors: number; warnings: number; info: number };
+  issues: DiagnosticIssue[];
+}
+```
+
+### `useDiagnostics(config?: DiagnosticsConfig): DiagnosticsReport`
+React hook returning reactive diagnostics reports.
+

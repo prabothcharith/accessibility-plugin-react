@@ -53,6 +53,8 @@ import type {
 } from "./preferences";
 import type { FeatureLocaleLabels, LocaleStrings } from "./i18n";
 
+import type { DiagnosticsConfig } from "./diagnostics";
+
 export type PluginPosition = "left" | "right" | "top" | "bottom";
 export interface AccessibilityPluginProps {
   children: ReactNode;
@@ -68,6 +70,12 @@ export interface AccessibilityPluginProps {
   statementUrl?: string;
   /** Oversized widget controls mode (>=48px touch targets, W-21). */
   largeControls?: boolean;
+  /**
+   * Development-only integration diagnostics (A11Y-405).
+   * Runs non-invasive checks for CSP, host CSS, portals, storage, and landmarks.
+   * Inactive in production unless explicitly forced.
+   */
+  diagnostics?: boolean | DiagnosticsConfig;
 }
 export interface AccessibilityButtonProps {
   /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
@@ -128,3 +136,13 @@ export type {
   ErrorStateProps,
   ProfilePreviewCardProps,
 } from "./controls";
+
+export type {
+  DiagnosticCategory,
+  DiagnosticIssue,
+  DiagnosticSeverity,
+  DiagnosticsConfig,
+  DiagnosticsReport,
+  DiagnosticsSummary,
+} from "./diagnostics";
+

@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.24.0 — 2026-10-27
+
+- Implement development-only integration diagnostics and test harness without private data or compliance claims (closes #61).
+- Introduce integration diagnostics engine (`src/core/diagnostics.ts`), developer harness component (`src/core/DiagnosticsHarness.tsx`), and `useDiagnostics` hook (`src/core/useDiagnostics.ts`):
+  - Development-only by default: diagnostics routines are inert in production builds (`process.env.NODE_ENV === "production"`), returning an empty report with 0 issues unless explicitly forced via `{ force: true }`.
+  - Zero compliance claims: explicit disclaimer on every report (`DIAGNOSTICS_DISCLAIMER`) stating diagnostics evaluate DOM landmarks and host CSS boundaries and do not constitute official WCAG 2.1/2.2 AA certification.
+  - Strict privacy guarantees: scans content images for missing `alt` attributes and landmarks without collecting, logging, or exposing private data, user content, sensitive URLs, or auth query parameters.
+  - Provider diagnostics: detects multiple `AccessibilityPlugin` instances on the document and diagnoses CSS containing-block traps (ancestor `filter`, `transform`, `perspective`, `backdrop-filter` breaking `position: fixed` viewport layout).
+  - Storage diagnostics: tests `localStorage` and `sessionStorage` accessibility, quota boundaries, and sandbox restrictions; warns when operating in memory-only fallback mode.
+  - CSP diagnostics: tests dynamic `<style>` injection and CSS custom property manipulation against restrictive Content Security Policy (`style-src`).
+  - Host CSS diagnostics: detects root scroll locks (`overflow: hidden` on both `html` and `body`) and extreme host `z-index >= 2,147,483,000` that could obscure widget controls.
+  - DOM diagnostics: detects missing `<main>` landmarks, missing `<h1>` page titles, skipped heading hierarchy, and unlabelled content images (`alt`).
+  - Boundary diagnostics: detects embedded `<iframe>` elements (noting cross-origin styling boundaries), custom elements with `ShadowRoot`, and sub-body portal mount points.
+  - Developer inspection UI: `<DiagnosticsHarness />` provides an accessible floating drawer with category tabs (`provider`, `host-css`, `csp`, `storage`, `dom`, `boundaries`), severity filters (`error`, `warning`, `info`), actionable remediation tips, documentation links, and re-run buttons.
+  - Native `AccessibilityPlugin` integration: optional `diagnostics?: boolean | DiagnosticsConfig` prop automatically runs integration audits in development and logs collapsed console groups.
+- Export `runDiagnostics`, `checkProviderDiagnostics`, `checkStorageDiagnostics`, `checkCspDiagnostics`, `checkHostCssDiagnostics`, `checkDomDiagnostics`, `checkBoundariesDiagnostics`, `DIAGNOSTICS_DISCLAIMER`, `DiagnosticsHarness`, `useDiagnostics`, and related types in `src/index.ts`.
+- Add documentation in `docs/DIAGNOSTICS.md`, update `README.md`, `docs/FEATURES.md`, `docs/API.md`, `docs/BUILD_AND_RELEASE_PLAN.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 27 unit and integration tests in `tests/diagnostics.test.ts` and `tests/diagnosticsWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.23.0 — 2026-10-27
 
 - Implement declarative per-site feature-menu customization and reordering with safe diagnostics and stable rerenders (closes #60).
