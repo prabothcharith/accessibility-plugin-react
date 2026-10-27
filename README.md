@@ -115,6 +115,7 @@ site, and choose their order in JSX.
 | `PresetsController` / `CustomPresetsController`           | Saves named custom presets and handles versioned JSON import/export with privacy exclusions.                                                                                          |
 | `ReadAloudController`                                     | User-initiated native text-to-speech with play/pause/resume/stop, voice selection, rate/pitch steppers, and sensitive field protection.                                               |
 | `DictionaryController`                                    | Accessible terminology dictionary dialog with 100% offline local glossaries (en, si, ta), sanitization, and focus restoration.                                                        |
+| `VoiceNavigationController`                               | Opt-in voice navigation research prototype; navigates headings and scrolls via native Web Speech recognition with inactivity timeout, zero audio storage, and full keyboard fallback. |
 | `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                                                                                     |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,
@@ -136,6 +137,8 @@ Build custom accessible panels or custom features with modular primitives that i
 - **`KeyboardShortcutsController`**: Discoverable keyboard shortcut cheat sheet, collision-checked remapping, protected browser commands (e.g. Ctrl+U), form typing protection, and full Link Explorer.
 - **`ReadAloudController`**: User-initiated native text-to-speech (TTS) with play, pause, resume, and stop controls, voice dropdown, rate and pitch steppers, persistent floating player bar, and sensitive field exclusion.
 - **`DictionaryController`**: Accessible terminology dictionary lookup with local offline glossaries in English, Sinhala, and Tamil, sensitive data rejection, and truthful non-hallucinating responses.
+- **`SmartContrastController`**: Measured relative luminance contrast enhancement research prototype with Porter-Duff compositing, LRU caching, and unsupported background reporting. See [docs/SMART_CONTRAST.md](docs/SMART_CONTRAST.md).
+- **`VoiceNavigationController`**: Client-side speech navigation research prototype for headings and scrolling with inactivity watchdog, background tab protection, and keyboard alternatives. See [docs/VOICE_NAVIGATION.md](docs/VOICE_NAVIGATION.md).
 - **`FeatureMenu`**: Declarative per-site feature menu reordering, grouping, custom labels, and non-crashing safe diagnostics with stable rerenders. See [docs/MENU_CUSTOMIZATION.md](docs/MENU_CUSTOMIZATION.md).
 
 ## Custom features

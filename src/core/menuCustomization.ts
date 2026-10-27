@@ -42,6 +42,7 @@ export const KNOWN_FEATURE_IDS = [
   "keyboardShortcuts",
   "readAloud",
   "dictionary",
+  "voiceNavigation",
   "reset",
 ] as const;
 

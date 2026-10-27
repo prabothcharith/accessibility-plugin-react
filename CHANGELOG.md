@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.27.0 — 2026-10-27
+
+- Implement voice navigation research prototype with local Web Speech API recognition, strict privacy boundaries, and keyboard alternatives (closes #64).
+- Introduce voice navigation engine (`src/core/voiceNavigation.ts`) and controller (`src/features/VoiceNavigationController.tsx`):
+  - Strictly opt-in research prototype: labeled with `Prototype` pill in the UI; explicit disclaimer (`VOICE_NAVIGATION_DISCLAIMER`) stating voice commands are an experimental prototype with zero audio or transcript storage.
+  - Client-side Web Speech API: utilizes native browser speech recognition (`window.SpeechRecognition` or `window.webkitSpeechRecognition`) with zero external network requests, zero telemetry, and zero remote audio streaming.
+  - Explicit finite command vocabulary: recognizes 11 non-destructive navigation and control commands (`open_widget`, `close_widget`, `next_heading`, `previous_heading`, `first_heading`, `scroll_down`, `scroll_up`, `scroll_top`, `scroll_bottom`, `stop_listening`, `help`).
+  - High-visibility listening indicator: prominent visual badge with pulsating microphone dot and polite ARIA live region (`aria-live="polite"`) announcing active listening and recognized commands.
+  - Inactivity watchdog timeout: automatically stops listening after 30 seconds of silence to prevent accidental continuous background microphone access.
+  - Privacy protections & lifecycle cleanup: immediately halts recognition when the document is hidden (`document.hidden`), upon page unload (`beforeunload`, `pagehide`), or on component unmount; guarantees zero persistent storage in `localStorage` or `sessionStorage`.
+  - Accessible keyboard alternatives: provides native accessible buttons within the controller for every navigation action ("Next Heading", "Prev Heading", "Scroll Down", "Scroll Up", "Scroll Top", "Scroll Bottom"), remaining 100% operational in unsupported browsers or when microphone permissions are denied.
+  - Reduced motion integration: respects `prefers-reduced-motion` and widget `reduceMotion` preference by using instantaneous scrolling (`behavior: "auto"`) instead of smooth transitions.
+  - Collapsible commands reference: expandable cheat sheet detailing all recognized commands, spoken phrases, and executed actions.
+- Export `VoiceNavigationController`, `VOICE_COMMANDS`, `VOICE_NAVIGATION_DISCLAIMER`, `isSpeechRecognitionSupported`, `normalizeTranscript`, `matchVoiceCommand`, `executeVoiceCommand`, `createVoiceNavigationSession`, and related types in `src/index.ts`.
+- Add documentation in `docs/VOICE_NAVIGATION.md`, update `README.md`, `docs/FEATURES.md`, `docs/API.md`, `docs/BUILD_AND_RELEASE_PLAN.md`, `docs/PROJECT_STATUS.md`, and `docs/ROADMAP.md`.
+- Add 24 unit and integration tests in `tests/voiceNavigation.test.ts` and `tests/voiceNavigationWidget.test.tsx`, plus Playwright browser test in `tests/browser/widget.spec.ts`.
+
 ## 2.26.0 — 2026-10-27
 
 - Implement measured smart contrast research prototype with relative luminance, alpha compositing, and full non-destructive restoration (closes #63).

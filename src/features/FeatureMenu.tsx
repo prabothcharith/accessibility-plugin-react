@@ -39,6 +39,7 @@ import { ReadingModeController } from "./ReadingModeController";
 import { KeyboardShortcutsController } from "./KeyboardShortcutsController";
 import { ReadAloudController } from "./ReadAloudController";
 import { DictionaryController } from "./DictionaryController";
+import { VoiceNavigationController } from "./VoiceNavigationController";
 import { ResetController } from "./ResetController";
 
 type ControllerComponent = React.ComponentType<Record<string, unknown>>;
@@ -75,6 +76,7 @@ const CONTROLLER_COMPONENT_MAP: Record<string, ControllerComponent> = {
   keyboardShortcuts: KeyboardShortcutsController,
   readAloud: ReadAloudController,
   dictionary: DictionaryController,
+  voiceNavigation: VoiceNavigationController,
   reset: ResetController,
 };
 
