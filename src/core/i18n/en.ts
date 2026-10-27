@@ -1,5 +1,12 @@
 import type { LocaleStrings } from "./types";
 
+export const enCornerNames: Record<string, string> = {
+  "bottom-right": "bottom right",
+  "bottom-left": "bottom left",
+  "top-right": "top right",
+  "top-left": "top left",
+};
+
 export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   title: "Accessibility settings",
   description: "Adjust your reading experience",
@@ -30,8 +37,47 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   moveDown: "Move accessibility button down",
   moveRight: "Move accessibility button right",
   largeControlsLabel: "Oversized widget controls",
+  cornerNames: enCornerNames,
   formatPointPosition: (x: number, y: number) =>
     `Button position: ${Math.round(x * 100)}% horizontally, ${Math.round(y * 100)}% vertically.`,
   formatCornerPosition: (corner: string) =>
     `Button position: ${corner.split("-").join(" ")}.`,
+  searchPlaceholder: "Search tools or profiles...",
+  searchClearLabel: "Clear search query",
+  formatSearchCount: (matched: number, total: number, query?: string) =>
+    query
+      ? `Showing ${matched} of ${total} tools matching "${query}"`
+      : `Showing all ${total} tools`,
+  emptySearchTitle: "No matching tools found",
+  emptySearchDescription: "Try adjusting your search query or reset filters.",
+  clearSearchLabel: "Clear search",
+  formatProfileApplied: (profileName: string) =>
+    `✓ Profile "${profileName}" applied.`,
+  formatProfileReverted: () => "Reverted to custom settings.",
+  formatPresetSaved: (presetName: string) =>
+    `Preset "${presetName}" saved successfully.`,
+  formatPresetApplied: (presetName: string) =>
+    `Preset "${presetName}" applied.`,
+  formatPresetDeleted: (presetName: string) =>
+    `Preset "${presetName}" deleted.`,
+  decreaseTextSize: "Decrease text size",
+  increaseTextSize: "Increase text size",
+  features: {
+    textScale: "Bigger Text",
+    lineHeight: "Line Height",
+    letterSpacing: "Letter Spacing",
+    wordSpacing: "Word Spacing",
+    paragraphSpacing: "Paragraph Spacing",
+    textAlign: "Text Align",
+    fontFamily: "Readable Font",
+    contrast: "Contrast",
+    highlightLinks: "Highlight Links",
+    focusOutline: "Focus Outline",
+    reduceMotion: "Reduce Motion",
+    cursorGuide: "Reading Guide",
+    headingsNavigator: "Page Navigator",
+    profiles: "Accessibility Profiles",
+    presets: "Saved Presets",
+    readingMode: "Reading Mode",
+  },
 });

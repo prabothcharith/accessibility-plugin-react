@@ -79,7 +79,7 @@ export function PositionControls() {
           </option>
           {corners.map((corner) => (
             <option key={corner} value={corner}>
-              {corner.split("-").join(" ")}
+              {strings.cornerNames?.[corner] ?? corner.split("-").join(" ")}
             </option>
           ))}
         </select>

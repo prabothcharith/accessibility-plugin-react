@@ -1083,3 +1083,72 @@ test("reading guide and mask overlays never block clicks and clean up on Escape 
   await page.getByRole("button", { name: "Reset All", exact: true }).click();
   await expect(mask).toHaveCount(0);
 });
+
+test("A11Y-306: Sinhala and Tamil locale packs render clean layouts without translating host content", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // 1. Switch to Sinhala (si-LK)
+  await page.locator("#fixture-locale-select").selectOption("si-LK");
+
+  // Verify launcher button has Sinhala accessible name
+  const triggerSi = page.getByRole("button", {
+    name: "ප්‍රවේශ්‍යතාව",
+    exact: true,
+  });
+  await expect(triggerSi).toBeVisible();
+  await triggerSi.click();
+
+  // Verify panel attributes
+  const panelSi = page.getByRole("region", { name: "ප්‍රවේශ්‍යතා සැකසුම්" });
+  await expect(panelSi).toBeVisible();
+  await expect(panelSi).toHaveAttribute("lang", "si-LK");
+  await expect(panelSi).toHaveAttribute("dir", "ltr");
+  await expect(panelSi).toHaveAttribute("translate", "no");
+
+  // Verify panel title and reset button
+  await expect(
+    page.getByRole("heading", { name: "ප්‍රවේශ්‍යතා සැකසුම්" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "සියල්ල යළි සකසන්න", exact: true }),
+  ).toBeVisible();
+
+  // Verify host content is completely untouched and not translated
+  await expect(
+    page.getByRole("heading", { name: "Accessibility preferences" }),
+  ).toBeVisible();
+  await expect(page.getByText("A paragraph with a useful link.")).toBeVisible();
+
+  // 2. Switch to Tamil (ta-LK)
+  await page.locator("#fixture-locale-select").selectOption("ta-LK");
+
+  // Verify panel attributes
+  const panelTa = page.getByRole("region", { name: "அணுகல்தன்மை அமைப்புகள்" });
+  await expect(panelTa).toBeVisible();
+  await expect(panelTa).toHaveAttribute("lang", "ta-LK");
+  await expect(panelTa).toHaveAttribute("dir", "ltr");
+  await expect(panelTa).toHaveAttribute("translate", "no");
+
+  // Verify panel title and reset button
+  await expect(
+    page.getByRole("heading", { name: "அணுகல்தன்மை அமைப்புகள்" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "அனைத்தையும் மீட்டமை", exact: true }),
+  ).toBeVisible();
+
+  // Verify host content is still untouched
+  await expect(
+    page.getByRole("heading", { name: "Accessibility preferences" }),
+  ).toBeVisible();
+
+  // Close panel using Tamil close button
+  const closeBtnTa = page.getByRole("button", {
+    name: "அணுகல்தன்மை அமைப்புகளை மூடுக",
+  });
+  await expect(closeBtnTa).toBeVisible();
+  await closeBtnTa.click();
+  await expect(panelTa).not.toBeVisible();
+});

@@ -38,11 +38,13 @@ export type {
 // Internationalization (i18n)
 export {
   enLocale,
+  siLocale,
+  taLocale,
   registerLocale,
   resolveLocaleStrings,
   isRtlLocale,
 } from "./core/i18n";
-export type { SupportedLocale } from "./core/i18n";
+export type { SupportedLocale, FeatureLocaleLabels } from "./core/i18n";
 
 // Preferences & Profiles
 export {

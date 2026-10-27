@@ -1,10 +1,12 @@
 "use client";
 
-import { useId, useMemo, useRef, useState } from "react";
+import { useContext, useId, useMemo, useRef, useState } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
 import { ProfilePreviewCard } from "../core/controls/ProfilePreviewCard";
 import { EmptyState, SearchCount } from "../core/controls/FeatureStatusState";
 import { useProfiles } from "../core/useProfiles";
+import { AccessibilityContext } from "../core/AccessibilityContext";
+import { resolveLocaleStrings } from "../core/i18n";
 import type { ProfilePresetId } from "../core/preferences/types";
 
 export interface ProfilesControllerProps {
@@ -22,11 +24,16 @@ export interface ProfilesControllerProps {
  */
 export function ProfilesController({
   className = "",
-  label = "Accessibility Profiles",
+  label,
   description = "Explore suggested preference combinations",
   largeControls = false,
   onProfileChange,
 }: ProfilesControllerProps) {
+  const ctx = useContext(AccessibilityContext);
+  const strings = resolveLocaleStrings(ctx?.locale);
+  const effectiveLabel =
+    label ?? strings.features?.profiles ?? "Accessibility Profiles";
+
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const dialogId = "arap-profiles-dialog";
@@ -73,7 +80,7 @@ export function ProfilesController({
     <div
       className={`arap-feature arap-feature-expandable ${largeControls ? "arap-large-controls" : ""} ${className}`}
       role="group"
-      aria-label={label}
+      aria-label={effectiveLabel}
     >
       <div
         style={{
@@ -86,7 +93,7 @@ export function ProfilesController({
         <span className="arap-label">
           <FeatureIcon name="profiles" />
           <span>
-            <span style={{ display: "block" }}>{label}</span>
+            <span style={{ display: "block" }}>{effectiveLabel}</span>
             {description && (
               <span
                 style={{
@@ -210,7 +217,10 @@ export function ProfilesController({
               className="arap-search-input"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search 8 accessibility profiles..."
+              placeholder={
+                strings.searchPlaceholder ??
+                "Search 8 accessibility profiles..."
+              }
               aria-label="Filter profiles"
             />
             {search && (
@@ -218,7 +228,7 @@ export function ProfilesController({
                 type="button"
                 className="arap-search-clear"
                 onClick={() => setSearch("")}
-                aria-label="Clear profile filter"
+                aria-label={strings.searchClearLabel ?? "Clear profile filter"}
               >
                 ×
               </button>
