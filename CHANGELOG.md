@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.16.0 — 2026-10-27
+
+- Implement custom saved presets and settings import/export (closes #53).
+- Introduce `PresetsController`, `CustomPresetsController`, `SettingsImportExportController`, and `PresetsBackupController`:
+  - 1-click preset saving with custom name, date, and settings chips preview.
+  - Apply, delete, and manage named custom preference combinations.
+  - Versioned JSON export with schema envelope reference (`version: 1`), application identity, and timestamp.
+  - Safe JSON import supporting v1 envelopes, legacy preset arrays, and flat settings objects.
+  - Live announcements (`role="status"` / `aria-live="polite"`) for save, apply, delete, export, and import operations.
+  - Accessible error reporting on malformed JSON, empty files, or unsupported schema versions.
+- Strict Privacy & Security Exclusions:
+  - Presets and JSON exports strictly filter allowed accessibility preferences only.
+  - Discards all private content, form inputs, session tokens, user credentials, transcripts, and recordings.
+  - Rejects prototype pollution keys (`__proto__`, `constructor`, `prototype`).
+- Presets library preserved across "Reset All" display resets.
+- Introduce `usePresets()` hook exposing `presets`, `currentSettings`, `saveCurrentAsPreset`, `applyPreset`, `deletePreset`, `exportPresets`, `downloadExport`, `importFromJson`, and `importFromFile`.
+- Export preset utilities: `createCustomPreset`, `isValidCustomPreset`, `exportPresetsToJson`, `downloadJsonFile`, `validateAndParseImport`, `applyCustomPresetToStore`, `sanitizePreferences`, `ALLOWED_PREFERENCE_KEYS`.
+- Add documentation in `docs/PRESETS.md` and updated `docs/FEATURES.md`, `docs/API.md`, and `docs/BUILD_AND_RELEASE_PLAN.md`.
+- Add unit test suite in `tests/presets.test.tsx` and automated browser smoke test in `tests/browser/widget.spec.ts`.
+
 ## 2.15.0 — 2026-10-27
 
 - Implement eight accessibility profiles and deterministic override model (closes #52).

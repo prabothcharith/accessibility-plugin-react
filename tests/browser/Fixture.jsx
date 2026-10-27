@@ -109,6 +109,7 @@ export default function Fixture() {
             <A.TooltipsController />
             <A.PageNavigatorController />
             <A.ProfilesController />
+            <A.PresetsController />
             <Custom />
             <A.ResetController />
           </A.AccessibilityList>

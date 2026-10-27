@@ -324,6 +324,56 @@ test("A11Y-304 accessibility profiles: previews eight suggestions, applies atomi
   ).not.toBeVisible();
 });
 
+test("A11Y-305 custom presets: saves named preset, persists across display reset, and applies cleanly", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Change contrastMode to dark
+  const darkBtn = page
+    .getByRole("group", { name: "Contrast Mode" })
+    .getByRole("button", { name: /Dark/i });
+  await darkBtn.click();
+  const host = page.locator("#host");
+  await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
+
+  // Open PresetsController
+  const presetsBtn = page.locator(
+    "button[aria-controls='arap-presets-dialog']",
+  );
+  await presetsBtn.click();
+  await expect(presetsBtn).toHaveAttribute("aria-expanded", "true");
+
+  // Save current settings as preset
+  const nameInput = page.getByRole("textbox", { name: "Preset name" });
+  await nameInput.fill("Night Preset");
+  await page.getByRole("button", { name: "Save current preset" }).click();
+
+  // Verify confirmation status announcement and card in list
+  await expect(
+    page.getByText('✓ Preset "Night Preset" saved successfully.'),
+  ).toBeVisible();
+  await expect(page.getByText("Night Preset", { exact: true })).toBeVisible();
+
+  // Reset All display preferences
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(host).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+
+  // Night Preset survived Reset All!
+  await expect(page.getByText("Night Preset", { exact: true })).toBeVisible();
+
+  // Apply saved preset
+  await page.getByRole("button", { name: "Apply preset Night Preset" }).click();
+  await expect(
+    page.getByText('✓ Preset "Night Preset" applied.'),
+  ).toBeVisible();
+
+  // Verify host styled again with dark contrast!
+  await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
+});
+
 test("Next Pages Router and direct Server Component imports hydrate", async ({
   page,
 }, info) => {
