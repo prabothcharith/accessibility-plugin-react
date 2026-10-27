@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.11.0 — 2026-10-27
+
+- Visual regression, cross-feature composition, and performance sweep across Milestone 2 features (closes #48).
+- Verify simultaneous composition of A11Y-201..207 (text scaling, spacing, alignment, legible fonts, contrast modes, link highlight, focus visibility, reduce motion, and decorative image hiding) on dense application dashboards, forms, and media layouts with clean reset restoration.
+- Verify 100 consecutive rapid toggles with zero style compounding, font-size drift, or memory leakage.
+- Benchmark DOM scaling performance on 1,000-node documents under real browser environments and verify the 4,000-element safety budget (`MAX_HOST_ELEMENTS`) protecting the main UI thread.
+- Verify 200% zoom and 320px viewport responsive reflow without layout clipping or false modal traps.
+- Add comprehensive regression and performance test suite in `tests/regressionSweep.test.tsx` and automated browser smoke benchmark in `tests/browser/widget.spec.ts`.
+- Document empirical benchmark measurements, testing methodology, and boundary conditions in `docs/REGRESSION_AND_PERFORMANCE.md`.
+- Conclude and sign off Milestone 2 (Core visual and typographic adjustments).
+
 ## 2.10.0 — 2026-10-26
 
 - Refine decorative image handling and safeguard informative and functional visuals (closes #47).

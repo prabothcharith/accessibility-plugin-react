@@ -56,7 +56,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [ ] [Master feature-release program #21](https://github.com/prabothcharith/accessibility-react/issues/21) — Coordinate the complete feature-release program, enforce scope and guardrails, and accept milestone evidence without treating planned work as shipped.
 - [ ] [M0 — Repository audit and compatibility safety net #22](https://github.com/prabothcharith/accessibility-react/issues/22) — Establish the real repository/package baseline, protect compatibility, and finish the M0 evidence gate before feature coding.
 - [ ] [M1 — Safe core, accessible widget UI and stable state #23](https://github.com/prabothcharith/accessibility-react/issues/23) — Build the typed state, storage, effects, accessible widget shell, examples and CI needed for a safe foundation.
-- [ ] [M2 — Core visual and typographic adjustments #24](https://github.com/prabothcharith/accessibility-react/issues/24) — Add reversible text, spacing, font, contrast, focus, motion and decorative-image preferences with fixture evidence.
+- [x] [M2 — Core visual and typographic adjustments #24](https://github.com/prabothcharith/accessibility-react/issues/24) — Add reversible text, spacing, font, contrast, focus, motion and decorative-image preferences with fixture evidence.
 - [ ] [M3 — Reading support, profiles and localization #25](https://github.com/prabothcharith/accessibility-react/issues/25) — Add reading aids, semantic navigation, profiles, custom presets, import/export and reviewed regional localization.
 - [ ] [M4 — Opt-in advanced and browser-dependent controls #26](https://github.com/prabothcharith/accessibility-react/issues/26) — Isolate TTS, dictionary, color, diagnostics, callbacks, smart contrast, voice and translation work behind safe opt-in boundaries.
 - [ ] [M5 — Launch readiness and package hardening #27](https://github.com/prabothcharith/accessibility-react/issues/27) — Complete browser/AT, performance, documentation, security, licensing and packed-archive validation, then prepare a release proposal.
@@ -89,7 +89,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-205 — Link highlighting and focus visibility #45](https://github.com/prabothcharith/accessibility-react/issues/45) — Add non-color-only link cues and stronger focus visibility without removing native indicators or creating unsafe skip links.
 - [x] [A11Y-206 — Reduce motion and best-effort media controls #46](https://github.com/prabothcharith/accessibility-react/issues/46) — Add reduced-motion CSS, tracked Web Animations pausing and explicit media controls while documenting GIF and cross-origin limitations.
 - [x] [A11Y-207 — Decorative image handling #47](https://github.com/prabothcharith/accessibility-react/issues/47) — Hide only eligible decorative imagery and keep functional, meaningful, CAPTCHA, chart, map and QR content available.
-- [ ] [A11Y-208 — Visual regression and performance sweep #48](https://github.com/prabothcharith/accessibility-react/issues/48) — Run cross-feature visual, restoration, repeated-toggle, route, zoom, forced-color, reduced-motion and performance regression sweeps.
+- [x] [A11Y-208 — Visual regression and performance sweep #48](https://github.com/prabothcharith/accessibility-react/issues/48) — Run cross-feature visual, restoration, repeated-toggle, route, zoom, forced-color, reduced-motion and performance regression sweeps.
 
 ### M3 — Reading support, profiles and localization
 
