@@ -83,14 +83,18 @@ describe("DiagnosticsHarness and Widget Integration (A11Y-405)", () => {
       );
 
       // Re-run diagnostics after full DOM render
-      fireEvent.click(screen.getByRole("button", { name: /re-run diagnostics/i }));
+      fireEvent.click(
+        screen.getByRole("button", { name: /re-run diagnostics/i }),
+      );
 
       const domTab = screen.getByRole("tab", { name: /^dom$/i });
       fireEvent.click(domTab);
       expect(domTab).toHaveAttribute("aria-selected", "true");
 
       await waitFor(() => {
-        expect(screen.getByText(/images missing alt attribute/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/images missing alt attribute/i),
+        ).toBeInTheDocument();
       });
     });
 
@@ -110,7 +114,9 @@ describe("DiagnosticsHarness and Widget Integration (A11Y-405)", () => {
       fireEvent.click(closeBtn);
 
       expect(
-        screen.queryByRole("region", { name: /integration diagnostics panel/i }),
+        screen.queryByRole("region", {
+          name: /integration diagnostics panel/i,
+        }),
       ).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /open accessibility diagnostics/i }),

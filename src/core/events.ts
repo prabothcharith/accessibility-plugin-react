@@ -9,12 +9,7 @@ export type AccessibilityEventType =
   | "preset-apply";
 
 export type EventTriggerSource =
-  | "ui"
-  | "shortcut"
-  | "profile"
-  | "preset"
-  | "reset"
-  | "api";
+  "ui" | "shortcut" | "profile" | "preset" | "reset" | "api";
 
 export interface BaseAccessibilityEvent {
   type: AccessibilityEventType;
@@ -99,7 +94,10 @@ export function sanitizeFeatureEvent(
         if (typeof val === "number" && !isNaN(val)) return val;
         if (typeof val === "string") {
           // Coarse string tokens only (e.g. "dyslexia", "high", "dark"), capped to 64 chars
-          return val.slice(0, 64).replace(/<[^>]*>/g, "").trim();
+          return val
+            .slice(0, 64)
+            .replace(/<[^>]*>/g, "")
+            .trim();
         }
         return false;
       };

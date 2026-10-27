@@ -63,16 +63,19 @@ const DOC_BASE_URL =
 function sanitizeElementTarget(el: Element): string {
   const tag = el.tagName.toLowerCase();
   const id = el.id ? `#${el.id}` : "";
-  const className = el.className && typeof el.className === "string"
-    ? `.${el.className.trim().split(/\s+/).slice(0, 2).join(".")}`
-    : "";
+  const className =
+    el.className && typeof el.className === "string"
+      ? `.${el.className.trim().split(/\s+/).slice(0, 2).join(".")}`
+      : "";
   return `${tag}${id}${className}`;
 }
 
 /**
  * Validates single provider ownership and widget placement.
  */
-export function checkProviderDiagnostics(root: Document | Element): DiagnosticIssue[] {
+export function checkProviderDiagnostics(
+  root: Document | Element,
+): DiagnosticIssue[] {
   const issues: DiagnosticIssue[] = [];
   const doc = root.ownerDocument || (root as Document);
 
@@ -102,7 +105,8 @@ export function checkProviderDiagnostics(root: Document | Element): DiagnosticIs
           const style = window.getComputedStyle(current);
           const hasTransform = style.transform && style.transform !== "none";
           const hasFilter = style.filter && style.filter !== "none";
-          const hasPerspective = style.perspective && style.perspective !== "none";
+          const hasPerspective =
+            style.perspective && style.perspective !== "none";
           const hasBackdrop =
             style.backdropFilter && style.backdropFilter !== "none";
 
@@ -185,7 +189,8 @@ export function checkStorageDiagnostics(): DiagnosticIssue[] {
       severity: "info",
       title: "sessionStorage is restricted",
       message: "sessionStorage is restricted in this environment.",
-      recommendation: "Ensure session storage permissions are granted if using storage='session'.",
+      recommendation:
+        "Ensure session storage permissions are granted if using storage='session'.",
     });
   }
 
@@ -195,7 +200,9 @@ export function checkStorageDiagnostics(): DiagnosticIssue[] {
 /**
  * Validates Content Security Policy (CSP) and style injection capability.
  */
-export function checkCspDiagnostics(root: Document | Element): DiagnosticIssue[] {
+export function checkCspDiagnostics(
+  root: Document | Element,
+): DiagnosticIssue[] {
   const issues: DiagnosticIssue[] = [];
   const doc = root.ownerDocument || (root as Document);
   if (!doc || !doc.head) return issues;
@@ -241,7 +248,8 @@ export function checkCspDiagnostics(root: Document | Element): DiagnosticIssue[]
   if (doc.documentElement && doc.documentElement.style) {
     try {
       doc.documentElement.style.setProperty("--arap-csp-probe", "1");
-      const val = doc.documentElement.style.getPropertyValue("--arap-csp-probe");
+      const val =
+        doc.documentElement.style.getPropertyValue("--arap-csp-probe");
       doc.documentElement.style.removeProperty("--arap-csp-probe");
       if (val !== "1") {
         issues.push({
@@ -249,8 +257,10 @@ export function checkCspDiagnostics(root: Document | Element): DiagnosticIssue[]
           category: "csp",
           severity: "warning",
           title: "CSS custom properties failed to apply",
-          message: "Unable to read or write CSS custom properties on document.documentElement.",
-          recommendation: "Ensure host document styling supports standard CSS custom properties.",
+          message:
+            "Unable to read or write CSS custom properties on document.documentElement.",
+          recommendation:
+            "Ensure host document styling supports standard CSS custom properties.",
         });
       }
     } catch {
@@ -264,7 +274,9 @@ export function checkCspDiagnostics(root: Document | Element): DiagnosticIssue[]
 /**
  * Validates host CSS conflicts: extreme z-indexes, overflow locks, preflight clashes.
  */
-export function checkHostCssDiagnostics(root: Document | Element): DiagnosticIssue[] {
+export function checkHostCssDiagnostics(
+  root: Document | Element,
+): DiagnosticIssue[] {
   const issues: DiagnosticIssue[] = [];
   const doc = root.ownerDocument || (root as Document);
   if (!doc) return issues;
@@ -340,7 +352,9 @@ export function checkHostCssDiagnostics(root: Document | Element): DiagnosticIss
  * Validates DOM landmarks, heading hierarchy, and image alt attributes.
  * NEVER logs private data, auth tokens, or sensitive image sources.
  */
-export function checkDomDiagnostics(root: Document | Element): DiagnosticIssue[] {
+export function checkDomDiagnostics(
+  root: Document | Element,
+): DiagnosticIssue[] {
   const issues: DiagnosticIssue[] = [];
   const doc = root.ownerDocument || (root as Document);
   if (!doc) return issues;
@@ -366,7 +380,8 @@ export function checkDomDiagnostics(root: Document | Element): DiagnosticIssue[]
       severity: "info",
       title: "Multiple main landmarks detected",
       message: `Found ${mainLandmarks.length} main landmarks. Ensure only one main landmark is active at any time or use unique aria-label attributes.`,
-      recommendation: "Provide a single top-level <main> landmark per document.",
+      recommendation:
+        "Provide a single top-level <main> landmark per document.",
     });
   }
 
@@ -389,7 +404,8 @@ export function checkDomDiagnostics(root: Document | Element): DiagnosticIssue[]
       title: "Missing top-level <h1> heading",
       message:
         "Document contains headings but lacks an <h1>. A primary <h1> heading communicates the page purpose to screen readers.",
-      recommendation: "Provide a descriptive <h1> as the document's primary title.",
+      recommendation:
+        "Provide a descriptive <h1> as the document's primary title.",
       docUrl: `${DOC_BASE_URL}#manual-accessibility-acceptance-checklist`,
     });
   }
@@ -423,7 +439,8 @@ export function checkDomDiagnostics(root: Document | Element): DiagnosticIssue[]
       title: "Heading level skipped in outline",
       message:
         "Headings skip one or more structural levels (e.g. <h1> directly to <h3>). This can confuse screen-reader outline navigation.",
-      recommendation: "Structure headings sequentially without skipping levels.",
+      recommendation:
+        "Structure headings sequentially without skipping levels.",
       docUrl: `${DOC_BASE_URL}#manual-accessibility-acceptance-checklist`,
     });
   }
@@ -459,7 +476,9 @@ export function checkDomDiagnostics(root: Document | Element): DiagnosticIssue[]
 /**
  * Validates boundaries: iframes, shadow DOM, and portal mount points.
  */
-export function checkBoundariesDiagnostics(root: Document | Element): DiagnosticIssue[] {
+export function checkBoundariesDiagnostics(
+  root: Document | Element,
+): DiagnosticIssue[] {
   const issues: DiagnosticIssue[] = [];
   const doc = root.ownerDocument || (root as Document);
   if (!doc) return issues;
@@ -522,7 +541,9 @@ export function checkBoundariesDiagnostics(root: Document | Element): Diagnostic
  * Executes a full integration diagnostics audit.
  * In production mode, returns an empty report with 0 issues unless force is true.
  */
-export function runDiagnostics(config: DiagnosticsConfig = {}): DiagnosticsReport {
+export function runDiagnostics(
+  config: DiagnosticsConfig = {},
+): DiagnosticsReport {
   const isProduction =
     typeof process !== "undefined" &&
     process.env &&
@@ -539,8 +560,7 @@ export function runDiagnostics(config: DiagnosticsConfig = {}): DiagnosticsRepor
   }
 
   const root =
-    config.root ||
-    (typeof document !== "undefined" ? document : null);
+    config.root || (typeof document !== "undefined" ? document : null);
 
   if (!root) {
     return {
@@ -602,7 +622,11 @@ export function runDiagnostics(config: DiagnosticsConfig = {}): DiagnosticsRepor
     issues: allIssues,
   };
 
-  if (config.logToConsole !== false && typeof console !== "undefined" && allIssues.length > 0) {
+  if (
+    config.logToConsole !== false &&
+    typeof console !== "undefined" &&
+    allIssues.length > 0
+  ) {
     logDiagnosticsToConsole(report);
   }
 

@@ -59,7 +59,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
         <div data-arap-ui="3">Widget 3</div>
       `;
       const issues = checkProviderDiagnostics(document);
-      const multiIssue = issues.find((i) => i.id === "provider-multiple-instances");
+      const multiIssue = issues.find(
+        (i) => i.id === "provider-multiple-instances",
+      );
       expect(multiIssue).toBeDefined();
       expect(multiIssue?.severity).toBe("warning");
     });
@@ -76,7 +78,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
 
       // jsdom getComputedStyle returns style properties
       const issues = checkProviderDiagnostics(document);
-      const trapIssue = issues.find((i) => i.id === "provider-fixed-position-trap");
+      const trapIssue = issues.find(
+        (i) => i.id === "provider-fixed-position-trap",
+      );
       expect(trapIssue).toBeDefined();
       expect(trapIssue?.severity).toBe("error");
       expect(trapIssue?.target).toContain("#hero-trap");
@@ -86,18 +90,24 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
   describe("Storage Diagnostics", () => {
     it("validates accessible localStorage without errors", () => {
       const issues = checkStorageDiagnostics();
-      const storageBlocked = issues.find((i) => i.id === "storage-local-blocked");
+      const storageBlocked = issues.find(
+        (i) => i.id === "storage-local-blocked",
+      );
       expect(storageBlocked).toBeUndefined();
     });
 
     it("catches blocked localStorage gracefully", () => {
-      const spy = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-        throw new Error("QuotaExceededError or SecurityError");
-      });
+      const spy = vi
+        .spyOn(Storage.prototype, "setItem")
+        .mockImplementation(() => {
+          throw new Error("QuotaExceededError or SecurityError");
+        });
 
       try {
         const issues = checkStorageDiagnostics();
-        const storageBlocked = issues.find((i) => i.id === "storage-local-blocked");
+        const storageBlocked = issues.find(
+          (i) => i.id === "storage-local-blocked",
+        );
         expect(storageBlocked).toBeDefined();
         expect(storageBlocked?.severity).toBe("warning");
         expect(storageBlocked?.recommendation).toContain("third-party storage");
@@ -110,7 +120,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
   describe("CSP and Style Injection Diagnostics", () => {
     it("verifies stylesheet injection succeeds in normal environment", () => {
       const issues = checkCspDiagnostics(document);
-      const cspBlocked = issues.find((i) => i.id === "csp-style-injection-blocked");
+      const cspBlocked = issues.find(
+        (i) => i.id === "csp-style-injection-blocked",
+      );
       expect(cspBlocked).toBeUndefined();
     });
 
@@ -122,7 +134,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
 
       try {
         const issues = checkCspDiagnostics(document);
-        const cspIssue = issues.find((i) => i.id === "csp-style-injection-blocked");
+        const cspIssue = issues.find(
+          (i) => i.id === "csp-style-injection-blocked",
+        );
         expect(cspIssue).toBeDefined();
         expect(cspIssue?.severity).toBe("error");
         expect(cspIssue?.title).toContain("Content Security Policy");
@@ -139,7 +153,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
 
       try {
         const issues = checkHostCssDiagnostics(document);
-        const overflowIssue = issues.find((i) => i.id === "host-css-root-overflow-hidden");
+        const overflowIssue = issues.find(
+          (i) => i.id === "host-css-root-overflow-hidden",
+        );
         expect(overflowIssue).toBeDefined();
         expect(overflowIssue?.severity).toBe("warning");
       } finally {
@@ -166,7 +182,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
     it("reports warning when main landmark is missing", () => {
       container.innerHTML = `<div><p>No main here</p></div>`;
       const issues = checkDomDiagnostics(document);
-      const mainIssue = issues.find((i) => i.id === "dom-missing-main-landmark");
+      const mainIssue = issues.find(
+        (i) => i.id === "dom-missing-main-landmark",
+      );
       expect(mainIssue).toBeDefined();
       expect(mainIssue?.severity).toBe("warning");
     });
@@ -174,7 +192,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
     it("passes when a valid <main> landmark exists", () => {
       container.innerHTML = `<main><h1>Heading</h1><p>Content</p></main>`;
       const issues = checkDomDiagnostics(document);
-      const mainIssue = issues.find((i) => i.id === "dom-missing-main-landmark");
+      const mainIssue = issues.find(
+        (i) => i.id === "dom-missing-main-landmark",
+      );
       expect(mainIssue).toBeUndefined();
     });
 
@@ -188,7 +208,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
     it("reports info when heading levels are skipped (e.g. h1 to h3)", () => {
       container.innerHTML = `<main><h1>Title</h1><h3>Skipped h2</h3></main>`;
       const issues = checkDomDiagnostics(document);
-      const skipIssue = issues.find((i) => i.id === "dom-skipped-heading-level");
+      const skipIssue = issues.find(
+        (i) => i.id === "dom-skipped-heading-level",
+      );
       expect(skipIssue).toBeDefined();
     });
 
@@ -216,7 +238,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
         </main>
       `;
       const issues = checkBoundariesDiagnostics(document);
-      const iframeIssue = issues.find((i) => i.id === "boundary-iframes-present");
+      const iframeIssue = issues.find(
+        (i) => i.id === "boundary-iframes-present",
+      );
       expect(iframeIssue).toBeDefined();
       expect(iframeIssue?.message).toContain("1 embedded iframe(s)");
     });
@@ -228,7 +252,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
         container.appendChild(customEl);
 
         const issues = checkBoundariesDiagnostics(document);
-        const shadowIssue = issues.find((i) => i.id === "boundary-shadow-dom-present");
+        const shadowIssue = issues.find(
+          (i) => i.id === "boundary-shadow-dom-present",
+        );
         expect(shadowIssue).toBeDefined();
         expect(shadowIssue?.title).toContain("Shadow DOM");
       }
@@ -243,7 +269,9 @@ describe("Integration Diagnostics Engine (A11Y-405)", () => {
       container.appendChild(nestedWrapper);
 
       const issues = checkBoundariesDiagnostics(document);
-      const portalIssue = issues.find((i) => i.id === "boundary-portal-subnode");
+      const portalIssue = issues.find(
+        (i) => i.id === "boundary-portal-subnode",
+      );
       expect(portalIssue).toBeDefined();
       expect(portalIssue?.severity).toBe("warning");
     });

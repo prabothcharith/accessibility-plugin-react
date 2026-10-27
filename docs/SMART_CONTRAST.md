@@ -15,6 +15,7 @@ The Smart Contrast Research Prototype provides opt-in, measured contrast assista
 Smart contrast implements the standard W3C WCAG 2.1 relative luminance and contrast ratio algorithms.
 
 ### 1. sRGB Linearization
+
 Each 8-bit color component ($R, G, B \in [0, 255]$) is converted to an sRGB floating-point value $c = C / 255$ and linearized:
 
 $$
@@ -25,6 +26,7 @@ c_{linear} = \begin{cases}
 $$
 
 ### 2. Relative Luminance ($L$)
+
 Linearized components are weighted by human spectral sensitivity coefficients:
 
 $$
@@ -34,6 +36,7 @@ $$
 Relative luminance ranges from $0.0$ (pure black `#000000`) to $1.0$ (pure white `#ffffff`).
 
 ### 3. Contrast Ratio ($CR$)
+
 Given relative luminances $L_1$ and $L_2$:
 
 $$
@@ -43,6 +46,7 @@ $$
 The resulting ratio is between $1.0:1$ (identical colors) and $21.0:1$ (pure black on pure white).
 
 ### 4. WCAG 2.1 Thresholds
+
 - **Level AA (SC 1.4.3)**:
   - Normal text (< 24px, or < 18.66px if bold): $\ge 4.5:1$
   - Large text ($\ge 24px$, or $\ge 18.66px$ with font-weight $\ge 700$): $\ge 3.0:1$
@@ -85,6 +89,7 @@ graph LR
 3. **Phase 3 (Batched Writes)**: Mutates only the elements that fail target thresholds in a single write pass, simultaneously recording original styles in a restoration ledger.
 
 ### Performance Evidence
+
 On a 1,000-node DOM fixture, full evaluation and batched application consistently completes in under **10ms**, well within the 16.6ms budget for a single 60fps animation frame.
 
 ---
@@ -93,14 +98,14 @@ On a 1,000-node DOM fixture, full evaluation and batched application consistentl
 
 Smart contrast refuses to make inaccurate assumptions when the backdrop cannot be measured deterministically:
 
-| Unsupported Condition | Detection Mechanism | Handling |
-| :--- | :--- | :--- |
-| **CSS Gradients** | `linear-gradient`, `radial-gradient`, `conic-gradient` | Skipped; flagged in audit as `reason: "gradient"`. |
-| **Background Images** | `backgroundImage` containing `url(...)` | Skipped; flagged in audit as `reason: "background-image"`. |
-| **Backdrop Filters** | `backdrop-filter` or `-webkit-backdrop-filter` | Skipped; flagged in audit as `reason: "backdrop-filter"`. |
-| **Hidden Elements** | `display: none`, `visibility: hidden`, `opacity: 0` | Ignored during candidate discovery. |
-| **Interactive States** | `:disabled`, `[aria-disabled="true"]`, `[aria-invalid="true"]` | Protected; original host semantics preserved. |
-| **Plugin UI** | `[data-arap-ui]`, `.arap-root`, `[data-arap-ignore]` | Strictly excluded from inspection and modification. |
+| Unsupported Condition  | Detection Mechanism                                            | Handling                                                   |
+| :--------------------- | :------------------------------------------------------------- | :--------------------------------------------------------- |
+| **CSS Gradients**      | `linear-gradient`, `radial-gradient`, `conic-gradient`         | Skipped; flagged in audit as `reason: "gradient"`.         |
+| **Background Images**  | `backgroundImage` containing `url(...)`                        | Skipped; flagged in audit as `reason: "background-image"`. |
+| **Backdrop Filters**   | `backdrop-filter` or `-webkit-backdrop-filter`                 | Skipped; flagged in audit as `reason: "backdrop-filter"`.  |
+| **Hidden Elements**    | `display: none`, `visibility: hidden`, `opacity: 0`            | Ignored during candidate discovery.                        |
+| **Interactive States** | `:disabled`, `[aria-disabled="true"]`, `[aria-invalid="true"]` | Protected; original host semantics preserved.              |
+| **Plugin UI**          | `[data-arap-ui]`, `.arap-root`, `[data-arap-ignore]`           | Strictly excluded from inspection and modification.        |
 
 The controller exposes an inspectable **Unsupported elements** list showing each skipped element's tag, ID, class, text snippet, and rejection reason.
 
@@ -109,6 +114,7 @@ The controller exposes an inspectable **Unsupported elements** list showing each
 ## Non-Destructive Restoration
 
 Every modification applied by smart contrast is recorded in an undo stack:
+
 - Original `style.color` and its CSS priority (`""` vs `"important"`) are saved.
 - `undo()` cleanly restores original styles or removes the property completely.
 - `data-arap-smart-contrast="true"` tracking attribute is stripped.

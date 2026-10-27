@@ -121,7 +121,9 @@ describe("AccessibilityPlugin onFeatureEvent Integration (A11Y-406)", () => {
     fireEvent.click(screen.getByRole("button", { name: /accessibility/i }));
 
     // Change a feature
-    fireEvent.click(screen.getByRole("button", { name: /increase font size/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /increase font size/i }),
+    );
 
     // Trigger reset
     const resetBtn = screen.getByRole("button", { name: /^reset all$/i });

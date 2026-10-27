@@ -10,7 +10,6 @@
  * - Strictly an opt-in research prototype: zero automatic WCAG compliance claims
  */
 
-
 export const SMART_CONTRAST_DISCLAIMER =
   "Research prototype only. Smart contrast evaluates foreground and backdrop colors using WCAG 2.1 mathematical relative luminance algorithms. It does not replace manual accessibility inspection or guarantee legal/formal WCAG 2.1 AA/AAA compliance.";
 
@@ -312,8 +311,7 @@ export function resolveEffectiveBackdrop(
   // Root fallback: inspect document.body background or default to pure white (#ffffff)
   if (typeof document !== "undefined" && document.body) {
     const bodyComputed =
-      computedMap?.get(document.body) ??
-      window.getComputedStyle(document.body);
+      computedMap?.get(document.body) ?? window.getComputedStyle(document.body);
     const bodyBg = parseColor(bodyComputed.backgroundColor);
     if (bodyBg && bodyBg.a > 0) {
       composite = compositeRgba(composite, bodyBg);
@@ -363,9 +361,7 @@ export function isEligibleForSmartContrast(element: Element): boolean {
 
   // Check if element has direct non-empty text content
   const hasDirectText = Array.from(element.childNodes).some(
-    (node) =>
-      node.nodeType === 3 &&
-      (node.textContent || "").trim().length > 0,
+    (node) => node.nodeType === 3 && (node.textContent || "").trim().length > 0,
   );
   if (!hasDirectText) return false;
 
