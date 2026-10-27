@@ -133,12 +133,28 @@ for (const key of [
   "accessibleTooltips",
   "readingMode",
   "shortcutsEnabled",
+  "readAloud",
 ]) {
   builtins[key] = {
     defaultValue: false,
     validate: (v) => typeof v === "boolean",
   };
 }
+
+builtins.readAloudRate = {
+  defaultValue: 1.0,
+  validate: numberIn(0.5, 2.0),
+};
+
+builtins.readAloudPitch = {
+  defaultValue: 1.0,
+  validate: numberIn(0.5, 1.5),
+};
+
+builtins.readAloudVoice = {
+  defaultValue: null,
+  validate: (v: unknown) => v === null || typeof v === "string",
+};
 
 builtins.customShortcuts = {
   defaultValue: {},

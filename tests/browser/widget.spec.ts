@@ -1307,3 +1307,80 @@ test("A11Y-308: Keyboard shortcut help, collision-checked remapping and link exp
   await page.keyboard.press("Escape");
   await expect(shortcutsDialog).not.toBeVisible();
 });
+
+test("A11Y-401: Read-aloud TTS with voice, rate and stop controls", async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto("/");
+
+  // Open accessibility panel
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  // Locate Read aloud card
+  const readAloudCard = page.getByRole("group", { name: "Read aloud" });
+  await expect(readAloudCard).toBeVisible();
+
+  // Primary action button is present and says Read aloud
+  const playBtn = readAloudCard.getByRole("button", { name: "Read aloud" });
+  await expect(playBtn).toBeVisible();
+
+  // Stop button is initially disabled
+  const stopBtn = readAloudCard.getByRole("button", { name: "Stop reading" });
+  await expect(stopBtn).toBeDisabled();
+
+  // Speed rate stepper: test increasing to 1.25x
+  const incRateBtn = readAloudCard.getByRole("button", {
+    name: "Increase reading speed",
+  });
+  await expect(incRateBtn).toBeVisible();
+  await incRateBtn.click();
+  await expect(readAloudCard.getByText("1.25x")).toBeVisible();
+
+  // Pitch stepper: test increasing to High
+  const incPitchBtn = readAloudCard.getByRole("button", {
+    name: "Increase pitch",
+  });
+  await expect(incPitchBtn).toBeVisible();
+  await incPitchBtn.click();
+  await expect(readAloudCard.getByText("High")).toBeVisible();
+
+  // Click Read aloud
+  await playBtn.click();
+
+  // Once started, pause button should become visible on the card
+  const pauseBtn = readAloudCard.locator(".arap-read-aloud-pause-btn");
+  await expect(pauseBtn).toBeVisible();
+
+  // Floating playback bar appears at viewport bottom
+  const playbackBar = page.getByRole("region", {
+    name: "Read aloud playback bar",
+  });
+  await expect(playbackBar).toBeVisible();
+
+  // Pause playback
+  await pauseBtn.click();
+  const resumeBtn = readAloudCard.locator(".arap-read-aloud-resume-btn");
+  await expect(resumeBtn).toBeVisible();
+
+  // Resume playback
+  await resumeBtn.click();
+  await expect(pauseBtn).toBeVisible();
+
+  // Press Escape to stop reading
+  await page.keyboard.press("Escape");
+
+  // Playback bar dismisses
+  await expect(playbackBar).not.toBeVisible();
+
+  // Re-open widget panel to verify read-aloud returned to stopped/idle state
+  await trigger.click();
+  await expect(readAloudCard).toBeVisible();
+  await expect(stopBtn).toBeDisabled();
+  await expect(playBtn).toBeVisible();
+});
