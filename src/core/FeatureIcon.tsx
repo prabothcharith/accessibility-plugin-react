@@ -154,6 +154,11 @@ const drawings: Record<string, ReactNode> = {
       <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
     </>
   ),
+  presets: (
+    <>
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </>
+  ),
   reset: (
     <>
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />

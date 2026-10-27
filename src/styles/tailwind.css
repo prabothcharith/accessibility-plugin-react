@@ -1465,7 +1465,25 @@
 @media (prefers-reduced-motion: reduce) {
   .arap-profile-card,
   .arap-profile-apply-btn,
-  .arap-profile-revert-btn {
+  .arap-profile-revert-btn,
+  .arap-preset-card {
     transition: none !important;
   }
+}
+
+/* Custom Presets and Transfer (A11Y-305) */
+.arap-preset-card {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.arap-preset-card:hover {
+  border-color: var(--arap-border-hover, #cbd5e1);
+}
+
+.arap-large-controls .arap-preset-card button {
+  min-height: 48px;
+  padding: 10px 16px;
+  font-size: 14px;
 }

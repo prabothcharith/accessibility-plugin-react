@@ -88,28 +88,31 @@ export function App() {
 Every controller is opt-in. Add only the controls that make sense for your
 site, and choose their order in JSX.
 
-| Controller                                                | Effect                                                                                                                   |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `TextScaleController`                                     | Stepwise reflow-safe text enlargement (1.0x, 1.125x, 1.25x, 1.5x, 2.0x) protecting forms, code, and icons.               |
-| `FontSizeController`                                      | Scales eligible HTML text from 50% to 200%; supports continuous 10% steps or `stepScale` mode.                           |
-| `LineHeightController`                                    | Scales computed line height (50%–200%, step 10); supports `stepPresets` (100%, 150%, 175%, 200%).                        |
-| `LetterSpacingController`                                 | Applies 0–10px letter spacing with automatic cursive (Arabic/RTL) and Indic (Sinhala/Tamil) protection.                  |
-| `WordSpacingController`                                   | Applies 0–10px word spacing while protecting tables, code, forms, and widget internals.                                  |
-| `ContrastController`                                      | Adjusts contrast levels, palettes, or semantic modes while preserving images, video, charts, and validation.             |
-| `ContrastModeController`                                  | Applies light, dark, high contrast, or media-safe invert tokens with native forced-colors protection.                    |
-| `SaturationController`                                    | Reduces or increases saturation.                                                                                         |
-| `InvertColorsController`                                  | Inverts eligible page content.                                                                                           |
-| `GrayscaleController`                                     | Removes color while preserving the selected saturation value for later.                                                  |
-| `LinkHighlightController`                                 | Highlights links or selects a link palette.                                                                              |
-| `TextAlignController`                                     | Scopes left, center, right, or justified alignment to text blocks; warns about justification.                            |
-| `FontFamilyController`                                    | Applies clean system-ui or OpenDyslexic with Sinhala/Tamil fallbacks while protecting code and icons.                    |
-| `HideImagesController` / `HideDecorativeImagesController` | Hides only eligible decorative images while preserving controls, CAPTCHA, charts, maps, and informative graphics.        |
-| `HideVideosController`                                    | Hides video elements and recognized YouTube/Vimeo embeds visually.                                                       |
-| `BigCursorController`                                     | Applies a 40px high-contrast SVG pointer; capability-aware (requires `(pointer: fine)`).                                 |
-| `ReadingMaskController`                                   | Adjustable transparent reading window (40–400px, default 100px); pointer-transparent; follows pointer, touch, and focus. |
-| `ReadingGuideController`                                  | 4px pointer-transparent guide ruler; never blocks clicks/selection; follows pointer, touch, and focus.                   |
-| `TooltipsController` / `AccessibleTooltipsController`     | Accessible tooltips for authored descriptions (`aria-description`, `aria-describedby`, `alt`, etc.) with WCAG 1.4.13.    |
-| `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                        |
+| Controller                                                | Effect                                                                                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `TextScaleController`                                     | Stepwise reflow-safe text enlargement (1.0x, 1.125x, 1.25x, 1.5x, 2.0x) protecting forms, code, and icons.                     |
+| `FontSizeController`                                      | Scales eligible HTML text from 50% to 200%; supports continuous 10% steps or `stepScale` mode.                                 |
+| `LineHeightController`                                    | Scales computed line height (50%–200%, step 10); supports `stepPresets` (100%, 150%, 175%, 200%).                              |
+| `LetterSpacingController`                                 | Applies 0–10px letter spacing with automatic cursive (Arabic/RTL) and Indic (Sinhala/Tamil) protection.                        |
+| `WordSpacingController`                                   | Applies 0–10px word spacing while protecting tables, code, forms, and widget internals.                                        |
+| `ContrastController`                                      | Adjusts contrast levels, palettes, or semantic modes while preserving images, video, charts, and validation.                   |
+| `ContrastModeController`                                  | Applies light, dark, high contrast, or media-safe invert tokens with native forced-colors protection.                          |
+| `SaturationController`                                    | Reduces or increases saturation.                                                                                               |
+| `InvertColorsController`                                  | Inverts eligible page content.                                                                                                 |
+| `GrayscaleController`                                     | Removes color while preserving the selected saturation value for later.                                                        |
+| `LinkHighlightController`                                 | Highlights links or selects a link palette.                                                                                    |
+| `TextAlignController`                                     | Scopes left, center, right, or justified alignment to text blocks; warns about justification.                                  |
+| `FontFamilyController`                                    | Applies clean system-ui or OpenDyslexic with Sinhala/Tamil fallbacks while protecting code and icons.                          |
+| `HideImagesController` / `HideDecorativeImagesController` | Hides only eligible decorative images while preserving controls, CAPTCHA, charts, maps, and informative graphics.              |
+| `HideVideosController`                                    | Hides video elements and recognized YouTube/Vimeo embeds visually.                                                             |
+| `BigCursorController`                                     | Applies a 40px high-contrast SVG pointer; capability-aware (requires `(pointer: fine)`).                                       |
+| `ReadingMaskController`                                   | Adjustable transparent reading window (40–400px, default 100px); pointer-transparent; follows pointer, touch, and focus.       |
+| `ReadingGuideController`                                  | 4px pointer-transparent guide ruler; never blocks clicks/selection; follows pointer, touch, and focus.                         |
+| `TooltipsController` / `AccessibleTooltipsController`     | Accessible tooltips for authored descriptions (`aria-description`, `aria-describedby`, `alt`, etc.) with WCAG 1.4.13.          |
+| `PageNavigatorController` / `HeadingsNavigatorController` | Explores real headings and landmarks, supports keyboard navigation, safe scroll/focus, and search filtering.                   |
+| `ProfilesController` / `ProfileController`                | Previews, applies, and reverts eight neutral presets (Motor, Blind, Color Blind, Dyslexia, etc.) with deterministic overrides. |
+| `PresetsController` / `CustomPresetsController`           | Saves named custom presets and handles versioned JSON import/export with privacy exclusions.                                   |
+| `ResetController`                                         | Resets display features and custom registered features without moving the widget.                                              |
 
 Effects compose where appropriate. For example, contrast, saturation, invert,
 and grayscale are applied in a deterministic order. Defaults leave host styles

@@ -163,11 +163,16 @@ export function AccessibilityPlugin({
   );
   const resetAll = useCallback(() => {
     resetFns.current.forEach((fn) => fn());
-    setFeatures((previous) =>
-      validPlacement(previous[PLACEMENT_KEY])
-        ? { [PLACEMENT_KEY]: previous[PLACEMENT_KEY] }
-        : {},
-    );
+    setFeatures((previous) => {
+      const preserved: Record<string, unknown> = {};
+      if (validPlacement(previous[PLACEMENT_KEY])) {
+        preserved[PLACEMENT_KEY] = previous[PLACEMENT_KEY];
+      }
+      if (Array.isArray(previous.customPresets)) {
+        preserved.customPresets = previous.customPresets;
+      }
+      return preserved;
+    });
   }, [setFeatures]);
   const registerReset = useCallback((key: string, fn: () => void) => {
     resetFns.current.set(key, fn);
