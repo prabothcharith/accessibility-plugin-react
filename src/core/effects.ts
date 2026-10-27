@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { builtins } from "./featureSchema";
+import { applySmartContrast } from "./smartContrast";
 import type { FeatureRegistration } from "./types";
 
 const EXCLUDED =
@@ -1063,6 +1064,19 @@ function applyPage(values: Record<string, unknown>): () => void {
         set(el, "border-color", activePalette.border);
       }
     }
+  }
+
+  // Smart contrast research prototype: measured relative luminance assistance
+  const smartContrastVal = values.smartContrast;
+  if (
+    (smartContrastVal === true ||
+      smartContrastVal === "aa" ||
+      smartContrastVal === "aaa") &&
+    !isForcedColorsActive()
+  ) {
+    const targetLevel = smartContrastVal === "aaa" ? "aaa" : "aa";
+    const applied = applySmartContrast({ targetLevel });
+    undo.push(applied.undo);
   }
 
   // Enhanced focus visibility

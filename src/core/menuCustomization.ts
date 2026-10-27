@@ -20,6 +20,7 @@ export const KNOWN_FEATURE_IDS = [
   "paragraphSpacing",
   "contrast",
   "contrastMode",
+  "smartContrast",
   "saturation",
   "invertColors",
   "grayscale",
