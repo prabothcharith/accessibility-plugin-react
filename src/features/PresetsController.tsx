@@ -1,9 +1,11 @@
 "use client";
 
-import { useId, useRef, useState, type ChangeEvent } from "react";
+import { useContext, useId, useRef, useState, type ChangeEvent } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
 import { EmptyState } from "../core/controls/FeatureStatusState";
 import { usePresets } from "../core/usePresets";
+import { AccessibilityContext } from "../core/AccessibilityContext";
+import { resolveLocaleStrings } from "../core/i18n";
 import type { CustomPreset } from "../core/presets";
 import type { AccessibilityPreferences } from "../core/preferences/types";
 
@@ -16,10 +18,14 @@ export interface PresetsControllerProps {
 
 export function PresetsController({
   className = "",
-  label = "Custom Presets",
+  label,
   description = "Save, restore, and transfer your settings",
   largeControls = false,
-}: PresetsControllerProps) {
+}: PresetsControllerProps = {}) {
+  const ctx = useContext(AccessibilityContext);
+  const strings = resolveLocaleStrings(ctx?.locale);
+  const effectiveLabel = label ?? strings.features?.presets ?? "Custom Presets";
+
   const [isOpen, setIsOpen] = useState(false);
   const [presetName, setPresetName] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
@@ -48,14 +54,22 @@ export function PresetsController({
     const created = saveCurrentAsPreset(trimmed);
     setPresetName("");
     setErrorMessage("");
-    setStatusMessage(`Preset "${created.name}" saved successfully.`);
+    setStatusMessage(
+      strings.formatPresetSaved
+        ? strings.formatPresetSaved(created.name)
+        : `Preset "${created.name}" saved successfully.`,
+    );
   };
 
   const handleApply = (preset: CustomPreset) => {
     const success = applyPreset(preset.id);
     if (success) {
       setErrorMessage("");
-      setStatusMessage(`Preset "${preset.name}" applied.`);
+      setStatusMessage(
+        strings.formatPresetApplied
+          ? strings.formatPresetApplied(preset.name)
+          : `Preset "${preset.name}" applied.`,
+      );
     }
   };
 
@@ -63,7 +77,11 @@ export function PresetsController({
     const success = deletePreset(preset.id);
     if (success) {
       setErrorMessage("");
-      setStatusMessage(`Preset "${preset.name}" deleted.`);
+      setStatusMessage(
+        strings.formatPresetDeleted
+          ? strings.formatPresetDeleted(preset.name)
+          : `Preset "${preset.name}" deleted.`,
+      );
     }
   };
 
@@ -138,7 +156,7 @@ export function PresetsController({
     <div
       className={`arap-feature arap-feature-expandable ${largeControls ? "arap-large-controls" : ""} ${className}`}
       role="group"
-      aria-label={label}
+      aria-label={effectiveLabel}
     >
       <div
         style={{
@@ -151,7 +169,7 @@ export function PresetsController({
         <span className="arap-label">
           <FeatureIcon name="presets" />
           <span>
-            <span style={{ display: "block" }}>{label}</span>
+            <span style={{ display: "block" }}>{effectiveLabel}</span>
             {description && (
               <span
                 style={{

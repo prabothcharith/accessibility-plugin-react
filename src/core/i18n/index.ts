@@ -1,11 +1,19 @@
 import type { LocaleStrings } from "./types";
 import { enLocale } from "./en";
+import { siLocale } from "./si";
+import { taLocale } from "./ta";
 
 export * from "./types";
 export { enLocale } from "./en";
+export { siLocale } from "./si";
+export { taLocale } from "./ta";
 
 const dictionaries: Record<string, LocaleStrings> = {
   en: enLocale,
+  si: siLocale,
+  "si-lk": siLocale,
+  ta: taLocale,
+  "ta-lk": taLocale,
 };
 
 const RTL_LOCALES = new Set([

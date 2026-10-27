@@ -1,6 +1,8 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import { useContext, type CSSProperties, type ReactNode } from "react";
+import { AccessibilityContext } from "../AccessibilityContext";
+import { resolveLocaleStrings } from "../i18n";
 
 export interface SearchCountProps {
   totalCount: number;
@@ -8,6 +10,7 @@ export interface SearchCountProps {
   query?: string;
   className?: string;
   style?: CSSProperties;
+  locale?: string;
 }
 
 export function SearchCount({
@@ -16,10 +19,15 @@ export function SearchCount({
   query,
   className = "",
   style,
+  locale,
 }: SearchCountProps) {
-  const text = query
-    ? `Showing ${matchedCount} of ${totalCount} tools matching "${query}"`
-    : `Showing all ${totalCount} tools`;
+  const ctx = useContext(AccessibilityContext);
+  const strings = resolveLocaleStrings(locale ?? ctx?.locale);
+  const text = strings.formatSearchCount
+    ? strings.formatSearchCount(matchedCount, totalCount, query)
+    : query
+      ? `Showing ${matchedCount} of ${totalCount} tools matching "${query}"`
+      : `Showing all ${totalCount} tools`;
 
   return (
     <div
@@ -41,17 +49,30 @@ export interface EmptyStateProps {
   icon?: ReactNode;
   className?: string;
   style?: CSSProperties;
+  locale?: string;
 }
 
 export function EmptyState({
-  title = "No matching tools found",
-  description = "Try adjusting your search query or reset filters.",
-  actionLabel = "Clear search",
+  title,
+  description,
+  actionLabel,
   onAction,
   icon,
   className = "",
   style,
+  locale,
 }: EmptyStateProps) {
+  const ctx = useContext(AccessibilityContext);
+  const strings = resolveLocaleStrings(locale ?? ctx?.locale);
+  const resolvedTitle =
+    title ?? strings.emptySearchTitle ?? "No matching tools found";
+  const resolvedDescription =
+    description ??
+    strings.emptySearchDescription ??
+    "Try adjusting your search query or reset filters.";
+  const resolvedActionLabel =
+    actionLabel ?? strings.clearSearchLabel ?? "Clear search";
+
   return (
     <div
       role="status"
@@ -61,11 +82,11 @@ export function EmptyState({
       <div className="arap-empty-icon" aria-hidden="true">
         {icon ?? "🔍"}
       </div>
-      <h3 className="arap-empty-title">{title}</h3>
-      <p className="arap-empty-desc">{description}</p>
+      <h3 className="arap-empty-title">{resolvedTitle}</h3>
+      <p className="arap-empty-desc">{resolvedDescription}</p>
       {onAction && (
         <button type="button" className="arap-empty-btn" onClick={onAction}>
-          {actionLabel}
+          {resolvedActionLabel}
         </button>
       )}
     </div>

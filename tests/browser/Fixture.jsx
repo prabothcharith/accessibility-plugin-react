@@ -29,7 +29,8 @@ export default function Fixture() {
     [route, setRoute] = useState(false),
     [dark, setDark] = useState(false),
     [mounted, setMounted] = useState(true),
-    [position, setPosition] = useState("right");
+    [position, setPosition] = useState("right"),
+    [locale, setLocale] = useState("en");
   return (
     <>
       <main id="host" className={dark ? "dark" : ""}>
@@ -82,8 +83,24 @@ export default function Fixture() {
           <code id="sample-code">const accessible = true;</code>
         </pre>
       </main>
+      <div id="fixture-locale-wrapper">
+        <label>
+          Locale{" "}
+          <select
+            id="fixture-locale-select"
+            value={locale}
+            onChange={(event) => setLocale(event.target.value)}
+          >
+            {["en", "si-LK", "ta-LK"].map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
       {mounted && (
-        <A.AccessibilityPlugin position={position}>
+        <A.AccessibilityPlugin position={position} locale={locale}>
           <A.AccessibilityButton description="Adjust your display preferences" />
           <A.AccessibilityList>
             <A.FontSizeController />
