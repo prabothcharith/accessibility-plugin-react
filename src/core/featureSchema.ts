@@ -169,6 +169,22 @@ builtins.activeProfile = {
       "profileId" in v &&
       typeof (v as { profileId: unknown }).profileId === "string"),
 };
+
+builtins.customPresets = {
+  defaultValue: [],
+  validate: (v: unknown) =>
+    Array.isArray(v) &&
+    v.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        typeof (item as { id?: unknown }).id === "string" &&
+        typeof (item as { name?: unknown }).name === "string" &&
+        typeof (item as { createdAt?: unknown }).createdAt === "string" &&
+        typeof (item as { settings?: unknown }).settings === "object" &&
+        (item as { settings?: unknown }).settings !== null,
+    ),
+};
 export function validValue(
   key: string,
   value: unknown,

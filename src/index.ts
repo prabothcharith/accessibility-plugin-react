@@ -191,6 +191,29 @@ export {
   type ProfilesControllerProps,
 } from "./features/ProfilesController";
 export { ResetController } from "./features/ResetController";
+export {
+  PresetsController,
+  CustomPresetsController,
+  SettingsImportExportController,
+  PresetsBackupController,
+  type PresetsControllerProps,
+} from "./features/PresetsController";
+
+// Custom Presets, Backup & JSON Import/Export
+export { usePresets, type UsePresetsResult } from "./core/usePresets";
+export {
+  createCustomPreset,
+  isValidCustomPreset,
+  exportPresetsToJson,
+  downloadJsonFile,
+  validateAndParseImport,
+  applyCustomPresetToStore,
+  sanitizePreferences,
+  ALLOWED_PREFERENCE_KEYS,
+  type CustomPreset,
+  type PresetsExportV1,
+  type ImportResult,
+} from "./core/presets";
 
 // Control Primitives & State UI
 export {
