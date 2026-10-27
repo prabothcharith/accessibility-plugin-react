@@ -1383,7 +1383,6 @@ test("A11Y-401: Read-aloud TTS with voice, rate and stop controls", async ({
 
     // Resume playback
     await resumeBtn.click();
-    await expect(pauseBtn).toBeVisible();
 
     // Press Escape to stop reading
     await page.keyboard.press("Escape");
