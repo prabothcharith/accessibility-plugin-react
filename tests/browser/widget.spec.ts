@@ -1596,3 +1596,44 @@ test("per-site feature menu customization renders ordered custom groups and labe
   await page.getByLabel("Close accessibility settings").click();
   await expect(panel).not.toBeVisible();
 });
+
+test("development-only diagnostics harness opens and displays actionable integration reports (A11Y-405)", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Toggle diagnostics harness
+  await page.locator("#toggle-diagnostics").click();
+
+  // Diagnostics trigger badge should appear
+  const badgeBtn = page.getByRole("button", {
+    name: /open accessibility diagnostics/i,
+  });
+  await expect(badgeBtn).toBeVisible();
+
+  // Click badge to open panel
+  await badgeBtn.click();
+  const panel = page.getByRole("region", {
+    name: "Integration Diagnostics Panel",
+  });
+  await expect(panel).toBeVisible();
+
+  // Disclaimer and summary bar should be visible
+  await expect(
+    panel.getByText("Automated diagnostics evaluate host environment compatibility"),
+  ).toBeVisible();
+  await expect(panel.getByText("Total")).toBeVisible();
+
+  // Tab switching: click DOM tab
+  const domTab = panel.getByRole("tab", { name: "DOM" });
+  await domTab.click();
+  await expect(domTab).toHaveAttribute("aria-selected", "true");
+
+  // Close diagnostics panel
+  const closeBtn = panel.getByRole("button", {
+    name: "Close diagnostics panel",
+  });
+  await closeBtn.click();
+  await expect(panel).not.toBeVisible();
+});
+

@@ -4,7 +4,7 @@ Composable React controls for display preferences and reading assistance. Choose
 the controls in JSX, keep the widget outside your application layout, and let
 the provider own state, persistence, effects, focus behavior, and cleanup.
 
-The library features modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), state UI (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), locale packs (English, Sinhala, Tamil), offline dictionary lookup, native speech read-aloud TTS, opt-in saturation/grayscale with advisory warnings, reading mode, keyboard shortcuts, per-site feature-menu customization, and automated releases across npm, GitHub Releases, and GitHub Packages.
+The library features modular accessible control primitives (`FeatureCard`, `ToggleControl`, `ChoiceControl`, `StepperControl`), state UI (`SearchCount`, `EmptyState`, `ErrorState`), profile previews (`ProfilePreviewCard`), locale packs (English, Sinhala, Tamil), offline dictionary lookup, native speech read-aloud TTS, opt-in saturation/grayscale with advisory warnings, reading mode, keyboard shortcuts, per-site feature-menu customization, development-only integration diagnostics (`runDiagnostics`, `<DiagnosticsHarness />`), and automated releases across npm, GitHub Releases, and GitHub Packages.
 It supports React 18.3.1 and React 19.x, ships ESM, CommonJS, TypeScript declarations,
 and scoped plain CSS, and has no runtime dependency other than React and React DOM.
 
@@ -300,6 +300,8 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Migration from v1 and development baselines](docs/MIGRATION.md)
 - [Architecture and lifecycle decisions](docs/ARCHITECTURE.md)
 - [Development and testing](docs/DEVELOPMENT.md)
+- [Per-site feature-menu customization](docs/MENU_CUSTOMIZATION.md)
+- [Development-only integration diagnostics and test harness](docs/DIAGNOSTICS.md)
 - [Design foundation](docs/DESIGN.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Project status and verification evidence](docs/PROJECT_STATUS.md)

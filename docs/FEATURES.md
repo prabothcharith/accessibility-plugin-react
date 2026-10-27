@@ -79,3 +79,15 @@ Widget placement is now a persisted preference with pointer dragging and non-dra
 ## Verification mapping
 
 `tests/features.test.tsx`: stepper bounds, palettes, all alignment states, boolean effects, combined filters, native host restoration and dynamic routes. `tests/plugin.test.tsx`: custom lifecycle, restoration, invalid data, focus, Strict Mode, SSR, hydration, singleton enforcement. `tests/storage.test.ts`: deterministic timers, errors and schema envelopes. `tests/browser/widget.spec.ts`: actual compiled CSS, packed consumers, visibility, pointer interaction, geometry, keyboard and axe. See project status for executed results and manual gaps.
+
+## Development-Only Integration Diagnostics & Test Harness (A11Y-405)
+
+The integration diagnostics suite (`runDiagnostics`, `DiagnosticsHarness`, `useDiagnostics`) performs non-invasive environment, DOM, and styling checks during development:
+- **Provider & Widget Placement**: Diagnoses multiple providers and identifies ancestor containing-block traps (`filter`, `transform`, `perspective`).
+- **Storage Boundaries**: Tests `localStorage` / `sessionStorage` accessibility, quotas, and sandbox restrictions with graceful in-memory fallback.
+- **CSP & Style Injection**: Tests dynamic `<style>` injection and CSS custom property support against restrictive `style-src`.
+- **Host CSS Conflicts**: Detects extreme host `z-index >= 2,147,483,000` and root scroll locks (`overflow: hidden` on both `html` and `body`).
+- **DOM & Landmark Structure**: Scans for `<main>` landmarks, `<h1>` titles, skipped heading levels, and unlabelled content `<img>` tags (privacy-safe, no sensitive URLs or PII).
+- **Boundaries**: Flags embedded `<iframe>` elements (cross-origin styling boundaries) and custom elements with `ShadowRoot`.
+- **Zero Compliance Claims**: All reports carry an explicit disclaimer stating that automated diagnostics do not constitute official WCAG certification or replace manual audits.
+

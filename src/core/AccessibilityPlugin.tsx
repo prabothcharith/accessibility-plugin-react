@@ -15,6 +15,7 @@ import { validKey } from "./storage";
 import { createPreferenceStore } from "./preferenceStore";
 import { builtins, validValue } from "./featureSchema";
 import { CustomEffect, useBuiltinEffects } from "./effects";
+import { type DiagnosticsConfig, runDiagnostics } from "./diagnostics";
 import type { AccessibilityPluginProps, FeatureRegistration } from "./types";
 
 // Host-wide preferences have one owner. Fail explicitly rather than silently racing.
@@ -28,6 +29,7 @@ export function AccessibilityPlugin({
   locale,
   statementUrl,
   largeControls,
+  diagnostics,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [store] = useState(() =>
@@ -83,6 +85,23 @@ export function AccessibilityPlugin({
       if (owners.get(document) === token) owners.delete(document);
     };
   }, [store]);
+
+  useEffect(() => {
+    if (!diagnostics) return;
+    const isDev =
+      typeof process !== "undefined" &&
+      process.env &&
+      process.env.NODE_ENV === "development";
+    const force = typeof diagnostics === "object" ? diagnostics.force : false;
+    if (!isDev && !force && diagnostics !== true) return;
+
+    const diagConfig: DiagnosticsConfig =
+      typeof diagnostics === "object" ? diagnostics : { logToConsole: true };
+    const timer = setTimeout(() => {
+      runDiagnostics(diagConfig);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [diagnostics]);
   const registerFeature = useCallback(
     (key: string, definition: FeatureRegistration) => {
       if (!validKey(key) || key === PLACEMENT_KEY)

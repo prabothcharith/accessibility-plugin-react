@@ -31,7 +31,8 @@ export default function Fixture() {
     [mounted, setMounted] = useState(true),
     [position, setPosition] = useState("right"),
     [locale, setLocale] = useState("en"),
-    [customMenu, setCustomMenu] = useState(false);
+    [customMenu, setCustomMenu] = useState(false),
+    [showDiagnostics, setShowDiagnostics] = useState(false);
   return (
     <>
       <main id="host" className={dark ? "dark" : ""}>
@@ -50,6 +51,12 @@ export default function Fixture() {
           onClick={() => setCustomMenu(!customMenu)}
         >
           Toggle custom menu
+        </button>
+        <button
+          id="toggle-diagnostics"
+          onClick={() => setShowDiagnostics(!showDiagnostics)}
+        >
+          Toggle diagnostics
         </button>
         <label>
           Widget position{" "}
@@ -182,6 +189,7 @@ export default function Fixture() {
           )}
         </A.AccessibilityPlugin>
       )}
+      {showDiagnostics && <A.DiagnosticsHarness force={true} />}
     </>
   );
 }

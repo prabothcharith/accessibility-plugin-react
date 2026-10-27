@@ -1,9 +1,9 @@
 # Project status — 2026-10-27
 
-**Version 2.22.0 is published on npm, GitHub Releases, and GitHub Packages.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.22.0
+**Version 2.23.0 is merged into main and published.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.23.0
 are implemented, tested, and published under `latest`. The repository currently
-prepares `2.23.0` for per-site feature-menu customization (Issue #60).
+prepares `2.24.0` for development-only integration diagnostics and test harness (Issue #61).
 
 ## Status categories
 
