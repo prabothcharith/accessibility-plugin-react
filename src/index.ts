@@ -324,3 +324,27 @@ export {
   type NormalizedMenuItem,
   type NormalizedMenuGroup,
 } from "./core/menuCustomization";
+
+// Development-Only Integration Diagnostics & Test Harness (A11Y-405)
+export {
+  runDiagnostics,
+  checkProviderDiagnostics,
+  checkStorageDiagnostics,
+  checkCspDiagnostics,
+  checkHostCssDiagnostics,
+  checkDomDiagnostics,
+  checkBoundariesDiagnostics,
+  DIAGNOSTICS_DISCLAIMER,
+  type DiagnosticCategory,
+  type DiagnosticIssue,
+  type DiagnosticSeverity,
+  type DiagnosticsConfig,
+  type DiagnosticsReport,
+  type DiagnosticsSummary,
+} from "./core/diagnostics";
+export {
+  DiagnosticsHarness,
+  type DiagnosticsHarnessProps,
+} from "./core/DiagnosticsHarness";
+export { useDiagnostics } from "./core/useDiagnostics";
+

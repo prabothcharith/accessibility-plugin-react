@@ -2870,3 +2870,311 @@
     border-bottom: 1px solid CanvasText;
   }
 }
+
+/* Development-Only Diagnostics Harness (A11Y-405) */
+.arap-diagnostics-harness {
+  position: fixed;
+  bottom: 80px;
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 2147483000;
+  font-family: inherit;
+}
+
+.arap-diagnostics-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.arap-diagnostics-badge-btn:hover {
+  background: var(--arap-selected, #eff6ff);
+  border-color: var(--arap-accent, #1d4ed8);
+}
+
+.arap-diagnostics-badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.arap-diagnostics-badge-count.arap-count-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.arap-diagnostics-badge-count.arap-count-warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.arap-diagnostics-panel {
+  position: fixed;
+  bottom: 80px;
+  right: max(16px, env(safe-area-inset-right));
+  width: min(440px, calc(100vw - 32px));
+  max-height: min(580px, calc(100vh - 120px));
+  display: flex;
+  flex-direction: column;
+  background: var(--arap-surface, #ffffff);
+  color: var(--arap-text, #0f172a);
+  border: 1px solid var(--arap-border, #cbd5e1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 2147483002;
+}
+
+.arap-diagnostics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--arap-divider, #e2e8f0);
+  background: var(--arap-control, #f8fafc);
+}
+
+.arap-diagnostics-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arap-diagnostics-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.arap-diagnostics-env-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.arap-diagnostics-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arap-diagnostics-btn-sm {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border: 1px solid var(--arap-border, #cbd5e1);
+  background: var(--arap-surface, #ffffff);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.arap-diagnostics-btn-close {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.arap-diagnostics-disclaimer {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--arap-divider, #e2e8f0);
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.arap-diagnostics-summary-bar {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--arap-divider, #e2e8f0);
+}
+
+.arap-stat strong {
+  font-weight: 700;
+}
+
+.arap-stat-errors {
+  color: #b91c1c;
+}
+
+.arap-stat-warnings {
+  color: #b45309;
+}
+
+.arap-stat-info {
+  color: #0369a1;
+}
+
+.arap-diagnostics-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 4px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--arap-divider, #e2e8f0);
+  background: var(--arap-surface, #ffffff);
+}
+
+.arap-diagnostics-tab {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.arap-diagnostics-tab.arap-tab-active {
+  background: var(--arap-selected, #eff6ff);
+  color: var(--arap-accent, #1d4ed8);
+  font-weight: 600;
+}
+
+.arap-diagnostics-list {
+  padding: 12px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.arap-diagnostics-card {
+  border: 1px solid var(--arap-border, #cbd5e1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--arap-surface, #ffffff);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arap-diagnostics-card.arap-card-error {
+  border-left: 4px solid #ef4444;
+}
+
+.arap-diagnostics-card.arap-card-warn {
+  border-left: 4px solid #f59e0b;
+}
+
+.arap-diagnostics-card.arap-card-info {
+  border-left: 4px solid #0ea5e9;
+}
+
+.arap-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+}
+
+.arap-severity-pill {
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.arap-pill-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.arap-pill-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.arap-pill-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.arap-category-tag {
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.arap-target-badge {
+  margin-left: auto;
+  font-family: monospace;
+  font-size: 0.6875rem;
+  background: #f1f5f9;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #334155;
+}
+
+.arap-card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--arap-text, #0f172a);
+}
+
+.arap-card-message {
+  font-size: 0.8125rem;
+  margin: 0;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.arap-card-rec {
+  font-size: 0.75rem;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 4px;
+  color: #1e293b;
+}
+
+.arap-card-link {
+  font-size: 0.75rem;
+  color: var(--arap-accent, #1d4ed8);
+  text-decoration: underline;
+  align-self: flex-start;
+}
+
+.arap-diagnostics-empty {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+@media (forced-colors: active) {
+  .arap-diagnostics-panel,
+  .arap-diagnostics-badge-btn,
+  .arap-diagnostics-card {
+    border: 1px solid CanvasText;
+  }
+}
+

@@ -313,9 +313,9 @@ export function sanitizeLookupTerm(term: unknown): {
   }
 
   // Strip HTML tags and control characters
-  // eslint-disable-next-line no-control-regex
   let clean = term
     .replace(/<[^>]*>/g, "")
+    // eslint-disable-next-line no-control-regex
     .replace(/[\x00-\x1F\x7F]/g, "")
     .trim();
 
