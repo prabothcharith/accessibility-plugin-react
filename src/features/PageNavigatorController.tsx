@@ -5,10 +5,12 @@ import { FeatureIcon } from "../core/FeatureIcon";
 import {
   scanHeadings,
   scanLandmarks,
+  scanLinks,
   navigateToElement,
   subscribePageStructure,
   type HeadingItem,
   type LandmarkItem,
+  type LinkItem,
 } from "../core/pageNavigator";
 
 export interface PageNavigatorControllerProps {
@@ -19,9 +21,9 @@ export interface PageNavigatorControllerProps {
 }
 
 /**
- * Controller to explore and navigate the page's semantic outline (Headings H1-H6 and Landmarks).
+ * Controller to explore and navigate the page's semantic outline (Headings H1-H6, Landmarks, and Links).
  * Safely transfers focus and scrolls to elements with temporary tabindex cleanup.
- * Truthfully displays empty states when pages lack headings or landmarks.
+ * Truthfully displays empty states when pages lack headings, landmarks, or links.
  * Automatically synchronizes with dynamic DOM / SPA route changes without observer loops.
  */
 export function PageNavigatorController({
@@ -31,11 +33,12 @@ export function PageNavigatorController({
   closeOnNavigate = false,
 }: PageNavigatorControllerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"headings" | "landmarks">(
-    "headings",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "headings" | "landmarks" | "links"
+  >("headings");
   const [headings, setHeadings] = useState<HeadingItem[]>([]);
   const [landmarks, setLandmarks] = useState<LandmarkItem[]>([]);
+  const [links, setLinks] = useState<LinkItem[]>([]);
   const [search, setSearch] = useState("");
 
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -44,6 +47,7 @@ export function PageNavigatorController({
   const refreshStructure = useCallback(() => {
     setHeadings(scanHeadings());
     setLandmarks(scanLandmarks());
+    setLinks(scanLinks());
   }, []);
 
   const handleOpen = () => {
@@ -90,6 +94,14 @@ export function PageNavigatorController({
         l.label.toLowerCase().includes(search.toLowerCase()),
       )
     : landmarks;
+
+  const filteredLinks = search.trim()
+    ? links.filter(
+        (lnk) =>
+          lnk.text.toLowerCase().includes(search.toLowerCase()) ||
+          lnk.href.toLowerCase().includes(search.toLowerCase()),
+      )
+    : links;
 
   return (
     <div
@@ -192,11 +204,32 @@ export function PageNavigatorController({
                 if (e.key === "ArrowLeft") {
                   document.getElementById("arap-tab-headings")?.focus();
                   setActiveTab("headings");
+                } else if (e.key === "ArrowRight") {
+                  document.getElementById("arap-tab-links")?.focus();
+                  setActiveTab("links");
                 }
               }}
             >
               <FeatureIcon name="landmarks" />
               <span>Landmarks ({landmarks.length})</span>
+            </button>
+            <button
+              id="arap-tab-links"
+              className={`arap-navigator-tab ${activeTab === "links" ? "arap-navigator-tab-active" : ""}`}
+              role="tab"
+              aria-selected={activeTab === "links"}
+              aria-controls="arap-panel-links"
+              type="button"
+              onClick={() => setActiveTab("links")}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowLeft") {
+                  document.getElementById("arap-tab-landmarks")?.focus();
+                  setActiveTab("landmarks");
+                }
+              }}
+            >
+              <FeatureIcon name="linkHighlight" />
+              <span>Links ({links.length})</span>
             </button>
           </div>
 
@@ -282,6 +315,65 @@ export function PageNavigatorController({
                           </span>
                           <span className="arap-navigator-item-text">
                             {l.label}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {activeTab === "links" && (
+              <div
+                id="arap-panel-links"
+                role="tabpanel"
+                aria-labelledby="arap-tab-links"
+              >
+                {filteredLinks.length === 0 ? (
+                  <div className="arap-navigator-empty" role="status">
+                    {links.length === 0
+                      ? "No links found on this page."
+                      : "No matching links."}
+                  </div>
+                ) : (
+                  <ul className="arap-navigator-list" role="list">
+                    {filteredLinks.map((lnk, i) => (
+                      <li
+                        key={`${lnk.id}-${i}`}
+                        className="arap-navigator-item"
+                      >
+                        <button
+                          type="button"
+                          className="arap-navigator-jump-btn"
+                          onClick={() => handleNavigate(lnk.element)}
+                        >
+                          <span
+                            className={`arap-navigator-badge ${lnk.isExternal ? "arap-navigator-badge-ext" : "arap-navigator-badge-link"}`}
+                            aria-hidden="true"
+                          >
+                            {lnk.isExternal
+                              ? "EXT"
+                              : lnk.isHash
+                                ? "ANCHOR"
+                                : "LINK"}
+                          </span>
+                          <span className="arap-navigator-item-text">
+                            <span>{lnk.text}</span>
+                            {lnk.isAmbiguous && (
+                              <span
+                                className="arap-navigator-badge arap-navigator-badge-warning"
+                                title="Uninformative link text (e.g. 'click here')"
+                              >
+                                Ambiguous
+                              </span>
+                            )}
+                            <span
+                              className="arap-navigator-subtext"
+                              aria-hidden="true"
+                            >
+                              {lnk.href}
+                            </span>
                           </span>
                         </button>
                       </li>

@@ -165,6 +165,18 @@ const drawings: Record<string, ReactNode> = {
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </>
   ),
+  shortcuts: (
+    <>
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+    </>
+  ),
+  keyboardShortcuts: (
+    <>
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+    </>
+  ),
   reset: (
     <>
       <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
