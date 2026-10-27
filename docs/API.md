@@ -116,11 +116,14 @@ Use `footer` for additional fixed actions. Keep actions concise and independentl
 ## Integration Diagnostics and Harness (A11Y-405)
 
 ### `AccessibilityPluginProps.diagnostics`
+
 - Type: `boolean | DiagnosticsConfig`
 - In development (`NODE_ENV === "development"`), when set to `true` or configured via `DiagnosticsConfig`, executes integration diagnostics on mount and logs findings to the developer console.
 
 ### `<DiagnosticsHarness />`
+
 Floating developer panel component for inspecting diagnostics findings:
+
 ```tsx
 import { DiagnosticsHarness } from "accessibility-plugin-react";
 
@@ -128,11 +131,13 @@ import { DiagnosticsHarness } from "accessibility-plugin-react";
   force={false} // Set to true to force display even in production
   defaultOpen={false} // Whether drawer starts open
   config={{ categories: ["provider", "host-css", "csp", "dom"] }}
-/>
+/>;
 ```
 
 ### `runDiagnostics(config?: DiagnosticsConfig): DiagnosticsReport`
+
 Synchronous diagnostics runner returning a structured report:
+
 ```ts
 interface DiagnosticsReport {
   timestamp: number;
@@ -144,15 +149,18 @@ interface DiagnosticsReport {
 ```
 
 ### `useDiagnostics(config?: DiagnosticsConfig): DiagnosticsReport`
+
 React hook returning reactive diagnostics reports.
 
 ## Privacy-Safe Feature Event Callbacks (A11Y-406)
 
 ### `AccessibilityPluginProps.onFeatureEvent`
+
 - Type: `(event: AccessibilityFeatureEvent) => void`
 - Optional local lifecycle callback triggered on user interactions (toggles, steppers, resets, profiles, presets, panel visibility, placement). Disabled by default.
 
 ### `AccessibilityFeatureEvent` Types
+
 ```ts
 type AccessibilityFeatureEvent =
   | FeatureChangeEvent
@@ -164,12 +172,15 @@ type AccessibilityFeatureEvent =
 ```
 
 ### `sanitizeFeatureEvent(raw: AccessibilityFeatureEvent): AccessibilityFeatureEvent`
+
 Sanitizes and freezes event payloads against an allowlist, stripping forbidden or private fields.
 
 ## Smart Contrast Research Prototype (A11Y-407)
 
 ### `<SmartContrastController />`
+
 Opt-in research prototype controller providing measured contrast evaluation and enhancement:
+
 - Segmented buttons: `Original` (`off`), `AA (4.5:1)` (`aa`), `AAA (7.0:1)` (`aaa`).
 - Displays live statistics (elements evaluated, adjusted, sufficient, unsupported).
 - Inspectable unsupported elements list detailing skipped items (gradients, background images, backdrop filters).
@@ -177,22 +188,25 @@ Opt-in research prototype controller providing measured contrast evaluation and 
 - Yields to operating system `forced-colors: active`.
 
 ### `evaluateSmartContrast(options?: SmartContrastOptions): SmartContrastReport`
+
 Evaluates contrast ratios across all eligible text elements without mutating the DOM:
+
 - `targetLevel`: `"aa"` (default) or `"aaa"`.
 - `root`: Root element container (defaults to `document.body`).
 - `maxElements`: Evaluation cap (default: 2000).
 
 ### `applySmartContrast(options?: SmartContrastOptions): AppliedSmartContrast`
+
 Batched evaluation and non-destructive application of high-contrast replacement colors:
+
 - Returns `{ report: SmartContrastReport, undo: () => void }`.
 - `undo()` completely restores original styles and priorities; idempotent and clean.
 
 ### Core Mathematical Functions
+
 - `calculateRelativeLuminance(r: number, g: number, b: number): number`: Computes WCAG 2.1 relative luminance with sRGB linearization ($0.0$–$1.0$).
 - `calculateContrastRatio(l1: number, l2: number): number`: Computes WCAG 2.1 contrast ratio $(L_1 + 0.05) / (L_2 + 0.05)$ ($1.0$–$21.0$).
 - `compositeRgba(fg: RgbaColor, bg: RgbaColor): RgbaColor`: Porter-Duff source-over alpha blending.
 - `parseColor(colorStr: string): RgbaColor | null`: CSS color string parser with LRU memoization.
 - `resolveEffectiveBackdrop(element: HTMLElement): BackdropResolution`: Resolves effective background color by climbing ancestor chain, detecting unsupported gradients, background images, and backdrop filters.
 - `SMART_CONTRAST_DISCLAIMER`: Constant string disclaimer emphasizing prototype status and zero automatic WCAG compliance claims.
-
-

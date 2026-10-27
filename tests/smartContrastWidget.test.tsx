@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { screen, fireEvent, cleanup, render, waitFor, act } from "@testing-library/react";
+import {
+  screen,
+  fireEvent,
+  cleanup,
+  render,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import * as API from "../src";
 import { Widget } from "./helpers";
 
@@ -38,10 +45,18 @@ describe("Smart Contrast Controller Widget (A11Y-407)", () => {
   it("renders smart contrast controller with segmented levels and prototype pill", () => {
     renderWidget(<API.SmartContrastController />);
 
-    expect(screen.getByRole("group", { name: "Smart Contrast" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Original/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /AA \(4\.5:1\)/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /AAA \(7\.0:1\)/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Smart Contrast" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Original/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /AA \(4\.5:1\)/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /AAA \(7\.0:1\)/i }),
+    ).toBeInTheDocument();
 
     expect(screen.getByText("Prototype")).toBeInTheDocument();
     expect(screen.getByText(API.SMART_CONTRAST_DISCLAIMER)).toBeInTheDocument();
@@ -133,7 +148,9 @@ describe("Smart Contrast Controller Widget (A11Y-407)", () => {
     });
     fireEvent.click(detailsToggle);
 
-    expect(screen.getByRole("list", { name: "Unsupported elements" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("list", { name: "Unsupported elements" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("gradient")).toBeInTheDocument();
 
     // Toggle hide

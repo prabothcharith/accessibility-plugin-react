@@ -11,7 +11,9 @@ import {
  * React hook to retrieve integration diagnostics.
  * In production environments, returns an empty report unless `config.force` is true.
  */
-export function useDiagnostics(config: DiagnosticsConfig = {}): DiagnosticsReport {
+export function useDiagnostics(
+  config: DiagnosticsConfig = {},
+): DiagnosticsReport {
   const [report, setReport] = useState<DiagnosticsReport>(() =>
     runDiagnostics({ ...config, logToConsole: false }),
   );
@@ -21,7 +23,9 @@ export function useDiagnostics(config: DiagnosticsConfig = {}): DiagnosticsRepor
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setReport(runDiagnostics({ ...config, force, root, logToConsole: false }));
+      setReport(
+        runDiagnostics({ ...config, force, root, logToConsole: false }),
+      );
     }, 0);
     return () => clearTimeout(timer);
   }, [force, root, config]);

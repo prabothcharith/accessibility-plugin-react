@@ -33,10 +33,25 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
     it("parses various CSS color formats correctly", () => {
       expect(parseColor("#fff")).toEqual({ r: 255, g: 255, b: 255, a: 1 });
       expect(parseColor("#000000")).toEqual({ r: 0, g: 0, b: 0, a: 1 });
-      expect(parseColor("rgb(10, 20, 30)")).toEqual({ r: 10, g: 20, b: 30, a: 1 });
-      expect(parseColor("rgba(10, 20, 30, 0.5)")).toEqual({ r: 10, g: 20, b: 30, a: 0.5 });
+      expect(parseColor("rgb(10, 20, 30)")).toEqual({
+        r: 10,
+        g: 20,
+        b: 30,
+        a: 1,
+      });
+      expect(parseColor("rgba(10, 20, 30, 0.5)")).toEqual({
+        r: 10,
+        g: 20,
+        b: 30,
+        a: 0.5,
+      });
       expect(parseColor("transparent")).toEqual({ r: 0, g: 0, b: 0, a: 0 });
-      expect(parseColor("rgba(0, 0, 0, 0)")).toEqual({ r: 0, g: 0, b: 0, a: 0 });
+      expect(parseColor("rgba(0, 0, 0, 0)")).toEqual({
+        r: 0,
+        g: 0,
+        b: 0,
+        a: 0,
+      });
       expect(parseColor("white")).toEqual({ r: 255, g: 255, b: 255, a: 1 });
       expect(parseColor("black")).toEqual({ r: 0, g: 0, b: 0, a: 1 });
       expect(parseColor("invalid-color-string")).toBeNull();
@@ -131,7 +146,9 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
       const script = document.createElement("script");
 
       expect(isEligibleForSmartContrast(img)).toBe(false);
-      expect(isEligibleForSmartContrast(svg as unknown as HTMLElement)).toBe(false);
+      expect(isEligibleForSmartContrast(svg as unknown as HTMLElement)).toBe(
+        false,
+      );
       expect(isEligibleForSmartContrast(canvas)).toBe(false);
       expect(isEligibleForSmartContrast(script)).toBe(false);
     });
@@ -192,7 +209,8 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
 
     it("identifies linear-gradient backgrounds as unsupported", () => {
       const gradientBox = document.createElement("div");
-      gradientBox.style.backgroundImage = "linear-gradient(to right, red, blue)";
+      gradientBox.style.backgroundImage =
+        "linear-gradient(to right, red, blue)";
       container.appendChild(gradientBox);
 
       const text = document.createElement("p");
@@ -260,7 +278,10 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
       gradientBox.appendChild(gradText);
       container.appendChild(gradientBox);
 
-      const report = evaluateSmartContrast({ root: container, targetLevel: "aa" });
+      const report = evaluateSmartContrast({
+        root: container,
+        targetLevel: "aa",
+      });
 
       expect(report.evaluatedCount).toBe(3);
       expect(report.adjustedCount).toBe(1);
@@ -280,7 +301,10 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
       lowText.textContent = "Faded gray text";
       container.appendChild(lowText);
 
-      const { report, undo } = applySmartContrast({ root: container, targetLevel: "aa" });
+      const { report, undo } = applySmartContrast({
+        root: container,
+        targetLevel: "aa",
+      });
 
       expect(report.adjustedCount).toBe(1);
       // Low text on light backdrop receives dark token
@@ -307,7 +331,10 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
       darkFaded.textContent = "Hard to see dark text";
       darkContainer.appendChild(darkFaded);
 
-      const { report, undo } = applySmartContrast({ root: darkContainer, targetLevel: "aa" });
+      const { report, undo } = applySmartContrast({
+        root: darkContainer,
+        targetLevel: "aa",
+      });
       expect(report.adjustedCount).toBe(1);
       // Dark text on dark backdrop receives light token
       expect(darkFaded.style.color).toBe("rgb(255, 255, 255)");
@@ -326,11 +353,17 @@ describe("Smart Contrast Research Engine (A11Y-407)", () => {
       midText.textContent = "Borderline AAA text";
       container.appendChild(midText);
 
-      const reportAA = evaluateSmartContrast({ root: container, targetLevel: "aa" });
+      const reportAA = evaluateSmartContrast({
+        root: container,
+        targetLevel: "aa",
+      });
       expect(reportAA.adjustedCount).toBe(0);
       expect(reportAA.sufficientCount).toBe(1);
 
-      const reportAAA = evaluateSmartContrast({ root: container, targetLevel: "aaa" });
+      const reportAAA = evaluateSmartContrast({
+        root: container,
+        targetLevel: "aaa",
+      });
       expect(reportAAA.adjustedCount).toBe(1);
       expect(reportAAA.sufficientCount).toBe(0);
       expect(reportAAA.targetRatioNormal).toBe(7.0);

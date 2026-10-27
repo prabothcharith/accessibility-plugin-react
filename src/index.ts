@@ -390,5 +390,3 @@ export {
   type AppliedSmartContrast,
   type BackdropResolution,
 } from "./core/smartContrast";
-
-
