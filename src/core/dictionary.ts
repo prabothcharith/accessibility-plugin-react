@@ -40,113 +40,146 @@ export interface DictionaryProvider {
  * Built-in curated accessibility & web dictionary entries.
  * Guaranteed 100% offline with zero network requests.
  */
-export const LOCAL_DICTIONARY_EN: Record<string, Omit<DictionaryEntry, "word" | "source">> = {
+export const LOCAL_DICTIONARY_EN: Record<
+  string,
+  Omit<DictionaryEntry, "word" | "source">
+> = {
   accessibility: {
     phonetic: "/əkˌsesəˈbɪləti/",
     partOfSpeech: "noun",
-    definition: "The practice of designing software, websites, and environments usable by people with diverse abilities and disabilities.",
-    example: "Web accessibility ensures screen reader users can navigate and interact with all page controls.",
+    definition:
+      "The practice of designing software, websites, and environments usable by people with diverse abilities and disabilities.",
+    example:
+      "Web accessibility ensures screen reader users can navigate and interact with all page controls.",
     language: "en",
   },
   aria: {
     phonetic: "/ˈɑːriə/",
     partOfSpeech: "abbreviation",
-    definition: "Accessible Rich Internet Applications; a W3C specification of HTML attributes that convey roles, states, and properties to assistive technologies.",
-    example: "The button specifies aria-expanded to indicate whether its associated menu is open.",
+    definition:
+      "Accessible Rich Internet Applications; a W3C specification of HTML attributes that convey roles, states, and properties to assistive technologies.",
+    example:
+      "The button specifies aria-expanded to indicate whether its associated menu is open.",
     language: "en",
   },
   contrast: {
     phonetic: "/ˈkɒntrɑːst/",
     partOfSpeech: "noun",
-    definition: "The visual difference in luminance between text or foreground graphics and their background surface.",
+    definition:
+      "The visual difference in luminance between text or foreground graphics and their background surface.",
     example: "WCAG AA requires a 4.5:1 contrast ratio for normal body text.",
     language: "en",
   },
   dyslexia: {
     phonetic: "/dɪsˈleksiə/",
     partOfSpeech: "noun",
-    definition: "A neurodivergent learning variation that primarily impacts reading, word decoding, and spelling fluency.",
-    example: "Increased letter spacing and specialized legible typefaces can support readers with dyslexia.",
+    definition:
+      "A neurodivergent learning variation that primarily impacts reading, word decoding, and spelling fluency.",
+    example:
+      "Increased letter spacing and specialized legible typefaces can support readers with dyslexia.",
     language: "en",
   },
   focus: {
     phonetic: "/ˈfoʊkəs/",
     partOfSpeech: "noun",
-    definition: "The visual and programmatic state indicating which interactive element currently receives keyboard input.",
-    example: "A clear visible focus indicator is essential for keyboard-only navigation.",
+    definition:
+      "The visual and programmatic state indicating which interactive element currently receives keyboard input.",
+    example:
+      "A clear visible focus indicator is essential for keyboard-only navigation.",
     language: "en",
   },
   grayscale: {
     phonetic: "/ˈɡreɪskeɪl/",
     partOfSpeech: "noun",
-    definition: "A visual mode displaying content exclusively in shades of gray, removing all chromatic hue and color saturation.",
-    example: "Grayscale mode helps users who experience visual overstimulation or migraine triggers from vibrant colors.",
+    definition:
+      "A visual mode displaying content exclusively in shades of gray, removing all chromatic hue and color saturation.",
+    example:
+      "Grayscale mode helps users who experience visual overstimulation or migraine triggers from vibrant colors.",
     language: "en",
   },
   reflow: {
     phonetic: "/ˌriːˈfloʊ/",
     partOfSpeech: "noun",
-    definition: "The browser's ability to reorganize and wrap text content to fit the viewport width without requiring two-dimensional scrolling.",
-    example: "WCAG 1.4.10 requires responsive reflow up to 400% zoom without horizontal scrollbars.",
+    definition:
+      "The browser's ability to reorganize and wrap text content to fit the viewport width without requiring two-dimensional scrolling.",
+    example:
+      "WCAG 1.4.10 requires responsive reflow up to 400% zoom without horizontal scrollbars.",
     language: "en",
   },
   saturation: {
     phonetic: "/ˌsætʃəˈreɪʃn/",
     partOfSpeech: "noun",
-    definition: "The relative purity, vividness, or chromatic intensity of a color.",
-    example: "Lowering saturation reduces eye strain while maintaining natural color separation.",
+    definition:
+      "The relative purity, vividness, or chromatic intensity of a color.",
+    example:
+      "Lowering saturation reduces eye strain while maintaining natural color separation.",
     language: "en",
   },
   "screen reader": {
     phonetic: "/ˈskriːn ˌriːdər/",
     partOfSpeech: "noun",
-    definition: "Assistive software that translates digital text and interface elements into synthetic speech or refreshable braille displays.",
-    example: "Screen readers announce the role and state of native button elements automatically.",
+    definition:
+      "Assistive software that translates digital text and interface elements into synthetic speech or refreshable braille displays.",
+    example:
+      "Screen readers announce the role and state of native button elements automatically.",
     language: "en",
   },
   semantic: {
     phonetic: "/sɪˈmæntɪk/",
     partOfSpeech: "adjective",
-    definition: "HTML elements and code structures that convey inherent meaning, structure, and hierarchy rather than presentation alone.",
-    example: "Using semantic headings h1 through h6 creates an operable page outline for assistive technologies.",
+    definition:
+      "HTML elements and code structures that convey inherent meaning, structure, and hierarchy rather than presentation alone.",
+    example:
+      "Using semantic headings h1 through h6 creates an operable page outline for assistive technologies.",
     language: "en",
   },
   wcag: {
     phonetic: "/ˈwɪkæɡ/",
     partOfSpeech: "abbreviation",
-    definition: "Web Content Accessibility Guidelines; international standards published by the W3C defining technical criteria for digital accessibility.",
-    example: "The site targets WCAG 2.1 Level AA conformance across all interactive features.",
+    definition:
+      "Web Content Accessibility Guidelines; international standards published by the W3C defining technical criteria for digital accessibility.",
+    example:
+      "The site targets WCAG 2.1 Level AA conformance across all interactive features.",
     language: "en",
   },
 };
 
-export const LOCAL_DICTIONARY_SI: Record<string, Omit<DictionaryEntry, "word" | "source">> = {
+export const LOCAL_DICTIONARY_SI: Record<
+  string,
+  Omit<DictionaryEntry, "word" | "source">
+> = {
   accessibility: {
     phonetic: "ප්‍රවේශ්‍යතාව",
     partOfSpeech: "නාම පදය",
-    definition: "සියලු හැකියාවන් සහ ආබාධ සහිත පුද්ගලයින්ට පහසුවෙන් සහ ස්වාධීනව භාවිතා කළ හැකි වන පරිදි මෘදුකාංග සහ පරිසරයන් නිර්මාණය කිරීම.",
-    example: "ඩිජිටල් ප්‍රවේශ්‍යතාව මඟින් තිර කියවනය භාවිතා කරන්නන්ට වෙබ් අඩවි පහසුවෙන් භාවිතා කිරීමට ඉඩ සලසයි.",
+    definition:
+      "සියලු හැකියාවන් සහ ආබාධ සහිත පුද්ගලයින්ට පහසුවෙන් සහ ස්වාධීනව භාවිතා කළ හැකි වන පරිදි මෘදුකාංග සහ පරිසරයන් නිර්මාණය කිරීම.",
+    example:
+      "ඩිජිටල් ප්‍රවේශ්‍යතාව මඟින් තිර කියවනය භාවිතා කරන්නන්ට වෙබ් අඩවි පහසුවෙන් භාවිතා කිරීමට ඉඩ සලසයි.",
     language: "si",
   },
   ප්‍රවේශ්‍යතාව: {
     phonetic: "accessibility",
     partOfSpeech: "නාම පදය",
-    definition: "සියලු හැකියාවන් සහ ආබාධ සහිත පුද්ගලයින්ට පහසුවෙන් සහ ස්වාධීනව භාවිතා කළ හැකි වන පරිදි මෘදුකාංග සහ පරිසරයන් නිර්මාණය කිරීම.",
-    example: "ඩිජිටල් ප්‍රවේශ්‍යතාව මඟින් තිර කියවනය භාවිතා කරන්නන්ට වෙබ් අඩවි පහසුවෙන් භාවිතා කිරීමට ඉඩ සලසයි.",
+    definition:
+      "සියලු හැකියාවන් සහ ආබාධ සහිත පුද්ගලයින්ට පහසුවෙන් සහ ස්වාධීනව භාවිතා කළ හැකි වන පරිදි මෘදුකාංග සහ පරිසරයන් නිර්මාණය කිරීම.",
+    example:
+      "ඩිජිටල් ප්‍රවේශ්‍යතාව මඟින් තිර කියවනය භාවිතා කරන්නන්ට වෙබ් අඩවි පහසුවෙන් භාවිතා කිරීමට ඉඩ සලසයි.",
     language: "si",
   },
   contrast: {
     phonetic: "වර්ණ වෙනස",
     partOfSpeech: "නාම පදය",
     definition: "පෙළ සහ එහි පසුබිම අතර ඇති දීප්තියේ දෘශ්‍ය වෙනස.",
-    example: "පැහැදිලි කියවීමේ හැකියාව සඳහා ප්‍රමාණවත් වර්ණ වෙනසක් තිබීම අත්‍යවශ්‍ය වේ.",
+    example:
+      "පැහැදිලි කියවීමේ හැකියාව සඳහා ප්‍රමාණවත් වර්ණ වෙනසක් තිබීම අත්‍යවශ්‍ය වේ.",
     language: "si",
   },
   "වර්ණ වෙනස": {
     phonetic: "contrast",
     partOfSpeech: "නාම පදය",
     definition: "පෙළ සහ එහි පසුබිම අතර ඇති දීප්තියේ දෘශ්‍ය වෙනස.",
-    example: "පැහැදිලි කියවීමේ හැකියාව සඳහා ප්‍රමාණවත් වර්ණ වෙනසක් තිබීම අත්‍යවශ්‍ය වේ.",
+    example:
+      "පැහැදිලි කියවීමේ හැකියාව සඳහා ප්‍රමාණවත් වර්ණ වෙනසක් තිබීම අත්‍යවශ්‍ය වේ.",
     language: "si",
   },
   saturation: {
@@ -166,45 +199,58 @@ export const LOCAL_DICTIONARY_SI: Record<string, Omit<DictionaryEntry, "word" | 
   grayscale: {
     phonetic: "අළු පරිමාණය",
     partOfSpeech: "නාම පදය",
-    definition: "සියලු වර්ණ ඉවත් කර අළු පැහැයේ විවිධ ඡායාවන්ගෙන් පමණක් දර්ශනය වන මාදිලිය.",
-    example: "අළු පරිමාණ මාදිලිය මඟින් දීප්තිමත් වර්ණ නිසා ඇතිවන අපහසුතා මඟහරවා ගත හැක.",
+    definition:
+      "සියලු වර්ණ ඉවත් කර අළු පැහැයේ විවිධ ඡායාවන්ගෙන් පමණක් දර්ශනය වන මාදිලිය.",
+    example:
+      "අළු පරිමාණ මාදිලිය මඟින් දීප්තිමත් වර්ණ නිසා ඇතිවන අපහසුතා මඟහරවා ගත හැක.",
     language: "si",
   },
   "අළු පරිමාණය": {
     phonetic: "grayscale",
     partOfSpeech: "නාම පදය",
-    definition: "සියලු වර්ණ ඉවත් කර අළු පැහැයේ විවිධ ඡායාවන්ගෙන් පමණක් දර්ශනය වන මාදිලිය.",
-    example: "අළු පරිමාණ මාදිලිය මඟින් දීප්තිමත් වර්ණ නිසා ඇතිවන අපහසුතා මඟහරවා ගත හැක.",
+    definition:
+      "සියලු වර්ණ ඉවත් කර අළු පැහැයේ විවිධ ඡායාවන්ගෙන් පමණක් දර්ශනය වන මාදිලිය.",
+    example:
+      "අළු පරිමාණ මාදිලිය මඟින් දීප්තිමත් වර්ණ නිසා ඇතිවන අපහසුතා මඟහරවා ගත හැක.",
     language: "si",
   },
 };
 
-export const LOCAL_DICTIONARY_TA: Record<string, Omit<DictionaryEntry, "word" | "source">> = {
+export const LOCAL_DICTIONARY_TA: Record<
+  string,
+  Omit<DictionaryEntry, "word" | "source">
+> = {
   accessibility: {
     phonetic: "அணுகல்தன்மை",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "அனைத்து திறன் மற்றும் குறைபாடுகள் கொண்ட நபர்களும் பயன்படுத்தக்கூடிய வகையில் மென்பொருள் மற்றும் இணையதளங்களை வடிவமைத்தல்.",
-    example: "திரை வாசிப்பான் பயனர்களுக்கு டிஜிட்டல் அணுகல்தன்மை மிகவும் அவசியம்.",
+    definition:
+      "அனைத்து திறன் மற்றும் குறைபாடுகள் கொண்ட நபர்களும் பயன்படுத்தக்கூடிய வகையில் மென்பொருள் மற்றும் இணையதளங்களை வடிவமைத்தல்.",
+    example:
+      "திரை வாசிப்பான் பயனர்களுக்கு டிஜிட்டல் அணுகல்தன்மை மிகவும் அவசியம்.",
     language: "ta",
   },
   அணுகல்தன்மை: {
     phonetic: "accessibility",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "அனைத்து திறன் மற்றும் குறைபாடுகள் கொண்ட நபர்களும் பயன்படுத்தக்கூடிய வகையில் மென்பொருள் மற்றும் இணையதளங்களை வடிவமைத்தல்.",
-    example: "திரை வாசிப்பான் பயனர்களுக்கு டிஜிட்டல் அணுகல்தன்மை மிகவும் அவசியம்.",
+    definition:
+      "அனைத்து திறன் மற்றும் குறைபாடுகள் கொண்ட நபர்களும் பயன்படுத்தக்கூடிய வகையில் மென்பொருள் மற்றும் இணையதளங்களை வடிவமைத்தல்.",
+    example:
+      "திரை வாசிப்பான் பயனர்களுக்கு டிஜிட்டல் அணுகல்தன்மை மிகவும் அவசியம்.",
     language: "ta",
   },
   contrast: {
     phonetic: "மாறுபட்ட வண்ணம்",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "உரைக்கும் அதன் பின்னணிக்கும் இடையே உள்ள பிரகாசத்தின் காட்சி வேறுபாடு.",
+    definition:
+      "உரைக்கும் அதன் பின்னணிக்கும் இடையே உள்ள பிரகாசத்தின் காட்சி வேறுபாடு.",
     example: "தெளிவான வாசிப்புக்கு போதுமான வண்ண மாறுபாடு அவசியம்.",
     language: "ta",
   },
   "மாறுபட்ட வண்ணம்": {
     phonetic: "contrast",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "உரைக்கும் அதன் பின்னணிக்கும் இடையே உள்ள பிரகாசத்தின் காட்சி வேறுபாடு.",
+    definition:
+      "உரைக்கும் அதன் பின்னணிக்கும் இடையே உள்ள பிரகாசத்தின் காட்சி வேறுபாடு.",
     example: "தெளிவான வாசிப்புக்கு போதுமான வண்ண மாறுபாடு அவசியம்.",
     language: "ta",
   },
@@ -225,15 +271,19 @@ export const LOCAL_DICTIONARY_TA: Record<string, Omit<DictionaryEntry, "word" | 
   grayscale: {
     phonetic: "சாம்பல் நிறம்",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "அனைத்து வண்ணங்களையும் நீக்கி, சாம்பல் நிற நிழல்களில் மட்டுமே காட்சிகளை வழங்கும் முறை.",
-    example: "சாம்பல் நிற முறை அதிகப்படியான வண்ண ஒளிர்தலைத் தவிர்க்க உதவுகிறது.",
+    definition:
+      "அனைத்து வண்ணங்களையும் நீக்கி, சாம்பல் நிற நிழல்களில் மட்டுமே காட்சிகளை வழங்கும் முறை.",
+    example:
+      "சாம்பல் நிற முறை அதிகப்படியான வண்ண ஒளிர்தலைத் தவிர்க்க உதவுகிறது.",
     language: "ta",
   },
   "சாம்பல் நிறம்": {
     phonetic: "grayscale",
     partOfSpeech: "பெயர்ச்சொல்",
-    definition: "அனைத்து வண்ணங்களையும் நீக்கி, சாம்பல் நிற நிழல்களில் மட்டுமே காட்சிகளை வழங்கும் முறை.",
-    example: "சாம்பல் நிற முறை அதிகப்படியான வண்ண ஒளிர்தலைத் தவிர்க்க உதவுகிறது.",
+    definition:
+      "அனைத்து வண்ணங்களையும் நீக்கி, சாம்பல் நிற நிழல்களில் மட்டுமே காட்சிகளை வழங்கும் முறை.",
+    example:
+      "சாம்பல் நிற முறை அதிகப்படியான வண்ண ஒளிர்தலைத் தவிர்க்க உதவுகிறது.",
     language: "ta",
   },
 };
@@ -264,13 +314,20 @@ export function sanitizeLookupTerm(term: unknown): {
 
   // Strip HTML tags and control characters
   // eslint-disable-next-line no-control-regex
-  let clean = term.replace(/<[^>]*>/g, "").replace(/[\x00-\x1F\x7F]/g, "").trim();
+  let clean = term
+    .replace(/<[^>]*>/g, "")
+    .replace(/[\x00-\x1F\x7F]/g, "")
+    .trim();
 
   // Strip leading/trailing punctuation except quotes
   clean = clean.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}\p{M}]+$/gu, "");
 
   if (!clean || clean.length < 1) {
-    return { valid: false, sanitized: "", error: "Please enter a word to look up." };
+    return {
+      valid: false,
+      sanitized: "",
+      error: "Please enter a word to look up.",
+    };
   }
 
   if (clean.length > 50) {
@@ -305,7 +362,11 @@ export function lookupLocalDictionary(
 ): DictionaryLookupResult {
   const check = sanitizeLookupTerm(term);
   if (!check.valid) {
-    return { found: false, term: typeof term === "string" ? term : "", error: check.error };
+    return {
+      found: false,
+      term: typeof term === "string" ? term : "",
+      error: check.error,
+    };
   }
 
   const query = check.sanitized;
@@ -413,7 +474,8 @@ export async function lookupWord(
     }
     return {
       found: false,
-      error: err instanceof Error ? err.message : "Dictionary service unavailable.",
+      error:
+        err instanceof Error ? err.message : "Dictionary service unavailable.",
     };
   }
 

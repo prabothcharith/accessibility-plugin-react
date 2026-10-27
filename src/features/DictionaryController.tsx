@@ -153,7 +153,9 @@ export function DictionaryController({
         }
       } catch (err) {
         const errorMsg =
-          err instanceof Error ? err.message : "Lookup failed. Please try again.";
+          err instanceof Error
+            ? err.message
+            : "Lookup failed. Please try again.";
         setResult({ found: false, error: errorMsg });
         setLiveStatus(errorMsg);
       } finally {
@@ -300,8 +302,8 @@ export function DictionaryController({
                 disabled={isSearching}
               >
                 {isSearching
-                  ? strings.dictionaryStatusSearching ?? "Searching..."
-                  : strings.dictionaryLookupButton ?? "Look up"}
+                  ? (strings.dictionaryStatusSearching ?? "Searching...")
+                  : (strings.dictionaryLookupButton ?? "Look up")}
               </button>
             </form>
 
@@ -323,14 +325,16 @@ export function DictionaryController({
                     )}
                     <span className="arap-dict-source-badge">
                       {result.entry.source === "local"
-                        ? strings.dictionarySourceLocal ?? "Built-in Glossary"
-                        : provider?.name ??
+                        ? (strings.dictionarySourceLocal ?? "Built-in Glossary")
+                        : (provider?.name ??
                           strings.dictionarySourceProvider ??
-                          "Configured Provider"}
+                          "Configured Provider")}
                     </span>
                   </header>
 
-                  <p className="arap-dict-definition">{result.entry.definition}</p>
+                  <p className="arap-dict-definition">
+                    {result.entry.definition}
+                  </p>
 
                   {result.entry.example && (
                     <blockquote className="arap-dict-example">
@@ -348,7 +352,9 @@ export function DictionaryController({
                   <p className="arap-dict-not-found-msg">
                     {result.error ??
                       (strings.dictionaryStatusNotFound
-                        ? strings.dictionaryStatusNotFound(result.term ?? searchTerm)
+                        ? strings.dictionaryStatusNotFound(
+                            result.term ?? searchTerm,
+                          )
                         : `No definition found for "${result.term ?? searchTerm}".`)}
                   </p>
 

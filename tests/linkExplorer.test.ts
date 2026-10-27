@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { scanLinks } from "../src/core/pageNavigator";
 
-
 describe("A11Y-308: Link explorer and semantic scanning", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
