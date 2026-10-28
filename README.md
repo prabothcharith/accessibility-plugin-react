@@ -305,6 +305,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Migration from v1 and development baselines](docs/MIGRATION.md)
 - [Architecture and lifecycle decisions](docs/ARCHITECTURE.md)
 - [Development and testing](docs/DEVELOPMENT.md)
+- [Contributing guidelines](CONTRIBUTING.md)
 - [Per-site feature-menu customization](docs/MENU_CUSTOMIZATION.md)
 - [Development-only integration diagnostics and test harness](docs/DIAGNOSTICS.md)
 - [Optional privacy-safe feature event callbacks](docs/PRIVACY_AND_EVENTS.md)
