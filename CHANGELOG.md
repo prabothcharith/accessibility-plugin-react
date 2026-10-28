@@ -9,6 +9,12 @@
   - Verify minimum 44px x 44px touch target sizing across all visible interactive buttons (WCAG 2.5.5 / 2.5.8).
   - Detail screen-reader semantics (NVDA, JAWS, VoiceOver, TalkBack) and explicit architectural boundaries (zero compliance overclaims, Shadow DOM, cross-origin iframes, and platform TTS constraints).
   - Add dedicated Playwright verification test in `tests/browser/widget.spec.ts`.
+- Profile performance, bundle sizes, listeners, observers, and memory leaks (closes #67).
+  - Add comprehensive profiling documentation in `docs/PERFORMANCE_PROFILING.md` documenting actual raw, gzip, and brotli distributions and real production consumer chunk footprints.
+  - Audit closed idle runtime footprint: verifies 0 unthrottled pointer/mousemove listeners, 0 animation frame loops, and 0 polling intervals.
+  - Profile 1,000-node DOM scaling and verify multi-feature application and style restoration benchmarks.
+  - Stress-test 100 consecutive mount/unmount and toggle cycles, asserting 0 leaked `.arap-root` / `.arap-panel` DOM nodes, 0 residual style tags, and 0 memory drift.
+  - Add dedicated test suite in `tests/performanceProfiling.test.tsx`.
 
 ## 2.28.0 — 2026-10-27
 
