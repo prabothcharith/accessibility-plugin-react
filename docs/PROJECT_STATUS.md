@@ -4,7 +4,8 @@
 core, feature, and accessibility milestone releases from 2.0.0 through 2.28.0
 are implemented, tested, and published under `latest`. Milestone 5 launch readiness
 and hardening is underway; the full supported-browser, device, and assistive-technology
-matrix is verified and documented in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66).
+matrix is verified in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66), and performance,
+bundle, listener, and leak profiling is verified in [PERFORMANCE_PROFILING.md](PERFORMANCE_PROFILING.md) (Issue #67).
 
 ## Status categories
 
