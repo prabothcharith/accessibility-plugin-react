@@ -21,6 +21,11 @@
   - Synchronize `docs/FEATURES.md` with Smart Contrast Research Prototype documentation.
   - Update `examples/basic-usage/main.tsx` and `examples/next-app/app/components/AccessibilitySettings.tsx` with all prebuilt controllers.
   - Update `examples/index.html` with expanded capabilities.
+- Audit dependencies, licenses, CSP compliance, and privacy threat models (closes #69).
+  - Add `NOTICE` file detailing copyright, ISC license terms, upstream attribution, and asset origins.
+  - Add comprehensive audit document in `docs/SECURITY_AUDIT.md` verifying 0 runtime dependencies, 0 `npm audit` vulnerabilities, strict CSP compliance (0 dynamic `eval`), and 0 unauthorized network calls.
+  - Audit sensitive element exclusions (`isSensitiveElement`) and protocol sanitization (`isSafeUrl`).
+  - Add automated test suite in `tests/securityAudit.test.ts`.
 
 ## 2.28.0 — 2026-10-27
 
