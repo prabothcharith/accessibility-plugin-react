@@ -316,6 +316,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Supported browser, device, and AT matrix](docs/SUPPORTED_MATRIX.md)
 - [Performance, bundle, listener and leak profiling](docs/PERFORMANCE_PROFILING.md)
 - [Security, dependency, license and privacy audit](docs/SECURITY_AUDIT.md)
+- [Packed publish rehearsal and consumer smoke test](docs/PUBLISH_REHEARSAL.md)
 - [Release procedure](docs/RELEASE.md)
 - [Changelog](CHANGELOG.md)
 
