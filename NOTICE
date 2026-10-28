@@ -1,0 +1,24 @@
+accessibility-plugin-react
+Copyright (c) 2026 Praboth Charith
+
+This product is licensed under the ISC License. See the LICENSE file for details.
+
+Attribution & Upstream Project:
+This package is a composable React implementation developed from the architectural
+foundation of the original vanilla JavaScript accessibility plugin maintained at:
+https://github.com/prabothcharith/accessibility-plugin
+
+Third-Party Assets & Licensure:
+- Zero Runtime Dependencies: This library has no runtime dependencies outside of
+  peer dependencies on React and React DOM.
+- Fonts: No third-party binary font files (.woff, .woff2, .ttf) are bundled. All font
+  presets utilize client-system font stacks (e.g. system-ui, -apple-system, sans-serif)
+  with fallback declarations.
+- Icons: All decorative icons are authored directly as inline SVG elements under the
+  package's ISC License.
+- Dictionaries: Built-in glossaries (English, Sinhala, Tamil) are compiled in-tree
+  under the ISC License for client-side offline dictionary lookup with zero external
+  network dependencies.
+- Speech & Audio: Voice navigation and text-to-speech read-aloud functionality utilize
+  native browser platform APIs (window.speechSynthesis, window.SpeechRecognition)
+  with zero remote speech services or binary audio assets.
