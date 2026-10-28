@@ -1757,3 +1757,55 @@ test("host-content translation adapter architecture renders with consent prompt,
   // Sample paragraph should no longer contain [TR]
   await expect(sample).not.toContainText("[TR]");
 });
+
+test("A11Y-501: full supported matrix verification - zoom reflow, forced-colors, and 44px touch targets", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  // 1. Forced-colors mode verification (Windows High Contrast / forced-colors: active)
+  await page.emulateMedia({ forcedColors: "active" });
+  const trigger = page.getByRole("button", {
+    name: "Accessibility",
+    exact: true,
+  });
+  await expect(trigger).toBeVisible();
+  const triggerBox = await trigger.boundingBox();
+  expect(triggerBox!.width).toBeGreaterThanOrEqual(44);
+  expect(triggerBox!.height).toBeGreaterThanOrEqual(44);
+
+  // Open panel under forced-colors
+  await trigger.click();
+  const panel = page.getByRole("region", { name: "Accessibility settings" });
+  await expect(panel).toBeVisible();
+
+  // In forced-colors, filters must remain completely suppressed
+  await expect(panel).toHaveCSS("filter", "none");
+
+  // 2. 400% Zoom Reflow simulation (WCAG 1.4.10: 1280px at 400% zoom = 320px CSS viewport)
+  await page.setViewportSize({ width: 320, height: 640 });
+  const panelBox = await panel.boundingBox();
+  expect(panelBox!.width).toBeLessThanOrEqual(320);
+
+  // No horizontal scrolling inside panel
+  const noHorizontalOverflow = await panel.evaluate(
+    (el) => el.scrollWidth <= el.clientWidth + 1,
+  );
+  expect(noHorizontalOverflow).toBe(true);
+
+  // 3. Touch target sizing verification: every visible interactive button >= 44x44px
+  const visibleButtons = await panel.locator("button:visible").all();
+  for (const btn of visibleButtons) {
+    const box = await btn.boundingBox();
+    if (box && box.width > 0 && box.height > 0) {
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+  }
+
+  // 4. Close and return to normal forced-colors
+  await page.getByLabel("Close accessibility settings").click();
+  await expect(trigger).toBeFocused();
+  await page.emulateMedia({ forcedColors: "none" });
+});
+
