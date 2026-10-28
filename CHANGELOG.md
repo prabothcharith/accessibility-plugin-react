@@ -26,6 +26,11 @@
   - Add comprehensive audit document in `docs/SECURITY_AUDIT.md` verifying 0 runtime dependencies, 0 `npm audit` vulnerabilities, strict CSP compliance (0 dynamic `eval`), and 0 unauthorized network calls.
   - Audit sensitive element exclusions (`isSensitiveElement`) and protocol sanitization (`isSafeUrl`).
   - Add automated test suite in `tests/securityAudit.test.ts`.
+- Perform packed publish rehearsal and clean consumer smoke testing (closes #70).
+  - Add `NOTICE` to package archive files allowlist in `package.json` and verification in `scripts/check-package.mjs`.
+  - Verify exact `.consumers/package.tgz` tarball (61 files, 1.18 MB, `"use client";` directives, CSS injection, scoped resets).
+  - Verify clean consumer installation and production builds across React 18 (`.consumers/react18`), React 19 with Tailwind CSS (`.consumers/react19`), and Next.js 16 App Router with Webpack and SSR (`.consumers/next`).
+  - Document rehearsal verification in `docs/PUBLISH_REHEARSAL.md`.
 
 ## 2.28.0 — 2026-10-27
 

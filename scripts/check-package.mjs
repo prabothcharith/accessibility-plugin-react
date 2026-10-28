@@ -28,6 +28,7 @@ for (const file of [
   "dist/index.d.mts",
   "dist/style.css",
   "LICENSE",
+  "NOTICE",
 ])
   assert(names.includes(file), `Missing ${file}`);
 for (const file of ["dist/index.mjs", "dist/index.js"])

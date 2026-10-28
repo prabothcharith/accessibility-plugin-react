@@ -7,7 +7,8 @@ and hardening is underway; the full supported-browser, device, and assistive-tec
 matrix is verified in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66), performance,
 bundle, listener, and leak profiling is verified in [PERFORMANCE_PROFILING.md](PERFORMANCE_PROFILING.md) (Issue #67),
 public API/features documentation and runnable examples are synchronized (Issue #68),
-and security, dependency, license, and privacy audits are verified in [SECURITY_AUDIT.md](SECURITY_AUDIT.md) (Issue #69).
+security, dependency, license, and privacy audits are verified in [SECURITY_AUDIT.md](SECURITY_AUDIT.md) (Issue #69),
+and packed publish rehearsal and clean consumer smoke tests are verified in [PUBLISH_REHEARSAL.md](PUBLISH_REHEARSAL.md) (Issue #70).
 
 ## Status categories
 
