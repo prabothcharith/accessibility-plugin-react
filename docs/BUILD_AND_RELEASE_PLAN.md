@@ -116,7 +116,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 
 ### M5 — Launch readiness and package hardening
 
-- [ ] [A11Y-501 — Full supported-browser, device and assistive-technology matrix #66](https://github.com/prabothcharith/accessibility-react/issues/66) — Run the full browser, device, keyboard, screen-reader, zoom, touch, forced-color, reduced-motion and representative-host acceptance matrix.
+- [x] [A11Y-501 — Full supported-browser, device and assistive-technology matrix #66](https://github.com/prabothcharith/accessibility-react/issues/66) — Run the full browser, device, keyboard, screen-reader, zoom, touch, forced-color, reduced-motion and representative-host acceptance matrix.
 - [ ] [A11Y-502 — Performance, bundle, listener and leak profiling #67](https://github.com/prabothcharith/accessibility-react/issues/67) — Measure bundle size, runtime response, memory, listeners, observers, mount/unmount cycles, large-DOM behavior and feature-toggle jank.
 - [ ] [A11Y-503 — Documentation website and interactive examples #68](https://github.com/prabothcharith/accessibility-react/issues/68) — Synchronize README, API, features, testing, privacy, limitations, migration, contributing docs and interactive packed examples.
 - [ ] [A11Y-504 — Dependency, license and security audit #69](https://github.com/prabothcharith/accessibility-react/issues/69) — Audit dependencies, licenses, archive contents, CSP, unsafe rendering, external domains, privacy behavior and vulnerabilities.

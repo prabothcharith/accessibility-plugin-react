@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased (Milestone 5 — Launch readiness and package hardening)
+
+- Document full supported-browser, device, and assistive-technology matrix (closes #66).
+  - Add comprehensive matrix document in `docs/SUPPORTED_MATRIX.md` covering Chromium, Gecko/Firefox, WebKit, Mobile WebKit, Android, React 18/19, Next.js (App and Pages Router).
+  - Document 400% zoom reflow (WCAG 1.4.10) at 320px CSS viewport width, 200% font scaling, and safe area insets (`env(safe-area-inset-*)`).
+  - Document high contrast and forced-colors protection (`forced-colors: active` filter suppression and system palette keywords).
+  - Verify minimum 44px x 44px touch target sizing across all visible interactive buttons (WCAG 2.5.5 / 2.5.8).
+  - Detail screen-reader semantics (NVDA, JAWS, VoiceOver, TalkBack) and explicit architectural boundaries (zero compliance overclaims, Shadow DOM, cross-origin iframes, and platform TTS constraints).
+  - Add dedicated Playwright verification test in `tests/browser/widget.spec.ts`.
+
 ## 2.28.0 — 2026-10-27
 
 - Implement host-content translation adapter architecture with explicit consent, privacy threat model, sensitive element exclusion, and DOM restoration (closes #65). Completes Milestone 4 ([M4 #26](https://github.com/prabothcharith/accessibility-react/issues/26)).

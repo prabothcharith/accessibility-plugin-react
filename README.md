@@ -312,6 +312,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Design foundation](docs/DESIGN.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Project status and verification evidence](docs/PROJECT_STATUS.md)
+- [Supported browser, device, and AT matrix](docs/SUPPORTED_MATRIX.md)
 - [Release procedure](docs/RELEASE.md)
 - [Changelog](CHANGELOG.md)
 
