@@ -1808,4 +1808,3 @@ test("A11Y-501: full supported matrix verification - zoom reflow, forced-colors,
   await expect(trigger).toBeFocused();
   await page.emulateMedia({ forcedColors: "none" });
 });
-

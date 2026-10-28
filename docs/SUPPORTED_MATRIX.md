@@ -10,13 +10,13 @@ This document details the compatibility matrix, verification methods, responsive
 
 All browser environments are tested using real browser engines in clean, packed-consumer production builds (React 18, React 19 with Tailwind CSS, Next.js App Router, and Vite).
 
-| Platform / Engine | Tested Versions | Automated Status | Known Behaviors & Safeguards |
-| :--- | :--- | :--- | :--- |
-| **Chromium** (Chrome, Edge, Brave, Opera) | Chromium 120+ (Playwright 1.64.0 / Chromium 156) | **Verified (CI & Local)** | Full support for all filter pipelines, CSS variables, `forced-colors`, pointer capture, and Web Speech API. |
-| **Gecko / Firefox** (Firefox Desktop) | Firefox 120+ (Playwright Linux CI & Desktop) | **Verified (CI)** | Full CSS filter, zoom, and font replacement support. Web Speech synthesis in headless Linux CI requires graceful degradation due to absence of system audio sinks. |
-| **WebKit** (Safari Desktop) | WebKit 17+ (Playwright WebKit 27.2) | **Verified (CI & Local)** | WebKit requires programmatic focus transfer targets (such as `<main id="host">`) to have `tabIndex={-1}` when navigating via landmark skip links. Non-standard subpixel fractional geometry is handled with tolerance assertions. |
-| **Mobile WebKit** (iOS Safari) | iOS 16+, iPhone 13/14 emulation | **Verified (CI & Local)** | Full touch target compliance ($\ge 44\text{px} \times 44\text{px}$). Respects `env(safe-area-inset-*)`. Pointer drag events use pointer capture and prevent unwanted page scrolling during widget repositioning. |
-| **Chromium for Android** | Chrome Mobile emulation (Pixel 5/7) | **Verified (Local)** | Full touch target compliance ($\ge 44\text{px} \times 44\text{px}$). Safe area support. |
+| Platform / Engine                         | Tested Versions                                  | Automated Status          | Known Behaviors & Safeguards                                                                                                                                                                                                      |
+| :---------------------------------------- | :----------------------------------------------- | :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chromium** (Chrome, Edge, Brave, Opera) | Chromium 120+ (Playwright 1.64.0 / Chromium 156) | **Verified (CI & Local)** | Full support for all filter pipelines, CSS variables, `forced-colors`, pointer capture, and Web Speech API.                                                                                                                       |
+| **Gecko / Firefox** (Firefox Desktop)     | Firefox 120+ (Playwright Linux CI & Desktop)     | **Verified (CI)**         | Full CSS filter, zoom, and font replacement support. Web Speech synthesis in headless Linux CI requires graceful degradation due to absence of system audio sinks.                                                                |
+| **WebKit** (Safari Desktop)               | WebKit 17+ (Playwright WebKit 27.2)              | **Verified (CI & Local)** | WebKit requires programmatic focus transfer targets (such as `<main id="host">`) to have `tabIndex={-1}` when navigating via landmark skip links. Non-standard subpixel fractional geometry is handled with tolerance assertions. |
+| **Mobile WebKit** (iOS Safari)            | iOS 16+, iPhone 13/14 emulation                  | **Verified (CI & Local)** | Full touch target compliance ($\ge 44\text{px} \times 44\text{px}$). Respects `env(safe-area-inset-*)`. Pointer drag events use pointer capture and prevent unwanted page scrolling during widget repositioning.                  |
+| **Chromium for Android**                  | Chrome Mobile emulation (Pixel 5/7)              | **Verified (Local)**      | Full touch target compliance ($\ge 44\text{px} \times 44\text{px}$). Safe area support.                                                                                                                                           |
 
 ---
 
@@ -24,13 +24,13 @@ All browser environments are tested using real browser engines in clean, packed-
 
 The package ships pre-bundled ESM, CommonJS, TypeScript declarations (`.d.ts`), and scoped CSS without requiring external styling dependencies or build-time transforms.
 
-| Framework / Runtime | Versions Tested | Verification Scope | Status |
-| :--- | :--- | :--- | :--- |
-| **React 18** | 18.3.1 | Clean packed npm tarball, Vite CSR, Vitest unit suite | **Verified** |
-| **React 19** | 19.0.0, 19.2.0 | Clean packed npm tarball, Vite CSR, Tailwind CSS 3/4 integration | **Verified** |
-| **Next.js (App Router)** | 14.x, 15.x, 16.x (`next@16.2.10`) | Production webpack build, Server Component imports, SSR hydration, client boundary | **Verified** |
-| **Next.js (Pages Router)** | 14.x, 15.x, 16.x | Production SSR and client-side navigation | **Verified** |
-| **Node.js** | >= 22.13.0 (Node 22 LTS, Node 24) | `npm ci`, `npm pack`, build scripts, consumer installations | **Verified** |
+| Framework / Runtime        | Versions Tested                   | Verification Scope                                                                 | Status       |
+| :------------------------- | :-------------------------------- | :--------------------------------------------------------------------------------- | :----------- |
+| **React 18**               | 18.3.1                            | Clean packed npm tarball, Vite CSR, Vitest unit suite                              | **Verified** |
+| **React 19**               | 19.0.0, 19.2.0                    | Clean packed npm tarball, Vite CSR, Tailwind CSS 3/4 integration                   | **Verified** |
+| **Next.js (App Router)**   | 14.x, 15.x, 16.x (`next@16.2.10`) | Production webpack build, Server Component imports, SSR hydration, client boundary | **Verified** |
+| **Next.js (Pages Router)** | 14.x, 15.x, 16.x                  | Production SSR and client-side navigation                                          | **Verified** |
+| **Node.js**                | >= 22.13.0 (Node 22 LTS, Node 24) | `npm ci`, `npm pack`, build scripts, consumer installations                        | **Verified** |
 
 ---
 
@@ -39,14 +39,17 @@ The package ships pre-bundled ESM, CommonJS, TypeScript declarations (`.d.ts`), 
 The plugin is designed to withstand aggressive browser zoom and extreme viewport reflow without layout breakage, clipping, or loss of functionality.
 
 ### 400% Zoom Reflow (WCAG 1.4.10)
+
 - **Standard Baseline**: A desktop viewport of 1280px zoomed to 400% scales CSS layout down to a **320px viewport width**.
 - **Panel Reflow**: The accessibility panel constrains its maximum width to `100vw` (clamped to `min(360px, calc(100vw - 32px))`), preventing horizontal viewport scrollbars on the host page (`el.scrollWidth <= el.clientWidth + 1`).
 - **Internal Scrolling**: The control tools list (`.arap-tools-list`) scrolls independently with smooth vertical overflow, keeping header titles, close buttons, and footer reset actions fixed and immediately reachable.
 
 ### 200% Text Zoom / Font Scaling
+
 - Font scale controls step smoothly between 100% and 200% using scalable `rem` / proportional calculations without truncating button text or causing overlapping elements.
 
 ### Safe Areas (`env(safe-area-inset-*)`)
+
 - The floating launcher button and open panel respect device notches, home indicator bars, and display cutouts by padding bounds with:
   ```css
   top: max(16px, env(safe-area-inset-top));
@@ -60,19 +63,24 @@ The plugin is designed to withstand aggressive browser zoom and extreme viewport
 ## 4. High contrast and system color schemes
 
 ### Forced Colors / Windows High Contrast Mode (`forced-colors: active`)
+
 - **Filter Suppression**: When `forced-colors: active` is detected, the core filter composition engine (`composeFilter()`) automatically returns an empty string `""`. This guarantees that CSS filters (`invert()`, `contrast()`, `saturate()`, `grayscale()`) **never distort or override the user's high-contrast operating system colors**.
 - **System Palette Keywords**: Controls, borders, and focus rings utilize system color tokens such as `CanvasText`, `LinkText`, `ButtonBorder`, and `Highlight` to integrate seamlessly with OS color choices.
 - **Explicit Borders**: Interactive elements feature solid CSS borders so that controls remain distinctly outlined even when background colors are overridden by the user agent.
 
 ### Dark, Light, and System Themes
+
 - Built-in Clean Light theme uses CSS variables scoped under `.arap-root` and `.arap-panel`.
 - Adapts smoothly when embedded in dark-themed host applications without bleeding host styles into the widget or widget styles into the host application.
 
 ### Reduced Motion (`prefers-reduced-motion: reduce`)
+
 - All panel transitions, accordion expansions, and reading guide smooth scrolling are disabled or instantaneous when the user requests reduced motion:
   ```css
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -86,10 +94,12 @@ The plugin is designed to withstand aggressive browser zoom and extreme viewport
 ## 5. Touch and pointer target specifications
 
 ### Minimum Target Size (WCAG 2.5.5 / WCAG 2.5.8)
+
 - Every interactive button within the launcher, panel, control cards, stepper controls, choice selectors, and quick-action footers satisfies a minimum clickable/tappable bounding box of **$44\text{px} \times 44\text{px}$**.
 - Continuous Playwright browser tests assert that all visible buttons maintain `box.width >= 44` and `box.height >= 44` under both desktop and mobile viewports.
 
 ### Pointer and Drag Interactions
+
 - **Pointer Capture**: Widget repositioning uses pointer events (`onPointerDown`, `setPointerCapture`, `onPointerUp`) rather than HTML5 drag-and-drop, guaranteeing smooth movement across touchscreens, trackpads, and mice.
 - **Cancellation**: Pressing the `Escape` key during an active drag operation immediately cancels the drag and restores the widget to its prior persisted coordinates.
 - **Boundary Clamping**: The widget cannot be dragged off-screen or hidden behind browser chrome or taskbars.
@@ -100,13 +110,16 @@ The plugin is designed to withstand aggressive browser zoom and extreme viewport
 ## 6. Assistive technology and semantic structure
 
 ### Screen Reader Support
+
 The widget's controls are tested with standard screen reading technologies:
+
 - **NVDA** (Windows) with Chrome / Firefox / Edge
 - **JAWS** (Windows) with Chrome / Edge
 - **VoiceOver** (macOS & iOS) with Safari
 - **TalkBack** (Android) with Chrome
 
 ### Semantic DOM & ARIA Landmarks
+
 - **Launcher**: Native `<button type="button">` with descriptive `aria-label="Accessibility"` and `aria-expanded="true|false"`.
 - **Panel Container**: Non-modal `<section>` or `<div>` with `role="region"` and `aria-label="Accessibility settings"`. Does not trap focus or block interaction with the underlying page.
 - **Controls**:
