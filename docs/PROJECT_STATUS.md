@@ -1,9 +1,9 @@
 # Project status — 2026-10-27
 
-**Version 2.27.0 is merged into main and published.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.27.0
-are implemented, tested, and published under `latest`. The repository currently
-prepares `2.28.0` for host-content translation adapter architecture (Issue #65), completing Milestone 4.
+**Version 2.28.0 is merged into main and published.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.28.0
+are implemented, tested, and published under `latest`. Milestone 4 is complete with
+the release of host-content translation adapter architecture (Issue #65, PR #152).
 
 ## Status categories
 
@@ -118,4 +118,5 @@ Subsequent minor releases expanded the library's capabilities while preserving s
 9. **v2.24.0 (Issue #61, PR #141)**: Development-only integration diagnostics and test harness (`AccessibilityDiagnostics`, `DiagnosticsPanel`, `DiagnosticsInspector`, `DOM_CONTAINING_BLOCK_AUDIT`) with zero compliance claims, strict privacy guarantees, actionable fixes, and live fixture audits.
 10. **v2.25.0 (Issue #62, PR #143)**: Strictly opt-in, disabled-by-default local lifecycle callbacks (`onFeatureChange`, `onProfileApply`, `onReset`, `onAction`) with strictly reviewed payloads excluding page text, inputs, identifiers, and speech transcripts.
 11. **v2.26.0 (Issue #63, PR #145)**: Measured smart contrast research prototype (`SmartContrastController`, `smartContrast` engine) evaluating eligible text foreground luminance against computed backdrops with Porter-Duff compositing, LRU caching, unsupported backdrop detection, non-destructive restoration, and zero WCAG compliance claims.
-12. **v2.27.0 (Issue #64, in progress)**: Client-side voice navigation research prototype (`VoiceNavigationController`, `createVoiceNavigationSession`) with native Web Speech API recognition, 30s silence watchdog, background tab protection, zero audio storage, and complete keyboard alternatives.
+12. **v2.27.0 (Issue #64, PR #150)**: Client-side voice navigation research prototype (`VoiceNavigationController`, `createVoiceNavigationSession`) with native Web Speech API recognition, 30s silence watchdog, background tab protection, zero audio storage, and complete keyboard alternatives.
+13. **v2.28.0 (Issue #65, PR #152)**: Host-content translation adapter architecture (`TranslationController`, `TranslationAdapter`, `translateHostContent`) with explicit consent, privacy boundaries, sensitive element exclusion, DOM restoration, and 100% offline mock support. Completes Milestone 4.
