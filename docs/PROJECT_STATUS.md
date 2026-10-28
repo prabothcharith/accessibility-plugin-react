@@ -3,12 +3,13 @@
 **Version 2.28.0 is merged into main and published.** All
 core, feature, and accessibility milestone releases from 2.0.0 through 2.28.0
 are implemented, tested, and published under `latest`. Milestone 5 launch readiness
-and hardening is underway; the full supported-browser, device, and assistive-technology
+and package hardening is complete; the full supported-browser, device, and assistive-technology
 matrix is verified in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66), performance,
 bundle, listener, and leak profiling is verified in [PERFORMANCE_PROFILING.md](PERFORMANCE_PROFILING.md) (Issue #67),
 public API/features documentation and runnable examples are synchronized (Issue #68),
 security, dependency, license, and privacy audits are verified in [SECURITY_AUDIT.md](SECURITY_AUDIT.md) (Issue #69),
-and packed publish rehearsal and clean consumer smoke tests are verified in [PUBLISH_REHEARSAL.md](PUBLISH_REHEARSAL.md) (Issue #70).
+packed publish rehearsal and clean consumer smoke tests are verified in [PUBLISH_REHEARSAL.md](PUBLISH_REHEARSAL.md) (Issue #70),
+and the release proposal and version recommendation are documented in [RELEASE_PROPOSAL_M5.md](RELEASE_PROPOSAL_M5.md) (Issue #71).
 
 ## Status categories
 

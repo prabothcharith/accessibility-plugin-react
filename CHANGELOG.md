@@ -31,6 +31,11 @@
   - Verify exact `.consumers/package.tgz` tarball (61 files, 1.18 MB, `"use client";` directives, CSS injection, scoped resets).
   - Verify clean consumer installation and production builds across React 18 (`.consumers/react18`), React 19 with Tailwind CSS (`.consumers/react19`), and Next.js 16 App Router with Webpack and SSR (`.consumers/next`).
   - Document rehearsal verification in `docs/PUBLISH_REHEARSAL.md`.
+- Formulate version recommendation, changelog, and owner-approved release proposal (closes #71). Completes Milestone 5 ([M5 #27](https://github.com/prabothcharith/accessibility-plugin-react/issues/27)).
+  - Prepare comprehensive release proposal document in `docs/RELEASE_PROPOSAL_M5.md`.
+  - Evaluate semantic versioning options (recommending Option A: `2.29.0` minor vs Option B: `2.28.1` patch).
+  - Reconcile legacy release tracker (Issue #15) and manual acceptance verification gates.
+  - Establish owner decision checklist for version choice, branch merges, publication, and release tagging.
 
 ## 2.28.0 — 2026-10-27
 
