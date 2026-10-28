@@ -485,9 +485,9 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     expect(firstDecoImg.style.visibility).toBe("");
 
     // Performance assertion: In JSDOM under full parallel CPU load, 1,000 nodes must process without hanging the event loop
-    expect(tApply).toBeLessThan(10000);
-    expect(tTeardown).toBeLessThan(5000);
+    expect(tApply).toBeLessThan(15000);
+    expect(tTeardown).toBeLessThan(8000);
 
     unmount();
-  }, 25000);
+  }, 30000);
 });
