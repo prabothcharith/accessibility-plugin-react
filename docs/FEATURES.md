@@ -104,6 +104,16 @@ The optional lifecycle callback (`onFeatureEvent` on `<AccessibilityPlugin>`) pr
 - **Sanitized and Frozen**: All payloads are validated against an allowlist and deep-frozen (`Object.freeze`).
 - **Resilient**: Exceptions thrown in consumer listeners are safely caught and silenced, ensuring application functionality is never interrupted.
 
+## Smart Contrast Research Prototype (A11Y-407)
+
+The Smart Contrast Research Prototype (`SmartContrastController`, `evaluateSmartContrast`, `applySmartContrast`) dynamically evaluates and enhances text contrast ratios using WCAG relative luminance algorithms and alpha compositing:
+
+- **Mathematical Luminance & Compositing**: Evaluates background luminance by traversing parent hierarchies and alpha-compositing semi-transparent backgrounds (`compositeRgba`) against the viewport root.
+- **Configurable Contrast Targets**: Supports `off`, `enhanced` (targeting 4.5:1 for normal text, 3:1 for large text $\ge 18\text{pt}$ or bold $\ge 14\text{pt}$), and `maximum` (targeting 7:1 for normal text, 4.5:1 for large text).
+- **Graceful Unsupported Handling**: Transparently flags and skips unsupported complex elements (background images, CSS gradients, complex filters, canvas/video backdrops) while providing live diagnostic statistics.
+- **Strict Non-Destructive Restoration**: Records original inline colors before enhancement; restores every element back to authored styles immediately upon toggle OFF, mode switch, or `Reset All`.
+- **Zero WCAG Overclaim**: Prominently labeled with a `Prototype` badge and disclaimer (`SMART_CONTRAST_DISCLAIMER`) stating mathematical calculations do not certify official WCAG compliance.
+
 ## Voice Navigation Research Prototype (A11Y-408)
 
 The Voice Navigation Research Prototype (`VoiceNavigationController`, `createVoiceNavigationSession`) provides user-initiated speech control for page navigation:

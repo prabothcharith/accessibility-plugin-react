@@ -15,6 +15,12 @@
   - Profile 1,000-node DOM scaling and verify multi-feature application and style restoration benchmarks.
   - Stress-test 100 consecutive mount/unmount and toggle cycles, asserting 0 leaked `.arap-root` / `.arap-panel` DOM nodes, 0 residual style tags, and 0 memory drift.
   - Add dedicated test suite in `tests/performanceProfiling.test.tsx`.
+- Synchronize documentation, API reference, feature catalogs, and interactive consumer examples (closes #68).
+  - Add `CONTRIBUTING.md` guidelines for community contributions, design boundaries, and pull requests.
+  - Synchronize `docs/API.md` with complete components table, exported types, and utilities (`SmartContrastController`, `DiagnosticsHarness`, event types, and disclaimers).
+  - Synchronize `docs/FEATURES.md` with Smart Contrast Research Prototype documentation.
+  - Update `examples/basic-usage/main.tsx` and `examples/next-app/app/components/AccessibilitySettings.tsx` with all prebuilt controllers.
+  - Update `examples/index.html` with expanded capabilities.
 
 ## 2.28.0 — 2026-10-27
 
