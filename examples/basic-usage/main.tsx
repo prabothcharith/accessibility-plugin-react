@@ -131,9 +131,9 @@ function App() {
               and color filters to see them applied in real-time.
             </p>
             <p>
-              This example demonstrates all prebuilt feature controllers
-              working together with persistent settings, theme adaptation, and
-              dynamic view transitions.
+              This example demonstrates all prebuilt feature controllers working
+              together with persistent settings, theme adaptation, and dynamic
+              view transitions.
             </p>
             <h2>Testing Links & Form Controls</h2>
             <p>
