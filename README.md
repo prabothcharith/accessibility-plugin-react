@@ -317,6 +317,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 - [Performance, bundle, listener and leak profiling](docs/PERFORMANCE_PROFILING.md)
 - [Security, dependency, license and privacy audit](docs/SECURITY_AUDIT.md)
 - [Packed publish rehearsal and consumer smoke test](docs/PUBLISH_REHEARSAL.md)
+- [Milestone 5 release proposal and version recommendation](docs/RELEASE_PROPOSAL_M5.md)
 - [Release procedure](docs/RELEASE.md)
 - [Changelog](CHANGELOG.md)
 

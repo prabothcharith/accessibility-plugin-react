@@ -121,7 +121,7 @@ completed. Closing a child issue does not replace the milestone exit review.
 - [x] [A11Y-503 — Documentation website and interactive examples #68](https://github.com/prabothcharith/accessibility-react/issues/68) — Synchronize README, API, features, testing, privacy, limitations, migration, contributing docs and interactive packed examples.
 - [x] [A11Y-504 — Dependency, license and security audit #69](https://github.com/prabothcharith/accessibility-react/issues/69) — Audit dependencies, licenses, archive contents, CSP, unsafe rendering, external domains, privacy behavior and vulnerabilities.
 - [x] [A11Y-505 — Packed publish rehearsal and clean consumer smoke test #70](https://github.com/prabothcharith/accessibility-react/issues/70) — Inspect and install the exact tarball in clean React 18, React 19 and Next.js consumers, verifying exports, types, CSS, SSR and builds.
-- [ ] [A11Y-506 — Version recommendation, changelog and owner-approved release proposal #71](https://github.com/prabothcharith/accessibility-react/issues/71) — Review evidence, recommend patch/minor/major, prepare changelog/migration/release PR and request separate owner approval for merge, tag and publication.
+- [x] [A11Y-506 — Version recommendation, changelog and owner-approved release proposal #71](https://github.com/prabothcharith/accessibility-react/issues/71) — Review evidence, recommend patch/minor/major, prepare changelog/migration/release PR and request separate owner approval for merge, tag and publication.
 
 ### Existing release and follow-up trackers
 
