@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased (Milestone 5 — Launch readiness and package hardening)
+## 2.28.1 — 2026-10-28
 
-- Document full supported-browser, device, and assistive-technology matrix (closes #66).
+- Hardening, profiling, auditing, and packaging release completing Milestone 5 ([M5 #27](https://github.com/prabothcharith/accessibility-plugin-react/issues/27)).
   - Add comprehensive matrix document in `docs/SUPPORTED_MATRIX.md` covering Chromium, Gecko/Firefox, WebKit, Mobile WebKit, Android, React 18/19, Next.js (App and Pages Router).
   - Document 400% zoom reflow (WCAG 1.4.10) at 320px CSS viewport width, 200% font scaling, and safe area insets (`env(safe-area-inset-*)`).
   - Document high contrast and forced-colors protection (`forced-colors: active` filter suppression and system palette keywords).

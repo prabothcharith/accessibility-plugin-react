@@ -91,9 +91,10 @@ With the completion of Issue #71, all child issues of Milestone 5 (#66, #67, #68
 
 ## 5. Owner Decision Checklist
 
-To proceed with releasing Milestone 5, the repository owner must authorize:
+The repository owner authorized release on 2026-10-28:
 
-- [ ] **1. Release Version Choice:** Select either **Option A (`2.29.0`)** or **Option B (`2.28.1`)**.
-- [ ] **2. Default Branch Merge:** Authorize merge of `feature/a11y-506-release-proposal` into `development`, and synchronization of `development` into `main`.
-- [ ] **3. Publication Authorization:** Confirm whether the merge to `main` should automatically trigger publication to npm via `.github/workflows/publish.yml` (OIDC), or if a manual dry-run inspection should precede registry upload.
-- [ ] **4. Git Release Tag:** Authorize creating the matching Git tag (e.g., `v2.29.0` or `v2.28.1`) and GitHub Release upon successful npm registry verification.
+- [x] **1. Release Version Choice:** Option B (`2.28.1` patch release) confirmed by owner.
+- [x] **2. Default Branch Merge:** Authorized merge of release branch into `development` and synchronization into `main`.
+- [x] **3. Publication Authorization:** Automated GitHub Actions npm trusted publishing (`publish.yml`) via OIDC and GitHub Packages (`publish-github-package.yml`) triggered upon merge to `main`.
+- [x] **4. Git Release Tag:** Create matching `v2.28.1` Git tag and release upon verified npm registry upload.
+
