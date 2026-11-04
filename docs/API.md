@@ -163,6 +163,22 @@ React hook returning reactive diagnostics reports.
 - Type: `(event: AccessibilityFeatureEvent) => void`
 - Optional local lifecycle callback triggered on user interactions (toggles, steppers, resets, profiles, presets, panel visibility, placement). Disabled by default.
 
+### `AccessibilityPluginProps.effectScope` (Issue #13)
+
+- Type: `string | HTMLElement | { current: HTMLElement | null } | null`
+- Optional scoped container target for built-in effects. Accepts a CSS selector string (e.g. `"#main-content"`), an HTMLElement, or a React ref object.
+- Defaults to `document.body` (host-wide) when omitted.
+- When specified:
+  - Built-in typography and display effects are restricted to the target container and its descendants.
+  - CSS filters (grayscale, invert, saturation) apply directly to the scoped container, protecting external fixed elements (such as host headers, navbars, and banners) from filter containing-block/stacking-context bugs.
+  - See [docs/SCOPED_EFFECTS.md](SCOPED_EFFECTS.md).
+
+### `AccessibilityPluginProps.nonce` (Issue #13)
+
+- Type: `string`
+- Optional Content Security Policy (CSP) nonce attribute passed to all dynamically injected `<style>` elements (`arap-focus-highlight-style`, `arap-reduce-motion-style`).
+- Enables zero CSP violations in environments with strict `style-src 'nonce-...'` directives.
+
 ### `AccessibilityFeatureEvent` Types
 
 ```ts
