@@ -1058,9 +1058,13 @@ test("Issue #12: large DOM incremental mutations, late font load, and root attri
   const fontIncrease = page.getByLabel("Increase font size");
   await fontIncrease.click();
 
+  // Engines quantize fractional font sizes (e.g. Firefox computes 17.5938px for 17.6px)
+  const font17_6Pattern = /17\.(?:6|59\d*)px/;
+  const font22Pattern = /2(?:1\.9\d*|2(?:\.0\d*)?)px/;
+
   // Verify initial element is scaled
   const p0 = page.locator("#issue-12-browser-host .p-0");
-  await expect(p0).toHaveCSS("font-size", "17.6px"); // 16 * 1.1 = 17.6px
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern); // 16 * 1.1 = ~17.6px
 
   // 2. Incremental mutation: append a new section dynamically
   await page.evaluate(() => {
@@ -1078,10 +1082,10 @@ test("Issue #12: large DOM incremental mutations, late font load, and root attri
 
   // Verify newly appended element receives active font scaling incrementally without FOUC
   const incrementalP = page.locator("#issue-12-incremental-sec .incremental-p");
-  await expect(incrementalP).toHaveCSS("font-size", "22px"); // 20 * 1.1 = 22px
+  await expect(incrementalP).toHaveCSS("font-size", font22Pattern); // 20 * 1.1 = ~22px
 
   // Verify existing element retained its scale
-  await expect(p0).toHaveCSS("font-size", "17.6px");
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
 
   // 3. Late font loading simulation
   await page.evaluate(() => {
@@ -1091,7 +1095,7 @@ test("Issue #12: large DOM incremental mutations, late font load, and root attri
   });
 
   // Verify styles remain intact after font load settles
-  await expect(p0).toHaveCSS("font-size", "17.6px");
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
 
   // 4. Host root attribute change (theme class toggle)
   await page.evaluate(() => {
@@ -1099,7 +1103,7 @@ test("Issue #12: large DOM incremental mutations, late font load, and root attri
   });
 
   await page.waitForTimeout(50);
-  await expect(p0).toHaveCSS("font-size", "17.6px");
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
 
   // Reset and clean up
   await page.getByRole("button", { name: "Reset All", exact: true }).click();
