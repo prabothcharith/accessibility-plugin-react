@@ -110,7 +110,10 @@ export {
   MAX_HOST_ELEMENTS,
   applyPage,
   applyPageSession,
+  resolveEffectScope,
   type EffectsSession,
+  type EffectScopeTarget,
+  type ApplyPageOptions,
 } from "./core/effects";
 export {
   FONT_FAMILY_PRESETS,

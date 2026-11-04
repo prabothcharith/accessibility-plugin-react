@@ -730,10 +730,48 @@ export function isEligibleDecorativeImage(el: Element): boolean {
   return false;
 }
 
+export type EffectScopeTarget =
+  string | HTMLElement | { current: HTMLElement | null } | null | undefined;
+
+export interface ApplyPageOptions {
+  effectScope?: EffectScopeTarget;
+  nonce?: string;
+}
+
 export interface EffectsSession {
   undo: () => void;
   applyIncremental: (addedNodes: HTMLElement[]) => void;
   styledCount: () => number;
+  targetRoot?: HTMLElement | null;
+}
+
+export function resolveEffectScope(
+  scope: EffectScopeTarget,
+): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  if (!scope) return document.body ?? null;
+  if (typeof scope === "string") {
+    try {
+      return (
+        document.querySelector<HTMLElement>(scope) ?? document.body ?? null
+      );
+    } catch {
+      return document.body ?? null;
+    }
+  }
+  if (typeof scope === "object") {
+    if ("nodeType" in scope && (scope as Node).nodeType === 1) {
+      return scope as HTMLElement;
+    }
+    if ("current" in scope) {
+      return (
+        (scope as { current: HTMLElement | null }).current ??
+        document.body ??
+        null
+      );
+    }
+  }
+  return document.body ?? null;
 }
 
 function applyToElements(
@@ -1107,7 +1145,29 @@ function applyToElements(
 
 export function applyPageSession(
   values: Record<string, unknown>,
+  optionsOrScope?: EffectScopeTarget | ApplyPageOptions,
 ): EffectsSession {
+  let effectScope: EffectScopeTarget = undefined;
+  let nonce: string | undefined = undefined;
+
+  if (optionsOrScope && typeof optionsOrScope === "object") {
+    if ("nodeType" in optionsOrScope) {
+      effectScope = optionsOrScope as HTMLElement;
+    } else if (
+      "current" in optionsOrScope &&
+      !("effectScope" in optionsOrScope)
+    ) {
+      effectScope = optionsOrScope as { current: HTMLElement | null };
+    } else {
+      const opts = optionsOrScope as ApplyPageOptions;
+      effectScope = opts.effectScope;
+      nonce = opts.nonce;
+    }
+  } else if (typeof optionsOrScope === "string") {
+    effectScope = optionsOrScope;
+  }
+
+  const targetRoot = resolveEffectScope(effectScope);
   const undo: (() => void)[] = [];
   const styledElements = new WeakSet<HTMLElement>();
   let totalStyled = 0;
@@ -1138,7 +1198,10 @@ export function applyPageSession(
       computed.backgroundColor === "rgba(0, 0, 0, 0)" ||
       computed.backgroundColor === "transparent"
     ) {
-      const bodyColor = getComputedStyle(document.body).backgroundColor;
+      const bodyColor =
+        typeof document !== "undefined" && document.body
+          ? getComputedStyle(document.body).backgroundColor
+          : "#ffffff";
       set(
         el,
         "background-color",
@@ -1153,10 +1216,18 @@ export function applyPageSession(
     set(el, "filter", `${base && base !== "none" ? base + " " : ""}${filter}`);
   }
 
-  // Never filter html/body: they would also transform fixed widget positioning.
-  if (filter && typeof document !== "undefined" && document.body) {
-    for (const el of Array.from(document.body.children)) {
-      if (el instanceof HTMLElement) applyContainerFilter(el);
+  // Never filter html/body directly: they would also transform fixed widget positioning.
+  if (filter && targetRoot) {
+    if (
+      targetRoot === (typeof document !== "undefined" ? document.body : null)
+    ) {
+      for (const el of Array.from(document.body.children)) {
+        if (el instanceof HTMLElement) applyContainerFilter(el);
+      }
+    } else {
+      // Scoped container: apply filter directly to targetRoot!
+      // This protects host fixed elements (navbars, modals) outside targetRoot from filter stacking contexts.
+      applyContainerFilter(targetRoot);
     }
   }
 
@@ -1183,6 +1254,10 @@ export function applyPageSession(
       styleEl = document.createElement("style");
       styleEl.id = FOCUS_STYLE_ID;
       styleEl.dataset.arapUi = "";
+      if (nonce) {
+        styleEl.nonce = nonce;
+        styleEl.setAttribute("nonce", nonce);
+      }
       styleEl.textContent = `
         *:not([data-arap-ui]):not([data-arap-ui] *):focus-visible {
           outline: 3px solid #2563eb !important;
@@ -1219,6 +1294,10 @@ export function applyPageSession(
       styleEl = document.createElement("style");
       styleEl.id = MOTION_STYLE_ID;
       styleEl.dataset.arapUi = "";
+      if (nonce) {
+        styleEl.nonce = nonce;
+        styleEl.setAttribute("nonce", nonce);
+      }
       styleEl.textContent = `
         *:not([data-arap-ui]):not([data-arap-ui] *),
         *:not([data-arap-ui]):not([data-arap-ui] *)::before,
@@ -1293,16 +1372,33 @@ export function applyPageSession(
     values.bigCursor &&
     isFinePointer &&
     typeof document !== "undefined" &&
-    document.body
+    targetRoot
   ) {
-    set(document.body, "cursor", cursor);
+    set(targetRoot, "cursor", cursor);
   }
 
   // Initial elements application up to MAX_HOST_ELEMENTS
-  if (typeof document !== "undefined" && document.body) {
-    const allElements = Array.from(
-      document.body.querySelectorAll<HTMLElement>("*"),
+  if (typeof document !== "undefined" && targetRoot) {
+    const allElements: HTMLElement[] = [];
+    if (targetRoot !== document.body && !targetRoot.matches(EXCLUDED)) {
+      allElements.push(targetRoot);
+    }
+    const descendants = Array.from(
+      targetRoot.querySelectorAll<HTMLElement>("*"),
     ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
+    allElements.push(...descendants);
+
+    // Open Shadow DOM traversal
+    for (const el of descendants) {
+      if (allElements.length >= MAX_HOST_ELEMENTS) break;
+      if (el.shadowRoot && el.shadowRoot.mode === "open") {
+        const shadowDescendants = Array.from(
+          el.shadowRoot.querySelectorAll<HTMLElement>("*"),
+        ).filter((s) => s instanceof HTMLElement && !s.matches(EXCLUDED));
+        allElements.push(...shadowDescendants);
+      }
+    }
+
     const elements =
       allElements.length > MAX_HOST_ELEMENTS
         ? allElements.slice(0, MAX_HOST_ELEMENTS)
@@ -1313,14 +1409,28 @@ export function applyPageSession(
   }
 
   function applyIncremental(addedNodes: HTMLElement[]) {
-    if (typeof document === "undefined" || !document.body) return;
+    if (typeof document === "undefined" || !targetRoot) return;
 
     const candidateElements: HTMLElement[] = [];
     for (const root of addedNodes) {
       if (root.matches(EXCLUDED)) continue;
 
-      // If a new direct child was appended to body and container filter is active, apply it
-      if (filter && root.parentElement === document.body) {
+      // If scoped, ignore any mutations outside targetRoot
+      if (
+        targetRoot !== document.body &&
+        !targetRoot.contains(root) &&
+        root !== targetRoot
+      ) {
+        continue;
+      }
+
+      // If a new direct child was appended to body (or targetRoot) and container filter is active, apply it
+      if (
+        filter &&
+        (targetRoot === document.body
+          ? root.parentElement === document.body
+          : root === targetRoot || root.parentElement === targetRoot)
+      ) {
         applyContainerFilter(root);
       }
 
@@ -1330,6 +1440,15 @@ export function applyPageSession(
         root.querySelectorAll<HTMLElement>("*"),
       ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
       candidateElements.push(...descendants);
+
+      for (const el of descendants) {
+        if (el.shadowRoot && el.shadowRoot.mode === "open") {
+          const shadowDescendants = Array.from(
+            el.shadowRoot.querySelectorAll<HTMLElement>("*"),
+          ).filter((s) => s instanceof HTMLElement && !s.matches(EXCLUDED));
+          candidateElements.push(...shadowDescendants);
+        }
+      }
     }
 
     if (candidateElements.length > 0) {
@@ -1358,11 +1477,15 @@ export function applyPageSession(
     },
     applyIncremental,
     styledCount: () => totalStyled,
+    targetRoot,
   };
 }
 
-export function applyPage(values: Record<string, unknown>): () => void {
-  const session = applyPageSession(values);
+export function applyPage(
+  values: Record<string, unknown>,
+  optionsOrScope?: EffectScopeTarget | ApplyPageOptions,
+): () => void {
+  const session = applyPageSession(values, optionsOrScope);
   return session.undo;
 }
 
@@ -1552,6 +1675,7 @@ function readingAid(
 export function useBuiltinEffects(
   values: Record<string, unknown>,
   onDisable?: (featureKey: string) => void,
+  optionsOrScope?: EffectScopeTarget | ApplyPageOptions,
 ) {
   useEffect(() => {
     if (
@@ -1562,7 +1686,15 @@ export function useBuiltinEffects(
     )
       return;
 
-    let activeSession = applyPageSession(values);
+    const targetRoot = resolveEffectScope(
+      optionsOrScope &&
+        typeof optionsOrScope === "object" &&
+        "effectScope" in optionsOrScope
+        ? (optionsOrScope as ApplyPageOptions).effectScope
+        : (optionsOrScope as EffectScopeTarget),
+    );
+
+    let activeSession = applyPageSession(values, optionsOrScope);
     let refreshTimer: ReturnType<typeof setTimeout> | null = null;
     let incrementalTimer: ReturnType<typeof setTimeout> | null = null;
     let pendingAddedNodes: HTMLElement[] = [];
@@ -1578,7 +1710,7 @@ export function useBuiltinEffects(
       if (refreshTimer) clearTimeout(refreshTimer);
       refreshTimer = setTimeout(() => {
         activeSession.undo();
-        activeSession = applyPageSession(values);
+        activeSession = applyPageSession(values, optionsOrScope);
       }, delay);
     };
 
@@ -1591,7 +1723,8 @@ export function useBuiltinEffects(
         if (record.type === "attributes") {
           if (
             record.target === document.documentElement ||
-            record.target === document.body
+            record.target === document.body ||
+            record.target === targetRoot
           ) {
             hasRootAttributeChange = true;
           }
@@ -1625,13 +1758,27 @@ export function useBuiltinEffects(
       }
     });
 
-    const bodyObserverOptions: MutationObserverInit = {
+    const observerOptions: MutationObserverInit = {
       childList: true,
       subtree: true,
       attributes: true,
       attributeFilter: ["class", "data-theme", "dir", "lang"],
     };
-    observer.observe(document.body, bodyObserverOptions);
+
+    if (targetRoot) {
+      observer.observe(targetRoot, observerOptions);
+    }
+
+    if (
+      typeof document !== "undefined" &&
+      document.body &&
+      targetRoot !== document.body
+    ) {
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme", "dir", "lang"],
+      });
+    }
 
     if (typeof document !== "undefined" && document.documentElement) {
       observer.observe(document.documentElement, {
@@ -1681,7 +1828,7 @@ export function useBuiltinEffects(
       window.removeEventListener("resize", resize);
       activeSession.undo();
     };
-  }, [values]);
+  }, [values, optionsOrScope]);
 
   useEffect(() => {
     if (!values.readingMask) return;

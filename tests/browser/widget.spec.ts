@@ -1115,6 +1115,83 @@ test("Issue #12: large DOM incremental mutations, late font load, and root attri
   });
 });
 
+test("Issue #13: scoped effects, strict CSP, and host compatibility in real browser", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Set up scoped host layout dynamically
+  await page.evaluate(() => {
+    const existing = document.getElementById("issue-13-browser-host");
+    if (existing) existing.remove();
+
+    const host = document.createElement("div");
+    host.id = "issue-13-browser-host";
+    host.innerHTML = `
+      <header id="issue-13-external-header" style="position: fixed; top: 0; left: 0; font-size: 16px;">
+        <h2 class="ext-h2" style="font-size: 16px;">External Header</h2>
+      </header>
+      <main id="issue-13-scoped-main" style="margin-top: 60px; font-size: 16px;">
+        <p class="scoped-p" style="font-size: 16px;">Scoped main paragraph</p>
+      </main>
+    `;
+    document.body.appendChild(host);
+  });
+
+  // Apply scoped effects via window.__ARAP__.applyPageSession
+  await page.evaluate(() => {
+    const pkg = (
+      window as unknown as {
+        __ARAP__: {
+          applyPageSession: (v: unknown, o: unknown) => { undo: () => void };
+        };
+      }
+    ).__ARAP__;
+    if (pkg && pkg.applyPageSession) {
+      (
+        window as unknown as { __issue13_session: { undo: () => void } }
+      ).__issue13_session = pkg.applyPageSession(
+        { textScale: 1.25, grayscale: true },
+        { effectScope: "#issue-13-scoped-main", nonce: "test-nonce-13" },
+      );
+    }
+  });
+
+  const scopedP = page.locator("#issue-13-scoped-main .scoped-p");
+  const extH2 = page.locator("#issue-13-external-header .ext-h2");
+  const scopedMain = page.locator("#issue-13-scoped-main");
+  const extHeader = page.locator("#issue-13-external-header");
+
+  // Verify scoped paragraph is scaled (16 * 1.25 = 20px)
+  await expect(scopedP).toHaveCSS("font-size", "20px");
+
+  // Verify external header is unaffected
+  await expect(extH2).toHaveCSS("font-size", "16px");
+
+  // Verify scoped container received grayscale filter, while external header did NOT
+  await expect(scopedMain).toHaveCSS("filter", /grayscale\(1\)/);
+  await expect(extHeader).toHaveCSS("filter", "none");
+
+  // Undo session in browser
+  await page.evaluate(() => {
+    const win = window as unknown as {
+      __issue13_session?: { undo: () => void };
+    };
+    if (win.__issue13_session) {
+      win.__issue13_session.undo();
+      delete win.__issue13_session;
+    }
+  });
+
+  // Verify restoration
+  await expect(scopedP).toHaveCSS("font-size", "16px");
+
+  // Clean up host elements
+  await page.evaluate(() => {
+    document.getElementById("issue-13-browser-host")?.remove();
+  });
+});
+
 test("reading guide and mask overlays never block clicks and clean up on Escape and reset", async ({
   page,
 }) => {

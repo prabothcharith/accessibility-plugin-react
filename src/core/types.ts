@@ -32,6 +32,8 @@ export interface AccessibilityContextValue {
   locale?: string;
   statementUrl?: string;
   largeControls?: boolean;
+  effectScope?: string | HTMLElement | { current: HTMLElement | null } | null;
+  nonce?: string;
 }
 export type WidgetPlacement =
   | {
@@ -83,6 +85,17 @@ export interface AccessibilityPluginProps {
    * inputs, transcripts, and identifiers.
    */
   onFeatureEvent?: FeatureEventListener;
+  /**
+   * Optional scoped container target for built-in effects (Issue #13).
+   * Can be a CSS selector string (e.g. '#main-content'), an HTMLElement,
+   * or a React ref object. Defaults to document.body when omitted.
+   */
+  effectScope?: string | HTMLElement | { current: HTMLElement | null } | null;
+  /**
+   * Optional Content Security Policy (CSP) nonce attribute passed to any
+   * dynamically injected <style> tags (Issue #13).
+   */
+  nonce?: string;
 }
 export interface AccessibilityButtonProps {
   /** Pointer dragging and Alt+Arrow movement. Defaults to true. */
