@@ -32,6 +32,8 @@ export function AccessibilityPlugin({
   largeControls,
   diagnostics,
   onFeatureEvent,
+  effectScope,
+  nonce,
 }: AccessibilityPluginProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [store] = useState(() =>
@@ -312,7 +314,7 @@ export function AccessibilityPlugin({
       : undefined) ||
     undefined;
 
-  useBuiltinEffects(active, handleDisable);
+  useBuiltinEffects(active, handleDisable, { effectScope, nonce });
   const value = useMemo(
     () => ({
       state: { isOpen, features },
@@ -332,6 +334,8 @@ export function AccessibilityPlugin({
       locale: effectiveLocale,
       statementUrl,
       largeControls,
+      effectScope,
+      nonce,
     }),
     [
       isOpen,
@@ -351,6 +355,8 @@ export function AccessibilityPlugin({
       effectiveLocale,
       statementUrl,
       largeControls,
+      effectScope,
+      nonce,
     ],
   );
   return (

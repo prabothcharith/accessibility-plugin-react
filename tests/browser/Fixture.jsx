@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import * as A from "accessibility-plugin-react";
+if (typeof window !== "undefined") {
+  window.__ARAP__ = A;
+}
 function Custom() {
   const { value, setValue } = A.useAccessibility("hostOutline", false, {
     apply: (value) => {

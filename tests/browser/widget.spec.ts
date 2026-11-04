@@ -1031,6 +1031,167 @@ test("regression and performance sweep: rapid toggles and 1,000-node DOM benchma
   });
 });
 
+test("Issue #12: large DOM incremental mutations, late font load, and root attribute refresh in real browser", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // 1. Setup 1,000-node DOM
+  await page.evaluate(() => {
+    const host = document.createElement("div");
+    host.id = "issue-12-browser-host";
+    for (let i = 0; i < 100; i++) {
+      const sec = document.createElement("section");
+      sec.className = `sec-${i}`;
+      const p = document.createElement("p");
+      p.className = `p-${i}`;
+      p.style.fontSize = "16px";
+      p.textContent = `Paragraph ${i}`;
+      sec.appendChild(p);
+      host.appendChild(sec);
+    }
+    document.body.appendChild(host);
+  });
+
+  // Scale font size up
+  const fontIncrease = page.getByLabel("Increase font size");
+  await fontIncrease.click();
+
+  // Engines quantize fractional font sizes (e.g. Firefox computes 17.5938px for 17.6px)
+  const font17_6Pattern = /17\.(?:6|59\d*)px/;
+  const font22Pattern = /2(?:1\.9\d*|2(?:\.0\d*)?)px/;
+
+  // Verify initial element is scaled
+  const p0 = page.locator("#issue-12-browser-host .p-0");
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern); // 16 * 1.1 = ~17.6px
+
+  // 2. Incremental mutation: append a new section dynamically
+  await page.evaluate(() => {
+    const host = document.getElementById("issue-12-browser-host");
+    if (!host) return;
+    const newSec = document.createElement("section");
+    newSec.id = "issue-12-incremental-sec";
+    const newP = document.createElement("p");
+    newP.className = "incremental-p";
+    newP.style.fontSize = "20px";
+    newP.textContent = "New dynamic paragraph";
+    newSec.appendChild(newP);
+    host.appendChild(newSec);
+  });
+
+  // Verify newly appended element receives active font scaling incrementally without FOUC
+  const incrementalP = page.locator("#issue-12-incremental-sec .incremental-p");
+  await expect(incrementalP).toHaveCSS("font-size", font22Pattern); // 20 * 1.1 = ~22px
+
+  // Verify existing element retained its scale
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
+
+  // 3. Late font loading simulation
+  await page.evaluate(() => {
+    if ("fonts" in document && document.fonts) {
+      document.fonts.dispatchEvent(new Event("loadingdone"));
+    }
+  });
+
+  // Verify styles remain intact after font load settles
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
+
+  // 4. Host root attribute change (theme class toggle)
+  await page.evaluate(() => {
+    document.documentElement.classList.add("dark");
+  });
+
+  await page.waitForTimeout(50);
+  await expect(p0).toHaveCSS("font-size", font17_6Pattern);
+
+  // Reset and clean up
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(p0).toHaveCSS("font-size", "16px");
+
+  await page.evaluate(() => {
+    document.getElementById("issue-12-browser-host")?.remove();
+    document.documentElement.classList.remove("dark");
+  });
+});
+
+test("Issue #13: scoped effects, strict CSP, and host compatibility in real browser", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:7311/");
+
+  // Set up scoped host layout dynamically
+  await page.evaluate(() => {
+    const existing = document.getElementById("issue-13-browser-host");
+    if (existing) existing.remove();
+
+    const host = document.createElement("div");
+    host.id = "issue-13-browser-host";
+    host.innerHTML = `
+      <header id="issue-13-external-header" style="position: fixed; top: 0; left: 0; font-size: 16px;">
+        <h2 class="ext-h2" style="font-size: 16px;">External Header</h2>
+      </header>
+      <main id="issue-13-scoped-main" style="margin-top: 60px; font-size: 16px;">
+        <p class="scoped-p" style="font-size: 16px;">Scoped main paragraph</p>
+      </main>
+    `;
+    document.body.appendChild(host);
+  });
+
+  // Apply scoped effects via window.__ARAP__.applyPageSession
+  await page.evaluate(() => {
+    const pkg = (
+      window as unknown as {
+        __ARAP__: {
+          applyPageSession: (v: unknown, o: unknown) => { undo: () => void };
+        };
+      }
+    ).__ARAP__;
+    if (pkg && pkg.applyPageSession) {
+      (
+        window as unknown as { __issue13_session: { undo: () => void } }
+      ).__issue13_session = pkg.applyPageSession(
+        { textScale: 1.25, grayscale: true },
+        { effectScope: "#issue-13-scoped-main", nonce: "test-nonce-13" },
+      );
+    }
+  });
+
+  const scopedP = page.locator("#issue-13-scoped-main .scoped-p");
+  const extH2 = page.locator("#issue-13-external-header .ext-h2");
+  const scopedMain = page.locator("#issue-13-scoped-main");
+  const extHeader = page.locator("#issue-13-external-header");
+
+  // Verify scoped paragraph is scaled (16 * 1.25 = 20px)
+  await expect(scopedP).toHaveCSS("font-size", "20px");
+
+  // Verify external header is unaffected
+  await expect(extH2).toHaveCSS("font-size", "16px");
+
+  // Verify scoped container received grayscale filter, while external header did NOT
+  await expect(scopedMain).toHaveCSS("filter", /grayscale\(1\)/);
+  await expect(extHeader).toHaveCSS("filter", "none");
+
+  // Undo session in browser
+  await page.evaluate(() => {
+    const win = window as unknown as {
+      __issue13_session?: { undo: () => void };
+    };
+    if (win.__issue13_session) {
+      win.__issue13_session.undo();
+      delete win.__issue13_session;
+    }
+  });
+
+  // Verify restoration
+  await expect(scopedP).toHaveCSS("font-size", "16px");
+
+  // Clean up host elements
+  await page.evaluate(() => {
+    document.getElementById("issue-13-browser-host")?.remove();
+  });
+});
+
 test("reading guide and mask overlays never block clicks and clean up on Escape and reset", async ({
   page,
 }) => {

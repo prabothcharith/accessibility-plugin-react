@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.29.0 — 2026-11-04
+
+- Design scoped effects, strict CSP nonce support, and stronger host compatibility (closes #13).
+  - Add `effectScope` prop to `AccessibilityPlugin` supporting CSS selector strings, HTMLElements, or React ref objects to restrict built-in effects strictly to designated host containers.
+  - Apply CSS filters (grayscale, invert, saturation) directly to the scoped container, completely protecting external fixed headers, navbars, and banners from filter containing-block/stacking-context positioning issues.
+  - Add open Shadow DOM traversal (`mode === "open"`), allowing accessibility enhancements to reach Web Component internals.
+  - Add `nonce` prop to `AccessibilityPlugin` and propagate nonce attributes to dynamically injected style elements (`arap-focus-highlight-style`, `arap-reduce-motion-style`) for strict CSP compliance.
+  - Export `resolveEffectScope`, `type EffectScopeTarget`, and `type ApplyPageOptions` from `src/index.ts`.
+  - Add `docs/SCOPED_EFFECTS.md` detailing architecture, container targeting, Shadow DOM traversal, iframe boundaries, and CSP nonces.
+  - Update `docs/API.md`, `docs/ROADMAP.md`, and `docs/PROJECT_STATUS.md`.
+  - Add 11 unit and integration tests in `tests/scopedEffects.test.tsx` and real browser Playwright test in `tests/browser/widget.spec.ts`.
+
+- Profile large documents, add incremental mutation batching, late web font metric refresh, and root attribute observation (closes #12).
+  - Increase eligible element capacity cap from 4,000 to 8,000 nodes (`MAX_HOST_ELEMENTS = 8000`).
+  - Add incremental `childList` mutation batching in `applyPageSession`, preserving existing styled nodes and styling newly added candidate subtrees without flash of unstyled content (FOUC) or full-document teardowns.
+  - Add automatic font loading detection via `document.fonts.ready` and `loadingdone` event listener, recalculating line height and text metrics as soon as asynchronous web fonts render.
+  - Add root attribute observation on `document.documentElement` and `document.body` for `class`, `data-theme`, `dir`, and `lang`, automatically refreshing styles on host theme or direction changes without feedback loops.
+  - Export `MAX_HOST_ELEMENTS`, `applyPage`, `applyPageSession`, and `type EffectsSession` from `src/index.ts`.
+  - Add `docs/LARGE_DOCUMENT_PROFILING.md` documenting methodology, benchmarks, memory profiles, and observer contracts.
+  - Update `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`, and `docs/PROJECT_STATUS.md`.
+  - Add comprehensive unit tests in `tests/largeDocumentAndFontRefresh.test.tsx` and real browser Playwright benchmark in `tests/browser/widget.spec.ts`.
+
 ## 2.28.1 — 2026-10-28
 
 - Hardening, profiling, auditing, and packaging release completing Milestone 5 ([M5 #27](https://github.com/prabothcharith/accessibility-plugin-react/issues/27)).
