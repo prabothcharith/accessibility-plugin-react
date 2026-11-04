@@ -5,7 +5,7 @@ import type { FeatureRegistration } from "./types";
 
 const EXCLUDED =
   "[data-arap-ui], [data-arap-ui] *, script, style, link, meta, noscript, template";
-const MAX_HOST_ELEMENTS = 4000;
+export const MAX_HOST_ELEMENTS = 8000;
 const cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M4 2v32l9-9 7 13 6-3-7-12h14z' fill='black' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto`;
 /** Detects whether the user's operating system has forced colors / high contrast active. */
 export function isForcedColorsActive(): boolean {
@@ -730,32 +730,31 @@ export function isEligibleDecorativeImage(el: Element): boolean {
   return false;
 }
 
-function applyPage(values: Record<string, unknown>): () => void {
-  const undo: (() => void)[] = [];
-  function set(element: HTMLElement, property: string, value: string) {
-    const previous = element.style.getPropertyValue(property);
-    const priority = element.style.getPropertyPriority(property);
-    element.style.setProperty(property, value, "important");
-    const applied = element.style.getPropertyValue(property);
-    undo.push(() => {
-      // Do not overwrite a newer host-owned change to the same property.
-      if (
-        element.style.getPropertyValue(property) !== applied ||
-        element.style.getPropertyPriority(property) !== "important"
-      )
-        return;
-      if (previous) element.style.setProperty(property, previous, priority);
-      else element.style.removeProperty(property);
-    });
+export interface EffectsSession {
+  undo: () => void;
+  applyIncremental: (addedNodes: HTMLElement[]) => void;
+  styledCount: () => number;
+}
+
+function applyToElements(
+  elements: HTMLElement[],
+  values: Record<string, unknown>,
+  undo: Array<() => void>,
+  styledElements: WeakSet<HTMLElement>,
+  isFinePointer: boolean,
+  set: (element: HTMLElement, property: string, value: string) => void,
+) {
+  // Filter out elements already processed in this active session
+  const targetElements: HTMLElement[] = [];
+  for (const el of elements) {
+    if (!styledElements.has(el)) {
+      styledElements.add(el);
+      targetElements.push(el);
+    }
   }
-  const allElements = Array.from(
-    document.body.querySelectorAll<HTMLElement>("*"),
-  ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
-  // Limit total elements to prevent main thread starvation in massive host DOMs
-  const elements =
-    allElements.length > MAX_HOST_ELEMENTS
-      ? allElements.slice(0, MAX_HOST_ELEMENTS)
-      : allElements;
+
+  if (targetElements.length === 0) return;
+
   const fontScaleValue =
     typeof values.fontScale === "number" && values.fontScale !== 1.0
       ? values.fontScale
@@ -778,7 +777,7 @@ function applyPage(values: Record<string, unknown>): () => void {
   // Protect forms, labels, code, icons, widget and explicitly ignored elements from text scale.
   // Protect tables, forms, code, icons, widget from spacing line-height overrides.
   if (fontActive || lineActive) {
-    const measurements = elements
+    const measurements = targetElements
       .filter(
         (el) =>
           !isProtectedFromTextScale(el) || !isProtectedFromTextSpacing(el),
@@ -824,31 +823,6 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
-  const filter = composeFilter(values);
-  // Never filter html/body: they would also transform fixed widget positioning.
-  for (const el of Array.from(document.body.children)) {
-    if (!(el instanceof HTMLElement) || el.matches(EXCLUDED) || !filter)
-      continue;
-    const computed = getComputedStyle(el);
-    if (
-      computed.backgroundColor === "rgba(0, 0, 0, 0)" ||
-      computed.backgroundColor === "transparent"
-    ) {
-      const bodyColor = getComputedStyle(document.body).backgroundColor;
-      set(
-        el,
-        "background-color",
-        bodyColor &&
-          bodyColor !== "rgba(0, 0, 0, 0)" &&
-          bodyColor !== "transparent"
-          ? bodyColor
-          : "#ffffff",
-      );
-    }
-    const base = computed.filter;
-    set(el, "filter", `${base && base !== "none" ? base + " " : ""}${filter}`);
-  }
-
   // Letter spacing with language-aware constraints and element protections
   const letterSpacingVal =
     typeof values.letterSpacing === "number" && values.letterSpacing > 0
@@ -860,7 +834,7 @@ function applyPage(values: Record<string, unknown>): () => void {
       : null;
 
   if (letterSpacingVal > 0 || letterSpacingEmVal !== null) {
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromTextSpacing(el)) {
         if (
           el.matches(
@@ -901,7 +875,7 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
-  // Word spacing with element protections
+  // Word spacing with element exclusions
   const wordSpacingVal =
     typeof values.wordSpacing === "number" && values.wordSpacing > 0
       ? values.wordSpacing
@@ -912,7 +886,7 @@ function applyPage(values: Record<string, unknown>): () => void {
       : null;
 
   if (wordSpacingVal > 0 || wordSpacingEmVal !== null) {
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromTextSpacing(el)) {
         if (
           el.matches(
@@ -946,7 +920,7 @@ function applyPage(values: Record<string, unknown>): () => void {
       : null;
 
   if (paragraphSpacingVal > 0 || paragraphSpacingEmVal !== null) {
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromTextSpacing(el)) continue;
       if (el.matches("p, [role='paragraph']")) {
         const computed = getComputedStyle(el);
@@ -963,7 +937,7 @@ function applyPage(values: Record<string, unknown>): () => void {
   // Text alignment scoped strictly to logical text blocks (p, headings, lists, quotes)
   const textAlignVal = values.textAlign ? String(values.textAlign) : "default";
   if (textAlignVal !== "default" && textAlignVal !== "original") {
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromTextAlign(el)) continue;
       if (el.matches(TEXT_ALIGN_BLOCK_SELECTOR)) {
         set(el, "text-align", textAlignVal);
@@ -981,7 +955,7 @@ function applyPage(values: Record<string, unknown>): () => void {
         ? DYSLEXIA_FONT_STACK
         : LEGIBLE_FONT_STACK;
 
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromFontFamily(el)) {
         // Monospace blocks inside styled containers must retain monospace styling
         if (el.matches("pre, code, kbd, samp, var")) {
@@ -1000,21 +974,20 @@ function applyPage(values: Record<string, unknown>): () => void {
     }
   }
 
+  // Invert colors media protection (protects images/videos from container inversion)
   const isInvert =
     Boolean(values.invertColors) ||
     values.contrast === "invert" ||
     values.contrastMode === "invert";
 
-  // When invert is active, protect photos, videos, canvas, and charts by countering the container inversion
   if (isInvert && !isForcedColorsActive()) {
-    const mediaElements = Array.from(
-      document.body.querySelectorAll<HTMLElement>(
-        "img, video, canvas, picture, [role='img']",
-      ),
-    ).filter((el) => !el.closest("[data-arap-ui]"));
-
-    for (const mediaEl of mediaElements) {
-      set(mediaEl, "filter", "invert(1)");
+    for (const el of targetElements) {
+      if (
+        el.matches("img, video, canvas, picture, [role='img']") &&
+        !el.closest("[data-arap-ui]")
+      ) {
+        set(el, "filter", "invert(1)");
+      }
     }
   }
 
@@ -1038,7 +1011,7 @@ function applyPage(values: Record<string, unknown>): () => void {
       : null;
 
   if (activePalette) {
-    for (const el of elements) {
+    for (const el of targetElements) {
       if (isProtectedFromContrast(el)) continue;
 
       set(el, "color", activePalette.text);
@@ -1063,6 +1036,127 @@ function applyPage(values: Record<string, unknown>): () => void {
       ) {
         set(el, "border-color", activePalette.border);
       }
+    }
+  }
+
+  for (const el of targetElements) {
+    if (values.bigCursor && isFinePointer) set(el, "cursor", cursor);
+    if (values.hideImages) {
+      if (isEligibleDecorativeImage(el)) {
+        set(el, "visibility", "hidden");
+      }
+      if (!isFunctionalOrMeaningfulImage(el)) {
+        const inlineBg = el.style.backgroundImage;
+        if (inlineBg && inlineBg !== "none") {
+          set(el, "background-image", "none");
+        } else {
+          try {
+            const computedBg = getComputedStyle(el).backgroundImage;
+            if (computedBg && computedBg !== "none") {
+              set(el, "background-image", "none");
+            }
+          } catch {
+            // Ignore computed style failures in non-standard environments
+          }
+        }
+      }
+    }
+    // Do not hide unrelated embeds (maps, documents or payment forms).
+    if (
+      values.hideVideos &&
+      el.matches(
+        'video, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="player.vimeo.com/video/"]',
+      )
+    )
+      set(el, "visibility", "hidden");
+    const colors = palette[String(values.contrast)];
+    if (colors && !activePalette && !isForcedColorsActive()) {
+      set(el, "color", colors[0]);
+      set(el, "background-color", colors[1]);
+    }
+    if (
+      values.linkHighlight &&
+      el.matches("a[href]") &&
+      !el.closest("[data-arap-ui]")
+    ) {
+      const isDisabled =
+        el.getAttribute("aria-disabled") === "true" ||
+        el.hasAttribute("disabled") ||
+        el.classList.contains("disabled");
+      if (!isDisabled) {
+        if (isForcedColorsActive()) {
+          set(el, "color", "LinkText");
+          set(el, "text-decoration", "underline");
+          set(el, "text-decoration-thickness", "2px");
+          set(el, "text-underline-offset", "3px");
+        } else {
+          const colors = palette[String(values.linkHighlight)] ?? [
+            "#111827",
+            "#fef08a",
+          ];
+          set(el, "color", colors[0]);
+          set(el, "background-color", colors[1]);
+          set(el, "text-decoration", "underline");
+          set(el, "text-decoration-thickness", "2px");
+          set(el, "text-underline-offset", "3px");
+        }
+      }
+    }
+  }
+}
+
+export function applyPageSession(
+  values: Record<string, unknown>,
+): EffectsSession {
+  const undo: (() => void)[] = [];
+  const styledElements = new WeakSet<HTMLElement>();
+  let totalStyled = 0;
+  const isFinePointer = hasFinePointer();
+
+  function set(element: HTMLElement, property: string, value: string) {
+    const previous = element.style.getPropertyValue(property);
+    const priority = element.style.getPropertyPriority(property);
+    element.style.setProperty(property, value, "important");
+    const applied = element.style.getPropertyValue(property);
+    undo.push(() => {
+      // Do not overwrite a newer host-owned change to the same property.
+      if (
+        element.style.getPropertyValue(property) !== applied ||
+        element.style.getPropertyPriority(property) !== "important"
+      )
+        return;
+      if (previous) element.style.setProperty(property, previous, priority);
+      else element.style.removeProperty(property);
+    });
+  }
+
+  const filter = composeFilter(values);
+  function applyContainerFilter(el: HTMLElement) {
+    if (el.matches(EXCLUDED) || !filter) return;
+    const computed = getComputedStyle(el);
+    if (
+      computed.backgroundColor === "rgba(0, 0, 0, 0)" ||
+      computed.backgroundColor === "transparent"
+    ) {
+      const bodyColor = getComputedStyle(document.body).backgroundColor;
+      set(
+        el,
+        "background-color",
+        bodyColor &&
+          bodyColor !== "rgba(0, 0, 0, 0)" &&
+          bodyColor !== "transparent"
+          ? bodyColor
+          : "#ffffff",
+      );
+    }
+    const base = computed.filter;
+    set(el, "filter", `${base && base !== "none" ? base + " " : ""}${filter}`);
+  }
+
+  // Never filter html/body: they would also transform fixed widget positioning.
+  if (filter && typeof document !== "undefined" && document.body) {
+    for (const el of Array.from(document.body.children)) {
+      if (el instanceof HTMLElement) applyContainerFilter(el);
     }
   }
 
@@ -1195,78 +1289,81 @@ function applyPage(values: Record<string, unknown>): () => void {
     });
   }
 
-  const isFinePointer = hasFinePointer();
-  if (values.bigCursor && isFinePointer) {
+  if (
+    values.bigCursor &&
+    isFinePointer &&
+    typeof document !== "undefined" &&
+    document.body
+  ) {
     set(document.body, "cursor", cursor);
   }
 
-  for (const el of elements) {
-    if (values.bigCursor && isFinePointer) set(el, "cursor", cursor);
-    if (values.hideImages) {
-      if (isEligibleDecorativeImage(el)) {
-        set(el, "visibility", "hidden");
+  // Initial elements application up to MAX_HOST_ELEMENTS
+  if (typeof document !== "undefined" && document.body) {
+    const allElements = Array.from(
+      document.body.querySelectorAll<HTMLElement>("*"),
+    ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
+    const elements =
+      allElements.length > MAX_HOST_ELEMENTS
+        ? allElements.slice(0, MAX_HOST_ELEMENTS)
+        : allElements;
+
+    totalStyled = elements.length;
+    applyToElements(elements, values, undo, styledElements, isFinePointer, set);
+  }
+
+  function applyIncremental(addedNodes: HTMLElement[]) {
+    if (typeof document === "undefined" || !document.body) return;
+
+    const candidateElements: HTMLElement[] = [];
+    for (const root of addedNodes) {
+      if (root.matches(EXCLUDED)) continue;
+
+      // If a new direct child was appended to body and container filter is active, apply it
+      if (filter && root.parentElement === document.body) {
+        applyContainerFilter(root);
       }
-      if (!isFunctionalOrMeaningfulImage(el)) {
-        const inlineBg = el.style.backgroundImage;
-        if (inlineBg && inlineBg !== "none") {
-          set(el, "background-image", "none");
-        } else {
-          try {
-            const computedBg = getComputedStyle(el).backgroundImage;
-            if (computedBg && computedBg !== "none") {
-              set(el, "background-image", "none");
-            }
-          } catch {
-            // Ignore computed style failures in non-standard environments
-          }
-        }
-      }
+
+      candidateElements.push(root);
+
+      const descendants = Array.from(
+        root.querySelectorAll<HTMLElement>("*"),
+      ).filter((el) => el instanceof HTMLElement && !el.matches(EXCLUDED));
+      candidateElements.push(...descendants);
     }
-    // Do not hide unrelated embeds (maps, documents or payment forms).
-    if (
-      values.hideVideos &&
-      el.matches(
-        'video, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="player.vimeo.com/video/"]',
-      )
-    )
-      set(el, "visibility", "hidden");
-    const colors = palette[String(values.contrast)];
-    if (colors && !activePalette && !isForcedColorsActive()) {
-      set(el, "color", colors[0]);
-      set(el, "background-color", colors[1]);
-    }
-    if (
-      values.linkHighlight &&
-      el.matches("a[href]") &&
-      !el.closest("[data-arap-ui]")
-    ) {
-      const isDisabled =
-        el.getAttribute("aria-disabled") === "true" ||
-        el.hasAttribute("disabled") ||
-        el.classList.contains("disabled");
-      if (!isDisabled) {
-        if (isForcedColorsActive()) {
-          set(el, "color", "LinkText");
-          set(el, "text-decoration", "underline");
-          set(el, "text-decoration-thickness", "2px");
-          set(el, "text-underline-offset", "3px");
-        } else {
-          const colors = palette[String(values.linkHighlight)] ?? [
-            "#111827",
-            "#fef08a",
-          ];
-          set(el, "color", colors[0]);
-          set(el, "background-color", colors[1]);
-          set(el, "text-decoration", "underline");
-          set(el, "text-decoration-thickness", "2px");
-          set(el, "text-underline-offset", "3px");
-        }
-      }
+
+    if (candidateElements.length > 0) {
+      const remainingQuota = MAX_HOST_ELEMENTS - totalStyled;
+      if (remainingQuota <= 0) return;
+      const elementsToStyle =
+        candidateElements.length > remainingQuota
+          ? candidateElements.slice(0, remainingQuota)
+          : candidateElements;
+
+      totalStyled += elementsToStyle.length;
+      applyToElements(
+        elementsToStyle,
+        values,
+        undo,
+        styledElements,
+        isFinePointer,
+        set,
+      );
     }
   }
-  return () => {
-    for (const restore of undo.reverse()) restore();
+
+  return {
+    undo: () => {
+      for (const restore of undo.reverse()) restore();
+    },
+    applyIncremental,
+    styledCount: () => totalStyled,
   };
+}
+
+export function applyPage(values: Record<string, unknown>): () => void {
+  const session = applyPageSession(values);
+  return session.undo;
 }
 
 export function nudgeReadingAid(
@@ -1464,45 +1561,125 @@ export function useBuiltinEffects(
       )
     )
       return;
-    let undo = applyPage(values);
-    let mutationTimer: ReturnType<typeof setTimeout> | null = null;
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
 
+    let activeSession = applyPageSession(values);
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    let incrementalTimer: ReturnType<typeof setTimeout> | null = null;
+    let pendingAddedNodes: HTMLElement[] = [];
+
+    const flushIncremental = () => {
+      if (pendingAddedNodes.length === 0) return;
+      const nodes = pendingAddedNodes;
+      pendingAddedNodes = [];
+      activeSession.applyIncremental(nodes);
+    };
+
+    const scheduleFullRefresh = (delay = 25) => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => {
+        activeSession.undo();
+        activeSession = applyPageSession(values);
+      }, delay);
+    };
+
+    // 1. MutationObserver: incremental for child additions, debounced full refresh for root attributes
     const observer = new MutationObserver((records) => {
-      if (
-        !records.some(
-          (record) =>
-            record.target instanceof Element &&
-            !record.target.closest("[data-arap-ui]") &&
-            [...record.addedNodes, ...record.removedNodes].some(
-              (node) =>
-                node instanceof Element && !node.matches("[data-arap-ui]"),
-            ),
-        )
-      )
-        return;
-      if (mutationTimer) clearTimeout(mutationTimer);
-      mutationTimer = setTimeout(() => {
-        undo();
-        undo = applyPage(values);
-      }, 16);
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+      let hasRootAttributeChange = false;
+      const added: HTMLElement[] = [];
 
+      for (const record of records) {
+        if (record.type === "attributes") {
+          if (
+            record.target === document.documentElement ||
+            record.target === document.body
+          ) {
+            hasRootAttributeChange = true;
+          }
+        } else if (record.type === "childList") {
+          if (
+            record.target instanceof Element &&
+            record.target.closest("[data-arap-ui]")
+          ) {
+            continue;
+          }
+          for (const node of record.addedNodes) {
+            if (
+              node instanceof HTMLElement &&
+              !node.matches("[data-arap-ui]")
+            ) {
+              added.push(node);
+            }
+          }
+        }
+      }
+
+      if (hasRootAttributeChange) {
+        scheduleFullRefresh(25);
+        return;
+      }
+
+      if (added.length > 0) {
+        pendingAddedNodes.push(...added);
+        if (incrementalTimer) clearTimeout(incrementalTimer);
+        incrementalTimer = setTimeout(flushIncremental, 16);
+      }
+    });
+
+    const bodyObserverOptions: MutationObserverInit = {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["class", "data-theme", "dir", "lang"],
+    };
+    observer.observe(document.body, bodyObserverOptions);
+
+    if (typeof document !== "undefined" && document.documentElement) {
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme", "dir", "lang"],
+      });
+    }
+
+    // 2. Font Loading Observer (document.fonts)
+    const fontCleanups: (() => void)[] = [];
+    if (
+      typeof document !== "undefined" &&
+      "fonts" in document &&
+      document.fonts
+    ) {
+      const fonts = document.fonts;
+      const handleFontLoad = () => {
+        // Late font loading settles; refresh text and line height baselines
+        scheduleFullRefresh(50);
+      };
+
+      if (fonts.status === "loading") {
+        fonts.ready.then(handleFontLoad).catch(() => {});
+      }
+
+      try {
+        fonts.addEventListener("loadingdone", handleFontLoad);
+        fontCleanups.push(() => {
+          fonts.removeEventListener("loadingdone", handleFontLoad);
+        });
+      } catch {
+        // Fallback for environments lacking addEventListener on FontFaceSet
+      }
+    }
+
+    // 3. Window resize
     const resize = () => {
-      if (resizeTimer) clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        undo();
-        undo = applyPage(values);
-      }, 50);
+      scheduleFullRefresh(50);
     };
     window.addEventListener("resize", resize);
+
     return () => {
-      if (mutationTimer) clearTimeout(mutationTimer);
-      if (resizeTimer) clearTimeout(resizeTimer);
+      if (refreshTimer) clearTimeout(refreshTimer);
+      if (incrementalTimer) clearTimeout(incrementalTimer);
       observer.disconnect();
+      for (const cleanup of fontCleanups) cleanup();
       window.removeEventListener("resize", resize);
-      undo();
+      activeSession.undo();
     };
   }, [values]);
 
