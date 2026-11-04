@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.29.0 — 2026-11-04
 
 - Design scoped effects, strict CSP nonce support, and stronger host compatibility (closes #13).
   - Add `effectScope` prop to `AccessibilityPlugin` supporting CSS selector strings, HTMLElements, or React ref objects to restrict built-in effects strictly to designated host containers.

@@ -1,8 +1,8 @@
-# Project status — 2026-10-28
+# Project status — 2026-11-04
 
-**Version 2.28.1 is merged into main and published.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.28.1
-are implemented, tested, and published under `latest`. Milestone 5 launch readiness
+**Version 2.29.0 prepared for release.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.29.0
+are implemented, tested, and verified under `latest`. Milestone 5 launch readiness
 and package hardening is complete; the full supported-browser, device, and assistive-technology
 matrix is verified in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66), performance,
 bundle, listener, and leak profiling is verified in [PERFORMANCE_PROFILING.md](PERFORMANCE_PROFILING.md) (Issue #67),
@@ -127,3 +127,4 @@ Subsequent minor releases expanded the library's capabilities while preserving s
 12. **v2.27.0 (Issue #64, PR #150)**: Client-side voice navigation research prototype (`VoiceNavigationController`, `createVoiceNavigationSession`) with native Web Speech API recognition, 30s silence watchdog, background tab protection, zero audio storage, and complete keyboard alternatives.
 13. **v2.28.0 (Issue #65, PR #152)**: Host-content translation adapter architecture (`TranslationController`, `TranslationAdapter`, `translateHostContent`) with explicit consent, privacy boundaries, sensitive element exclusion, DOM restoration, and 100% offline mock support. Completes Milestone 4.
 14. **v2.28.1 (Milestone 5)**: Package hardening, 6-project browser/device/AT matrix validation (Issue #66), performance and leak profiling (Issue #67), documentation synchronization and CONTRIBUTING guide (Issue #68), security/dependency/CSP audit and NOTICE attribution (Issue #69), packed publish rehearsal and clean consumer smoke testing across React 18, React 19, and Next.js 16 (Issue #70), and release proposal (Issue #71). Completes Milestone 5.
+15. **v2.29.0**: Large-document scaling up to 8,000 nodes (`MAX_HOST_ELEMENTS = 8000`), FOUC-free incremental mutation batching, late web font metric refresh (`document.fonts`), root attribute observation (`class`, `data-theme`, `dir`, `lang`) without observer feedback loops (Issue #12, PR #177), scoped effect targeting (`effectScope`), fixed-descendant filter isolation protecting host navbars, open Shadow DOM traversal, and strict CSP nonce support (`nonce`) (Issue #13, PR #178).
