@@ -107,6 +107,10 @@ export {
   isProtectedFromContrast,
   CONTRAST_PALETTES,
   type ContrastPalette,
+  MAX_HOST_ELEMENTS,
+  applyPage,
+  applyPageSession,
+  type EffectsSession,
 } from "./core/effects";
 export {
   FONT_FAMILY_PRESETS,

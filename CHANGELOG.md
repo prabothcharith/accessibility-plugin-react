@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Profile large documents, add incremental mutation batching, late web font metric refresh, and root attribute observation (closes #12).
+  - Increase eligible element capacity cap from 4,000 to 8,000 nodes (`MAX_HOST_ELEMENTS = 8000`).
+  - Add incremental `childList` mutation batching in `applyPageSession`, preserving existing styled nodes and styling newly added candidate subtrees without flash of unstyled content (FOUC) or full-document teardowns.
+  - Add automatic font loading detection via `document.fonts.ready` and `loadingdone` event listener, recalculating line height and text metrics as soon as asynchronous web fonts render.
+  - Add root attribute observation on `document.documentElement` and `document.body` for `class`, `data-theme`, `dir`, and `lang`, automatically refreshing styles on host theme or direction changes without feedback loops.
+  - Export `MAX_HOST_ELEMENTS`, `applyPage`, `applyPageSession`, and `type EffectsSession` from `src/index.ts`.
+  - Add `docs/LARGE_DOCUMENT_PROFILING.md` documenting methodology, benchmarks, memory profiles, and observer contracts.
+  - Update `docs/TROUBLESHOOTING.md`, `docs/ROADMAP.md`, and `docs/PROJECT_STATUS.md`.
+  - Add comprehensive unit tests in `tests/largeDocumentAndFontRefresh.test.tsx` and real browser Playwright benchmark in `tests/browser/widget.spec.ts`.
+
 ## 2.28.1 — 2026-10-28
 
 - Hardening, profiling, auditing, and packaging release completing Milestone 5 ([M5 #27](https://github.com/prabothcharith/accessibility-plugin-react/issues/27)).
