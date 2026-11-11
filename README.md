@@ -1,5 +1,16 @@
 # accessibility-plugin-react
 
+[![CI](https://github.com/prabothcharith/accessibility-plugin-react/actions/workflows/ci.yml/badge.svg)](https://github.com/prabothcharith/accessibility-plugin-react/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/accessibility-plugin-react.svg?logo=npm)](https://www.npmjs.com/package/accessibility-plugin-react)
+[![npm downloads](https://img.shields.io/npm/dm/accessibility-plugin-react.svg)](https://www.npmjs.com/package/accessibility-plugin-react)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/accessibility-plugin-react)](https://bundlephobia.com/package/accessibility-plugin-react)
+[![dependencies](https://img.shields.io/badge/dependencies-0-success.svg)](package.json)
+[![React](https://img.shields.io/badge/react-%5E18%20%7C%7C%20%5E19-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![license](https://img.shields.io/npm/l/accessibility-plugin-react.svg?color=blue)](LICENSE)
+[![docs](https://img.shields.io/badge/docs-praboth.com-007acc.svg)](https://www.praboth.com/accessibility-plugin-react)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/prabothcharith/badge.svg)](https://hub.xerj.org/contributors/prabothcharith)
+
 Composable React controls for display preferences and reading assistance. Choose
 the controls in JSX, keep the widget outside your application layout, and let
 the provider own state, persistence, effects, focus behavior, and cleanup.
@@ -291,6 +302,7 @@ See [troubleshooting](docs/TROUBLESHOOTING.md) before filing an issue.
 
 ## Documentation and examples
 
+- [Official documentation](https://www.praboth.com/accessibility-plugin-react)
 - [API reference](docs/API.md)
 - [Feature behavior and bounds](docs/FEATURES.md)
 - [Link highlighting, focus visibility, and landmark skip links](docs/LINKS_AND_FOCUS.md)

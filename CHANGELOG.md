@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.29.1 — 2026-11-11
+
+- Add comprehensive status, package, quality, and community badges to `README.md`.
+  - Add GitHub Actions CI workflow status badge (`Validate library`).
+  - Add npm version and monthly downloads badges (`accessibility-plugin-react`).
+  - Add minzipped bundle size and zero-dependency count badges.
+  - Add React peer dependency support (^18 || ^19) and TypeScript badges.
+  - Add ISC license badge linked to repository `LICENSE`.
+  - Add documentation badge and list entry linking to official site (`https://www.praboth.com/accessibility-plugin-react`).
+  - Add XERJ Corpus Hub contributor verification badge for repository claim.
+
 ## 2.29.0 — 2026-11-04
 
 - Design scoped effects, strict CSP nonce support, and stronger host compatibility (closes #13).
