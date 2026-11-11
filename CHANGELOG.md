@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.29.2 — 2026-11-11
+
+- Replace rate-limited Bundlephobia badge in `README.md` with high-reliability edge-rendered `bundlejs` badge.
+
 ## 2.29.1 — 2026-11-11
 
 - Add comprehensive status, package, quality, and community badges to `README.md`.
