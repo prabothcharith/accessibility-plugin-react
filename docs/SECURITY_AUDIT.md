@@ -6,14 +6,14 @@ This document provides a comprehensive security review, dependency audit, Conten
 
 ## 1. Executive summary and audit results
 
-| Audit Area           | Standard / Requirement                                      | Current Verification Result                                                                                         | Status   |
-| :------------------- | :---------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ | :------- |
-| **Dependencies**     | 0 runtime dependencies; peerDependencies only               | Clean `package.json`; 0 runtime dependencies. Only peer dependencies: React (`^18.3.1 \|\| ^19.0.0`) and React DOM. | **PASS** |
-| **Vulnerabilities**  | `npm audit` 0 findings across direct and transitive tooling | `npm audit` returns 0 vulnerabilities across all installed packages.                                                | **PASS** |
-| **Script Injection** | No dynamic code execution (`eval`, `new Function`)          | Automated AST scan verifies 0 instances of `eval` or `Function` constructors across all `src/` modules.             | **PASS** |
-| **Network Requests** | No unauthorized telemetry, tracking, or background calls    | 0 `fetch()`, 0 `XMLHttpRequest`, 0 `navigator.sendBeacon`, 0 `WebSocket` calls.                                     | **PASS** |
-| **Data Residency**   | All state stored locally; zero external exfiltration        | Preferences persist strictly in `localStorage` under `react-accessibility-plugin:state`. Zero cloud sync.           | **PASS** |
-| **Licensing**        | Permissive ISC license; clean IP attribution                | Dedicated `LICENSE` and `NOTICE` files committed; zero GPL/copyleft or proprietary binary assets.                   | **PASS** |
+| Audit Area           | Standard / Requirement                                      | Current Verification Result                                                                                                                                | Status   |
+| :------------------- | :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- |
+| **Dependencies**     | 0 runtime dependencies; peerDependencies only               | Clean `package.json`; 0 runtime dependencies. Only peer dependencies: React (`^18.3.1 \|\| ^19.0.0`) and React DOM.                                        | **PASS** |
+| **Vulnerabilities**  | `npm audit` 0 findings across direct and transitive tooling | `npm audit` returns 0 vulnerabilities across all installed packages.                                                                                       | **PASS** |
+| **Script Injection** | No dynamic code execution (`eval`, `new Function`)          | Automated AST scan verifies 0 instances of `eval` or `Function` constructors across all `src/` modules.                                                    | **PASS** |
+| **Network Requests** | No unauthorized telemetry, tracking, or background calls    | 0 `fetch()`, 0 `XMLHttpRequest`, 0 `navigator.sendBeacon`, 0 `WebSocket` calls.                                                                            | **PASS** |
+| **Data Residency**   | All state stored locally; zero external exfiltration        | Preferences persist strictly in `localStorage` under `react-accessibility-plugin:state`. Zero cloud sync.                                                  | **PASS** |
+| **Licensing**        | Permissive ISC license + SIL OFL 1.1 font attribution       | Dedicated `LICENSE` and `NOTICE` files committed; bundles SIL OFL 1.1 `Manrope-VariableFont_wght.ttf` with zero GPL/copyleft or proprietary binary assets. | **PASS** |
 
 ---
 
@@ -78,6 +78,6 @@ Features that inspect or transform DOM elements (such as host translation, read 
 - **License**: Released under the open-source **ISC License** (permissive, GPL-compatible).
 - **Attribution**: Derived from the original vanilla JavaScript accessibility plugin; attribution is documented in `NOTICE` and `README.md`.
 - **Assets**:
-  - **Fonts**: No binary font files (`.woff`, `.woff2`, `.ttf`) are bundled. Presets rely entirely on standard system font stacks.
+  - **Fonts**: Bundles the open-source variable **Manrope** font (`Manrope-VariableFont_wght.ttf`) under the **SIL Open Font License 1.1** (`dist/fonts/OFL.txt` and `NOTICE`), with offline client-system fallback stacks for legible and dyslexia presets. Zero external Google Fonts or remote CDN requests.
   - **Icons**: Authored in-tree as native inline SVG icons under ISC.
   - **Glossary Data**: Built-in dictionary entries (English, Sinhala, Tamil) are compiled in-tree under ISC for offline accessibility lookup.

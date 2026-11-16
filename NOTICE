@@ -11,9 +11,12 @@ https://github.com/prabothcharith/accessibility-plugin
 Third-Party Assets & Licensure:
 - Zero Runtime Dependencies: This library has no runtime dependencies outside of
   peer dependencies on React and React DOM.
-- Fonts: No third-party binary font files (.woff, .woff2, .ttf) are bundled. All font
-  presets utilize client-system font stacks (e.g. system-ui, -apple-system, sans-serif)
-  with fallback declarations.
+- Fonts: The plugin bundles the variable Manrope typeface
+  (`src/styles/fonts/Manrope-VariableFont_wght.ttf` -> `dist/fonts/Manrope-VariableFont_wght.ttf`
+  and inlined `@font-face` data URI in JS bundles) as the default UI font,
+  licensed under the SIL Open Font License 1.1 (`OFL.txt` included alongside
+  the font asset). Additional font presets (`legible`, `dyslexia-option`)
+  utilize client-system font stacks with zero external network font requests.
 - Icons: All decorative icons are authored directly as inline SVG elements under the
   package's ISC License.
 - Dictionaries: Built-in glossaries (English, Sinhala, Tamil) are compiled in-tree

@@ -314,6 +314,14 @@ export function AccessibilityPlugin({
       : undefined) ||
     undefined;
 
+  const rawFont = getFeatureState<unknown>("fontFamily", "default");
+  const activeFont =
+    rawFont === "legible" ||
+    rawFont === "dyslexia-option" ||
+    rawFont === "dyslexia"
+      ? rawFont
+      : "default";
+
   useBuiltinEffects(active, handleDisable, { effectScope, nonce });
   const value = useMemo(
     () => ({
@@ -334,6 +342,7 @@ export function AccessibilityPlugin({
       locale: effectiveLocale,
       statementUrl,
       largeControls,
+      activeFont,
       effectScope,
       nonce,
     }),
@@ -355,6 +364,7 @@ export function AccessibilityPlugin({
       effectiveLocale,
       statementUrl,
       largeControls,
+      activeFont,
       effectScope,
       nonce,
     ],

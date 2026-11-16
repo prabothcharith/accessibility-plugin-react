@@ -11,4 +11,10 @@ export default defineConfig({
   banner: { js: '"use client";' },
   splitting: false,
   injectStyle: true,
+  esbuildOptions(options) {
+    options.loader = {
+      ...options.loader,
+      ".ttf": "dataurl",
+    };
+  },
 });
