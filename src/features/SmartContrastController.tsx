@@ -52,7 +52,11 @@ export function SmartContrastController() {
   const isActive = value === "aa" || value === "aaa" || value === true;
 
   return (
-    <div className="arap-feature" role="group" aria-label="Smart Contrast">
+    <div
+      className="arap-feature arap-feature-expandable arap-smart-contrast"
+      role="group"
+      aria-label="Smart Contrast"
+    >
       <div className="arap-label">
         <FeatureIcon name={FEATURE_KEY} />
         <span>Smart Contrast</span>

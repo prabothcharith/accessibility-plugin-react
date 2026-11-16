@@ -109,6 +109,7 @@ export function panelStyle(
   p: WidgetPlacement | null,
   viewport: number[],
   size = [56, 56],
+  panelWidth = 460,
 ): CSSProperties | undefined {
   if (p?.kind !== "point") return undefined;
   const [width, height] = viewport;
@@ -119,7 +120,7 @@ export function panelStyle(
     opposite = below ? "bottom" : "top";
   const offsetCss = `max(${offset}px, calc(max(16px, env(safe-area-inset-${side})) + ${size[1] + 12}px))`;
   return {
-    left: `clamp(max(16px, env(safe-area-inset-left)), ${left}px, max(16px, calc(100vw - ${Math.min(400, width - 32)}px - max(16px, env(safe-area-inset-right)))))`,
+    left: `clamp(max(16px, env(safe-area-inset-left)), ${left}px, max(16px, calc(100vw - ${Math.min(panelWidth, width - 32)}px - max(16px, env(safe-area-inset-right)))))`,
     right: "auto",
     top: below ? offsetCss : "auto",
     bottom: below ? "auto" : offsetCss,

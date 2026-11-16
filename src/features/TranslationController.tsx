@@ -56,10 +56,22 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
   const [showConsentModal, setShowConsentModal] = useState<boolean>(false);
 
   const sessionRef = useRef<TranslationSession | null>(null);
+  const extraRestoresRef = useRef<Array<() => void>>([]);
+  const isApplyingMutationRef = useRef<boolean>(false);
 
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  const restoreAllActive = () => {
+    while (extraRestoresRef.current.length > 0) {
+      const fn = extraRestoresRef.current.pop();
+      fn?.();
+    }
+    if (sessionRef.current?.active) {
+      sessionRef.current.restore();
+    }
+  };
 
   const displayLabel = label ?? "Page Translation";
   const displayDesc =
@@ -69,20 +81,131 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
   // Teardown and restore on unmount
   useEffect(() => {
     return () => {
-      if (sessionRef.current?.active) {
-        sessionRef.current.restore();
-      }
+      restoreAllActive();
     };
   }, []);
 
   // Listen to external reset preference
   useEffect(() => {
     if (!isTranslationEnabled && sessionRef.current?.active) {
-      sessionRef.current.restore();
+      restoreAllActive();
       setSession(null);
       setLiveStatus("Translations restored to original content.");
     }
   }, [isTranslationEnabled]);
+
+  const runTranslation = async (
+    nextLang: string,
+    consentRecord: TranslationConsentRecord = consent,
+  ) => {
+    setErrorMessage(null);
+    setIsTranslating(true);
+    setLiveStatus(`Extracting and translating page text to ${nextLang}...`);
+
+    try {
+      isApplyingMutationRef.current = true;
+      restoreAllActive();
+
+      const newSession = await translateHostContent({
+        provider,
+        targetLanguage: nextLang,
+        consentRecord,
+      });
+
+      setSession(newSession);
+      sessionRef.current = newSession;
+      setIsTranslationEnabled(true);
+      const langLabel =
+        DEFAULT_TARGET_LANGUAGES.find((l) => l.code === nextLang)?.label ??
+        nextLang;
+      setLiveStatus(
+        `Translated ${newSession.translatedCount} text segments to ${langLabel}.`,
+      );
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(msg);
+      setLiveStatus(`Translation failed: ${msg}`);
+    } finally {
+      isApplyingMutationRef.current = false;
+      setIsTranslating(false);
+    }
+  };
+
+  // Observe newly inserted host DOM nodes while translation session is active
+  useEffect(() => {
+    if (
+      !session?.active ||
+      consent.status !== "granted" ||
+      typeof MutationObserver === "undefined"
+    ) {
+      return;
+    }
+
+    let pendingTimer: number | null = null;
+    const pendingRoots = new Set<Element>();
+
+    const flushPending = async () => {
+      const roots = Array.from(pendingRoots).filter(
+        (el) =>
+          el.isConnected &&
+          !el.closest("[data-arap-ui], [data-arap-diagnostics], .arap-root"),
+      );
+      pendingRoots.clear();
+      if (roots.length === 0 || !sessionRef.current?.active) return;
+
+      isApplyingMutationRef.current = true;
+      try {
+        for (const rootEl of roots) {
+          const addedSession = await translateHostContent({
+            rootElement: rootEl,
+            provider,
+            targetLanguage: targetLang,
+            consentRecord: consent,
+          });
+          if (addedSession.active) {
+            extraRestoresRef.current.push(addedSession.restore);
+          }
+        }
+      } catch {
+        // Ignore transient dynamic DOM translation errors
+      } finally {
+        isApplyingMutationRef.current = false;
+      }
+    };
+
+    const observer = new MutationObserver((mutations) => {
+      if (isApplyingMutationRef.current) return;
+      let queued = false;
+      for (const m of mutations) {
+        if (m.type !== "childList") continue;
+        m.addedNodes.forEach((node) => {
+          const el =
+            node.nodeType === Node.ELEMENT_NODE
+              ? (node as Element)
+              : node.parentElement;
+          if (
+            el &&
+            !el.closest("[data-arap-ui], [data-arap-diagnostics], .arap-root")
+          ) {
+            pendingRoots.add(el);
+            queued = true;
+          }
+        });
+      }
+      if (queued) {
+        if (pendingTimer !== null) window.clearTimeout(pendingTimer);
+        pendingTimer = window.setTimeout(() => {
+          void flushPending();
+        }, 60);
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      if (pendingTimer !== null) window.clearTimeout(pendingTimer);
+      observer.disconnect();
+    };
+  }, [session?.active, consent, provider, targetLang]);
 
   const handleGrantConsent = () => {
     setConsent({
@@ -106,10 +229,8 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
   };
 
   const handleRevokeConsent = () => {
-    if (session?.active) {
-      session.restore();
-      setSession(null);
-    }
+    restoreAllActive();
+    setSession(null);
     setConsent({
       status: "revoked",
       userAcknowledgedRisks: false,
@@ -124,39 +245,19 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
       return;
     }
 
-    setErrorMessage(null);
-    setIsTranslating(true);
-    setLiveStatus(`Extracting and translating page text to ${targetLang}...`);
+    await runTranslation(targetLang, consent);
+  };
 
-    try {
-      // Revert previous session if active
-      if (session?.active) {
-        session.restore();
-      }
-
-      const newSession = await translateHostContent({
-        provider,
-        targetLanguage: targetLang,
-        consentRecord: consent,
-      });
-
-      setSession(newSession);
-      setIsTranslationEnabled(true);
-      setLiveStatus(
-        `Successfully translated ${newSession.translatedCount} elements to ${targetLang}.`,
-      );
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setErrorMessage(msg);
-      setLiveStatus(`Translation failed: ${msg}`);
-    } finally {
-      setIsTranslating(false);
+  const handleLanguageChange = (nextLang: string) => {
+    setTargetLang(nextLang);
+    if (session?.active && consent.status === "granted") {
+      void runTranslation(nextLang, consent);
     }
   };
 
   const handleRestoreClick = () => {
     if (session?.active) {
-      session.restore();
+      restoreAllActive();
       setSession(null);
       setIsTranslationEnabled(false);
       setLiveStatus("Page content restored to original text.");
@@ -217,7 +318,7 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
           </p>
           <button
             type="button"
-            className="arap-action-btn arap-consent-open-btn"
+            className="arap-btn-primary arap-consent-open-btn"
             onClick={() => setShowConsentModal(true)}
             aria-expanded={showConsentModal}
           >
@@ -257,14 +358,14 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
           <div className="arap-action-grid">
             <button
               type="button"
-              className="arap-action-btn arap-consent-grant-btn"
+              className="arap-btn-primary arap-consent-grant-btn"
               onClick={handleGrantConsent}
             >
               Grant Consent
             </button>
             <button
               type="button"
-              className="arap-action-btn arap-consent-deny-btn"
+              className="arap-btn-secondary arap-consent-deny-btn"
               onClick={handleDenyConsent}
             >
               Deny
@@ -285,9 +386,9 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
             </label>
             <select
               id="arap-target-lang-select"
-              className="arap-translation-select"
+              className="arap-select arap-translation-select"
               value={targetLang}
-              onChange={(e) => setTargetLang(e.target.value)}
+              onChange={(e) => handleLanguageChange(e.target.value)}
               disabled={isTranslating}
             >
               {DEFAULT_TARGET_LANGUAGES.map((lang) => (
@@ -301,7 +402,7 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
           <div className="arap-action-grid">
             <button
               type="button"
-              className="arap-action-btn arap-translate-btn"
+              className="arap-btn-primary arap-translate-btn"
               onClick={handleTranslateClick}
               disabled={isTranslating}
             >
@@ -309,7 +410,7 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
             </button>
             <button
               type="button"
-              className="arap-action-btn arap-restore-btn"
+              className="arap-btn-secondary arap-restore-btn"
               onClick={handleRestoreClick}
               disabled={!session?.active || isTranslating}
             >
@@ -320,7 +421,7 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
           <div className="arap-translation-revoke-row">
             <button
               type="button"
-              className="arap-unsupported-toggle"
+              className="arap-btn-ghost arap-translation-revoke-btn"
               onClick={handleRevokeConsent}
             >
               Revoke Translation Consent
@@ -336,9 +437,9 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
         </div>
       )}
 
-      {/* Screen-reader Live Status */}
+      {/* Visible & Screen-reader Live Status */}
       <div
-        className="arap-sr-only"
+        className={`arap-translation-status-banner ${session?.active ? "arap-is-active" : ""}`}
         role="status"
         aria-live="polite"
         aria-atomic="true"

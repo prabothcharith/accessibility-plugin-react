@@ -197,6 +197,14 @@ export const DEFAULT_MENU_GROUPS: FeatureMenuGroupConfig[] = [
     description: "Accessibility profiles and preset management",
     order: 50,
   },
+  {
+    id: "experimental",
+    title: "Experimental Prototypes",
+    description: "Optional research features isolated from stable controls",
+    order: 60,
+    collapsible: true,
+    defaultExpanded: false,
+  },
 ];
 
 /** Mapping of built-in features to default groups */
@@ -226,8 +234,6 @@ export const DEFAULT_FEATURE_GROUP_MAP: Record<string, string> = {
   readingMode: "reading",
   readAloud: "reading",
   dictionary: "reading",
-  voiceNavigation: "reading",
-  translation: "reading",
 
   reduceMotion: "media",
   hideImages: "media",
@@ -237,6 +243,10 @@ export const DEFAULT_FEATURE_GROUP_MAP: Record<string, string> = {
   presets: "preferences",
   keyboardShortcuts: "preferences",
   reset: "preferences",
+
+  smartContrast: "experimental",
+  voiceNavigation: "experimental",
+  translation: "experimental",
 };
 
 /**
@@ -274,6 +284,8 @@ export function validateMenuConfig(config: unknown): MenuValidationResult {
           itemIds: defaultItems
             .filter((i) => i.group === g.id)
             .map((i) => i.id),
+          collapsible: g.collapsible,
+          defaultExpanded: g.defaultExpanded,
         })),
         showProfiles: true,
         showStatement: true,
@@ -411,6 +423,8 @@ export function validateMenuConfig(config: unknown): MenuValidationResult {
         description: g.description,
         order: g.order ?? 0,
         itemIds: [],
+        collapsible: g.collapsible,
+        defaultExpanded: g.defaultExpanded,
       };
       groupsList.push(normGroup);
       groupMap.set(g.id, normGroup);
@@ -526,7 +540,10 @@ export function getMenuConfigSignature(
           ? item
           : `${item.id}:${item.enabled ?? true}:${item.order ?? 0}:${item.group ?? ""}`,
       ),
-      groups: config.groups?.map((g) => `${g.id}:${g.order ?? 0}`),
+      groups: config.groups?.map(
+        (g) =>
+          `${g.id}:${g.order ?? 0}:${Boolean(g.collapsible)}:${g.defaultExpanded ?? ""}`,
+      ),
       showProfiles: config.showProfiles,
       showReset: config.showReset,
       showStatement: config.showStatement,
