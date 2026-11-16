@@ -4698,7 +4698,57 @@
   }
 }
 
+/* External Reading Aid Nudge Controls (#199) */
+.arap-root .arap-reading-aid-nudge {
+  position: fixed;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2147482999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--arap-border);
+  border-radius: 14px;
+  background: var(--arap-surface);
+  box-shadow:
+    0 8px 16px rgba(15, 23, 42, 0.08),
+    0 16px 32px rgba(15, 23, 42, 0.12);
+}
+
+.arap-root .arap-reading-aid-nudge[data-aid="guide"] {
+  top: 38%;
+}
+
+.arap-root .arap-reading-aid-nudge[data-aid="mask"] {
+  top: 62%;
+}
+
+.arap-root .arap-reading-aid-nudge-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 @media (max-height: 480px) {
+  .arap-root .arap-reading-aid-nudge {
+    flex-direction: row;
+    transform: none;
+  }
+
+  .arap-root .arap-reading-aid-nudge[data-aid="guide"] {
+    top: max(16px, env(safe-area-inset-top));
+  }
+
+  .arap-root .arap-reading-aid-nudge[data-aid="mask"] {
+    top: max(80px, calc(env(safe-area-inset-top) + 64px));
+  }
+
   .arap-root .arap-modal-overlay {
     padding: 0;
   }

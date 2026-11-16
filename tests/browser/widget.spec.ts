@@ -2223,3 +2223,50 @@ test("read-aloud mini-player 44px targets, form field id/name compliance, and 32
   expect(dictOverflow).toBe(true);
   await dictDialog.getByRole("button", { name: /close dictionary/i }).click();
 });
+
+test("reading guide and mask nudge arrows render outside the plugin panel and work when closed (#199)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  const panel = page.getByRole("region", { name: "Accessibility settings" });
+  await panel.getByRole("button", { name: "Reading Guide" }).click();
+  await expect(panel.getByText("Move Guide")).toHaveCount(0);
+
+  // Close panel so only external floating controls remain visible
+  await page.getByLabel("Close accessibility settings").click();
+  await expect(panel).not.toBeVisible();
+
+  const guide = page.locator(".arap-reading-guide");
+  await expect(guide).toBeVisible();
+  const topBefore = await guide.evaluate((el) => parseFloat(el.style.top));
+
+  const guideUp = page.getByRole("button", { name: "Move reading guide up" });
+  const guideDown = page.getByRole("button", {
+    name: "Move reading guide down",
+  });
+  await expect(guideUp).toBeVisible();
+  await expect(guideDown).toBeVisible();
+  const upBox = (await guideUp.boundingBox())!;
+  expect(upBox.width).toBeGreaterThanOrEqual(44);
+  expect(upBox.height).toBeGreaterThanOrEqual(44);
+
+  await guideDown.click();
+  const topAfterDown = await guide.evaluate((el) => parseFloat(el.style.top));
+  expect(topAfterDown).toBeGreaterThan(topBefore);
+
+  await guideUp.click();
+  const topAfterUp = await guide.evaluate((el) => parseFloat(el.style.top));
+  expect(topAfterUp).toBeLessThan(topAfterDown);
+
+  // Also verify Reading Mask external nudge arrows + internal height-only control
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await panel.getByRole("button", { name: "Reading Mask" }).click();
+  await expect(panel.getByText("Move Window")).toHaveCount(0);
+  await expect(panel.getByText("Window Height")).toBeVisible();
+  await page.getByLabel("Close accessibility settings").click();
+
+  const maskDown = page.getByRole("button", { name: "Move reading mask down" });
+  await expect(maskDown).toBeVisible();
+});
