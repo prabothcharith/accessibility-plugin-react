@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useContext } from "react";
+import { useState, useRef, useCallback, useContext, useId } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { ModalDialog } from "../core/controls/ModalDialog";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 import { resolveLocaleStrings } from "../core/i18n";
 import {
@@ -55,8 +56,8 @@ export function DictionaryController({
   const [liveStatus, setLiveStatus] = useState<string>("");
 
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchInputId = useId();
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -64,60 +65,7 @@ export function DictionaryController({
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
-    // Return focus to trigger button
-    setTimeout(() => {
-      triggerRef.current?.focus();
-    }, 0);
   }, []);
-
-  // Focus search input when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 50);
-    }
-  }, [isOpen]);
-
-  // Focus trap and Escape key listener
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopPropagation();
-        handleClose();
-        return;
-      }
-
-      if (event.key === "Tab") {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        const focusable = dialog.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown, { capture: true });
-    };
-  }, [isOpen, handleClose]);
 
   const performLookup = useCallback(
     async (termToLookup: string) => {
@@ -210,193 +158,188 @@ export function DictionaryController({
       </button>
 
       {/* Accessible Modal Dialog */}
-      {isOpen && (
-        <div
-          className="arap-dict-overlay"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleClose();
-            }
-          }}
-        >
+      <ModalDialog
+        isOpen={isOpen}
+        onClose={handleClose}
+        id="arap-dictionary-dialog"
+        title={displayLabel}
+        subtitle={displayDesc}
+        icon={<FeatureIcon name="dictionary" />}
+        closeLabel={strings.dictionaryCloseDialog ?? "Close dictionary"}
+        size="full"
+        lockScroll={false}
+        initialFocusRef={searchInputRef}
+        returnFocusTo={triggerRef}
+      >
+        <div className="arap-dict-dialog-body">
+          {/* Live status announcements */}
           <div
-            id="arap-dictionary-dialog"
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="arap-dict-title"
-            aria-describedby="arap-dict-desc"
-            className="arap-dict-dialog"
-            tabIndex={-1}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="arap-sr-only"
           >
-            {/* Header */}
-            <div className="arap-dict-header">
-              <div className="arap-dict-title-group">
-                <span className="arap-dict-header-icon" aria-hidden="true">
-                  <FeatureIcon name="dictionary" />
-                </span>
-                <div>
-                  <h2 id="arap-dict-title" className="arap-dict-title">
-                    {displayLabel}
-                  </h2>
-                  <p id="arap-dict-desc" className="arap-dict-subtitle">
-                    {displayDesc}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="arap-dict-close-btn"
-                onClick={handleClose}
-                aria-label={strings.dictionaryCloseDialog ?? "Close dictionary"}
-              >
-                ✕
-              </button>
-            </div>
+            {liveStatus}
+          </div>
 
-            {/* Live status announcements */}
-            <div
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              className="arap-sr-only"
+          {/* Search Form */}
+          <form onSubmit={handleSubmit} className="arap-dict-search-form">
+            <div className="arap-dict-search-wrapper">
+              <input
+                ref={searchInputRef}
+                id={searchInputId}
+                name="arap-dictionary-query"
+                type="search"
+                className="arap-dict-input"
+                placeholder={
+                  strings.dictionarySearchPlaceholder ??
+                  "Type a word to look up..."
+                }
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label={
+                  strings.dictionarySearchPlaceholder ??
+                  "Type a word to look up..."
+                }
+                maxLength={50}
+                autoComplete="off"
+                spellCheck="false"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="arap-search-clear arap-dict-clear-btn"
+                  onClick={handleClear}
+                  aria-label={strings.dictionaryClearButton ?? "Clear word"}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="arap-btn-primary arap-dict-submit-btn"
+              disabled={isSearching}
             >
-              {liveStatus}
-            </div>
+              {isSearching
+                ? (strings.dictionaryStatusSearching ?? "Searching...")
+                : (strings.dictionaryLookupButton ?? "Look up")}
+            </button>
+          </form>
 
-            {/* Search Form */}
-            <form onSubmit={handleSubmit} className="arap-dict-search-form">
-              <div className="arap-dict-search-wrapper">
-                <input
-                  ref={searchInputRef}
-                  type="search"
-                  className="arap-dict-input"
-                  placeholder={
-                    strings.dictionarySearchPlaceholder ??
-                    "Type a word to look up..."
-                  }
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  aria-label={
-                    strings.dictionarySearchPlaceholder ??
-                    "Type a word to look up..."
-                  }
-                  maxLength={50}
-                  autoComplete="off"
-                  spellCheck="false"
-                />
-                {searchTerm && (
-                  <button
-                    type="button"
-                    className="arap-dict-clear-btn"
-                    onClick={handleClear}
-                    aria-label={strings.dictionaryClearButton ?? "Clear word"}
-                  >
-                    ✕
-                  </button>
+          {/* Content Area */}
+          <div className="arap-dict-content">
+            {result?.found && result.entry && (
+              <article className="arap-dict-result" aria-live="polite">
+                <header className="arap-dict-result-header">
+                  <h3 className="arap-dict-word">{result.entry.word}</h3>
+                  {result.entry.phonetic && (
+                    <span className="arap-dict-phonetic">
+                      {result.entry.phonetic}
+                    </span>
+                  )}
+                  {result.entry.partOfSpeech && (
+                    <span className="arap-dict-badge-pos">
+                      {result.entry.partOfSpeech}
+                    </span>
+                  )}
+                  <span className="arap-dict-source-badge">
+                    {result.entry.source === "local"
+                      ? (strings.dictionarySourceLocal ?? "Built-in Glossary")
+                      : (provider?.name ??
+                        strings.dictionarySourceProvider ??
+                        "Configured Provider")}
+                  </span>
+                </header>
+
+                <p className="arap-dict-definition">
+                  {result.entry.definition}
+                </p>
+
+                {result.entry.example && (
+                  <blockquote className="arap-dict-example">
+                    <span className="arap-dict-example-label">
+                      {strings.dictionaryExampleLabel ?? "Example"}:
+                    </span>{" "}
+                    “{result.entry.example}”
+                  </blockquote>
+                )}
+              </article>
+            )}
+
+            {result && !result.found && (
+              <div className="arap-dict-not-found" role="alert">
+                <p className="arap-dict-not-found-msg">
+                  {result.error ??
+                    (strings.dictionaryStatusNotFound
+                      ? strings.dictionaryStatusNotFound(
+                          result.term ?? searchTerm,
+                        )
+                      : `No definition found for "${result.term ?? searchTerm}".`)}
+                </p>
+
+                {result.suggestions && result.suggestions.length > 0 && (
+                  <div className="arap-dict-suggestions">
+                    <h4 className="arap-dict-suggestions-heading">
+                      {strings.dictionarySuggestionsTitle ?? "Did you mean:"}
+                    </h4>
+                    <div className="arap-dict-suggestions-list">
+                      {result.suggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          className="arap-dict-suggestion-chip"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-              <button
-                type="submit"
-                className="arap-dict-submit-btn"
-                disabled={isSearching}
-              >
-                {isSearching
-                  ? (strings.dictionaryStatusSearching ?? "Searching...")
-                  : (strings.dictionaryLookupButton ?? "Look up")}
-              </button>
-            </form>
+            )}
 
-            {/* Content Area */}
-            <div className="arap-dict-content">
-              {result?.found && result.entry && (
-                <article className="arap-dict-result" aria-live="polite">
-                  <header className="arap-dict-result-header">
-                    <h3 className="arap-dict-word">{result.entry.word}</h3>
-                    {result.entry.phonetic && (
-                      <span className="arap-dict-phonetic">
-                        {result.entry.phonetic}
-                      </span>
-                    )}
-                    {result.entry.partOfSpeech && (
-                      <span className="arap-dict-badge-pos">
-                        {result.entry.partOfSpeech}
-                      </span>
-                    )}
-                    <span className="arap-dict-source-badge">
-                      {result.entry.source === "local"
-                        ? (strings.dictionarySourceLocal ?? "Built-in Glossary")
-                        : (provider?.name ??
-                          strings.dictionarySourceProvider ??
-                          "Configured Provider")}
-                    </span>
-                  </header>
-
-                  <p className="arap-dict-definition">
-                    {result.entry.definition}
-                  </p>
-
-                  {result.entry.example && (
-                    <blockquote className="arap-dict-example">
-                      <span className="arap-dict-example-label">
-                        {strings.dictionaryExampleLabel ?? "Example"}:
-                      </span>{" "}
-                      “{result.entry.example}”
-                    </blockquote>
-                  )}
-                </article>
-              )}
-
-              {result && !result.found && (
-                <div className="arap-dict-not-found" role="alert">
-                  <p className="arap-dict-not-found-msg">
-                    {result.error ??
-                      (strings.dictionaryStatusNotFound
-                        ? strings.dictionaryStatusNotFound(
-                            result.term ?? searchTerm,
-                          )
-                        : `No definition found for "${result.term ?? searchTerm}".`)}
-                  </p>
-
-                  {result.suggestions && result.suggestions.length > 0 && (
-                    <div className="arap-dict-suggestions">
-                      <h4 className="arap-dict-suggestions-heading">
-                        {strings.dictionarySuggestionsTitle ?? "Did you mean:"}
-                      </h4>
-                      <div className="arap-dict-suggestions-list">
-                        {result.suggestions.map((suggestion) => (
-                          <button
-                            key={suggestion}
-                            type="button"
-                            className="arap-dict-suggestion-chip"
-                            onClick={() => handleSuggestionClick(suggestion)}
-                          >
-                            {suggestion}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+            {!result && (
+              <div className="arap-dict-intro">
+                <p>
+                  {strings.dictionaryDescription ??
+                    "Look up definitions and accessibility terminology"}
+                </p>
+                <div className="arap-dict-suggestions arap-dict-starter-chips">
+                  <h4 className="arap-dict-suggestions-heading">
+                    Popular terms:
+                  </h4>
+                  <div className="arap-dict-suggestions-list">
+                    {[
+                      "accessibility",
+                      "contrast",
+                      "dyslexia",
+                      "voice",
+                      "wcag",
+                      "screen reader",
+                    ].map((chip) => (
+                      <button
+                        key={chip}
+                        type="button"
+                        className="arap-dict-suggestion-chip"
+                        onClick={() => handleSuggestionClick(chip)}
+                      >
+                        {chip}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
-
-              {!result && (
-                <div className="arap-dict-intro">
-                  <p>
-                    {strings.dictionaryDescription ??
-                      "Look up definitions and accessibility terminology"}
-                  </p>
-                  <p className="arap-dict-privacy-note">
-                    {provider
-                      ? `Using ${provider.name}. Queries are rate-limited and sanitized.`
-                      : "Using local offline glossary. Zero network transmission."}
-                  </p>
-                </div>
-              )}
-            </div>
+                <p className="arap-dict-privacy-note">
+                  {provider
+                    ? `Using ${provider.name}. Queries are rate-limited and sanitized.`
+                    : "Using local offline glossary. Zero network transmission."}
+                </p>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </ModalDialog>
     </div>
   );
 }

@@ -21,7 +21,11 @@ export function ResetController() {
 
   const button = (
     <div className="arap-feature arap-feature-reset">
-      <button className="arap-reset-btn" onClick={resetAll} type="button">
+      <button
+        className="arap-btn-primary arap-reset-btn"
+        onClick={resetAll}
+        type="button"
+      >
         <FeatureIcon name="reset" />
         {strings.resetAll}
       </button>

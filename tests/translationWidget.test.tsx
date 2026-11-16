@@ -163,4 +163,32 @@ describe("A11Y-409: TranslationController Widget Integration", () => {
       screen.getByText("Consent revoked. No translations will be performed."),
     ).toBeInTheDocument();
   });
+
+  it("re-translates host content immediately when changing target language while active and updates status banner", async () => {
+    const adapter = createOfflineMockTranslationAdapter({ latencyMs: 0 });
+    renderWidget(<TranslationController provider={adapter} />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /^review & grant consent$/i }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^grant consent$/i }));
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", { name: /^translate page$/i }),
+      );
+    });
+    expect(hostPara.textContent).toContain("[TR]");
+
+    const langSelect = screen.getByLabelText(/target language/i);
+    await act(async () => {
+      fireEvent.change(langSelect, { target: { value: "si" } });
+    });
+
+    expect(hostPara.textContent).toMatch(/[\u0D80-\u0DFF]/);
+    const statusBanner = screen
+      .getByTestId("translation-controller")
+      .querySelector(".arap-translation-status-banner");
+    expect(statusBanner?.textContent).toContain("Sinhala");
+  });
 });

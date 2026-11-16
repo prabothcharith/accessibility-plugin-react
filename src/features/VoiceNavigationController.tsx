@@ -156,7 +156,7 @@ export function VoiceNavigationController({
         {isSupported ? (
           <button
             type="button"
-            className={`arap-button arap-voice-toggle-btn ${
+            className={`arap-btn-primary arap-button arap-voice-toggle-btn ${
               isListening ? "arap-voice-btn-active" : ""
             }`}
             onClick={toggleListening}
@@ -174,7 +174,7 @@ export function VoiceNavigationController({
         ) : (
           <button
             type="button"
-            className="arap-button arap-voice-toggle-btn"
+            className="arap-btn-primary arap-button arap-voice-toggle-btn"
             disabled
             aria-disabled="true"
             aria-describedby={statusId}
@@ -185,7 +185,7 @@ export function VoiceNavigationController({
 
         <button
           type="button"
-          className="arap-unsupported-toggle"
+          className="arap-btn-ghost arap-unsupported-toggle"
           onClick={() => setShowCommands((prev) => !prev)}
           aria-expanded={showCommands}
         >
@@ -230,7 +230,7 @@ export function VoiceNavigationController({
             </span>
             <button
               type="button"
-              className="arap-button arap-retry-btn"
+              className="arap-btn-primary arap-button arap-retry-btn"
               onClick={startListening}
             >
               Retry Permission
@@ -280,7 +280,7 @@ export function VoiceNavigationController({
         >
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("next_heading")}
             title="Jump to the next heading on the page"
           >
@@ -288,7 +288,7 @@ export function VoiceNavigationController({
           </button>
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("previous_heading")}
             title="Jump to the previous heading on the page"
           >
@@ -296,7 +296,7 @@ export function VoiceNavigationController({
           </button>
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("scroll_down")}
             title="Scroll down 75% of viewport"
           >
@@ -304,7 +304,7 @@ export function VoiceNavigationController({
           </button>
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("scroll_up")}
             title="Scroll up 75% of viewport"
           >
@@ -312,7 +312,7 @@ export function VoiceNavigationController({
           </button>
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("scroll_top")}
             title="Scroll to top of page"
           >
@@ -320,7 +320,7 @@ export function VoiceNavigationController({
           </button>
           <button
             type="button"
-            className="arap-button arap-action-btn"
+            className="arap-btn-secondary arap-button arap-action-btn"
             onClick={() => handleManualAction("scroll_bottom")}
             title="Scroll to bottom of page"
           >

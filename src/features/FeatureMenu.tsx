@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { FeatureGroup } from "../core/controls/FeatureGroup";
 import {
   type MenuCustomizationConfig,
   type NormalizedMenuItem,
@@ -154,26 +155,34 @@ export function FeatureMenu({
 
           if (groupItems.length === 0) return null;
 
-          const headingId = `arap-grp-${group.id}`;
+          if (group.title) {
+            return (
+              <FeatureGroup
+                key={group.id}
+                id={`arap-grp-${group.id}`}
+                role="group"
+                data-group={group.id}
+                title={group.title}
+                description={group.description}
+                badge={group.id === "experimental" ? "Beta" : undefined}
+                collapsible={Boolean(group.collapsible)}
+                defaultExpanded={group.defaultExpanded ?? true}
+                className="arap-menu-group"
+              >
+                <div className="arap-menu-group-items">
+                  {groupItems.map((item) => renderItem(item))}
+                </div>
+              </FeatureGroup>
+            );
+          }
 
           return (
             <section
               key={group.id}
               role="group"
-              aria-labelledby={group.title ? headingId : undefined}
               className="arap-menu-group"
               data-group={group.id}
             >
-              {group.title && (
-                <div className="arap-menu-group-header">
-                  <h3 id={headingId} className="arap-menu-group-heading">
-                    {group.title}
-                  </h3>
-                  {group.description && (
-                    <p className="arap-menu-group-desc">{group.description}</p>
-                  )}
-                </div>
-              )}
               <div className="arap-menu-group-items">
                 {groupItems.map((item) => renderItem(item))}
               </div>

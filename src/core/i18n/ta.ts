@@ -161,7 +161,7 @@ export const taLocale: Readonly<LocaleStrings> = Object.freeze({
   dictionaryStatusFound: (word: string) =>
     `"${word}" என்பதற்கான விளக்கம் கண்டறியப்பட்டது.`,
   dictionaryStatusNotFound: (word: string) =>
-    `"${word}" என்பதற்கான விளக்கம் கிடைக்கவில்லை. எழுத்துப் பிழையைச் சரிபார்க்கவும் அல்லது பரிந்துரையைத் தேர்ந்தெடுக்கவும்.`,
+    `"${word}" என்பதற்கான விளக்கம் கிடைக்கவில்லை. எழுத்துப் பிழையைச் சரிபார்க்கவும் அல்லது வேறு சொல்லைத் தேடவும்.`,
   dictionarySuggestionsTitle: "நீங்கள் தேடியது இதையா:",
   dictionarySourceLocal: "உள்ளமைக்கப்பட்ட சொற்களஞ்சியம்",
   dictionarySourceProvider: "கட்டமைக்கப்பட்ட வழங்குநர்",

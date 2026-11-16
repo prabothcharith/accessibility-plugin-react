@@ -3,6 +3,11 @@
 import { useContext, useId, useRef, useState, type ChangeEvent } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
 import { EmptyState } from "../core/controls/FeatureStatusState";
+import { ModalDialog } from "../core/controls/ModalDialog";
+import {
+  formatPreferenceKey,
+  formatPreferenceValue,
+} from "../core/controls/ProfilePreviewCard";
 import { usePresets } from "../core/usePresets";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 import { resolveLocaleStrings } from "../core/i18n";
@@ -32,6 +37,7 @@ export function PresetsController({
   const [errorMessage, setErrorMessage] = useState("");
   const dialogId = "arap-presets-dialog";
   const nameInputId = useId();
+  const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -110,76 +116,19 @@ export function PresetsController({
     }
   };
 
-  const formatKeyName = (key: string): string => {
-    switch (key) {
-      case "fontScale":
-        return "Font Size";
-      case "lineHeight":
-        return "Line Height";
-      case "contrastMode":
-        return "Contrast";
-      case "reduceMotion":
-        return "Reduce Motion";
-      case "textAlign":
-        return "Text Align";
-      case "highlightLinks":
-        return "Highlight Links";
-      case "highlightFocus":
-        return "Highlight Focus";
-      case "cursorSize":
-        return "Cursor Size";
-      case "readerMode":
-        return "Reading Mode";
-      case "saturation":
-        return "Saturation";
-      case "hideDecorativeImages":
-        return "Hide Images";
-      default:
-        return key.replace(/([A-Z])/g, " $1").trim();
-    }
-  };
-
-  const formatSettingValue = (
-    key: keyof AccessibilityPreferences,
-    val: unknown,
-  ): string => {
-    if (typeof val === "boolean") return val ? "On" : "Off";
-    if (key === "fontScale" && typeof val === "number")
-      return `${Math.round(val * 100)}%`;
-    if (key === "lineHeight" && typeof val === "number")
-      return `${Math.round(val * 100)}%`;
-    if (val === null || val === undefined) return "Original";
-    return String(val);
-  };
-
   return (
     <div
       className={`arap-feature arap-feature-expandable ${largeControls ? "arap-large-controls" : ""} ${className}`}
       role="group"
       aria-label={effectiveLabel}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
+      <div className="arap-feature-row-between">
         <span className="arap-label">
           <FeatureIcon name="presets" />
           <span>
-            <span style={{ display: "block" }}>{effectiveLabel}</span>
+            <span className="arap-label-title">{effectiveLabel}</span>
             {description && (
-              <span
-                style={{
-                  display: "block",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: "var(--arap-muted, #64748b)",
-                  marginTop: "1px",
-                }}
-              >
+              <span className="arap-label-sub">
                 {presets.length > 0
                   ? `${presets.length} custom preset${presets.length === 1 ? "" : "s"} saved`
                   : description}
@@ -189,101 +138,61 @@ export function PresetsController({
         </span>
         <button
           ref={triggerRef}
-          className="arap-btn-sm"
+          className="arap-btn-secondary arap-btn-compact"
           type="button"
+          aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-controls={dialogId}
           onClick={() => setIsOpen(!isOpen)}
+          title="Manage saved presets and JSON import/export"
         >
           {isOpen ? "Close" : "Presets"}
         </button>
       </div>
 
-      {isOpen && (
+      <ModalDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        id="arap-presets-modal"
+        title={effectiveLabel}
+        subtitle={description}
+        icon={<FeatureIcon name="presets" />}
+        closeLabel="Close presets dialog"
+        size="full"
+        lockScroll={false}
+        returnFocusTo={triggerRef}
+      >
         <div
           id={dialogId}
           role="region"
           aria-label="Custom Presets and Settings"
+          className="arap-presets-panel"
           tabIndex={-1}
-          style={{
-            marginTop: "12px",
-            padding: "12px",
-            borderRadius: "6px",
-            backgroundColor: "var(--arap-card-bg, #f8fafc)",
-            border: "1px solid var(--arap-border, #e2e8f0)",
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              e.stopPropagation();
-              setIsOpen(false);
-              triggerRef.current?.focus();
-            }
-          }}
         >
           {/* Live Status and Error Announcements */}
-          <div
-            role="status"
-            aria-live="polite"
-            className="arap-presets-status"
-            style={{
-              minHeight: statusMessage || errorMessage ? "24px" : "0",
-              marginBottom: statusMessage || errorMessage ? "8px" : "0",
-            }}
-          >
+          <div role="status" aria-live="polite" className="arap-presets-status">
             {statusMessage && (
-              <div
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  color: "var(--arap-success, #16a34a)",
-                  padding: "4px 8px",
-                  backgroundColor: "rgba(22, 163, 74, 0.1)",
-                  borderRadius: "4px",
-                }}
-              >
+              <div className="arap-presets-status-success">
                 ✓ {statusMessage}
               </div>
             )}
             {errorMessage && (
-              <div
-                role="alert"
-                style={{
-                  fontSize: "12px",
-                  fontWeight: 500,
-                  color: "var(--arap-error, #dc2626)",
-                  padding: "4px 8px",
-                  backgroundColor: "rgba(220, 38, 38, 0.1)",
-                  borderRadius: "4px",
-                }}
-              >
+              <div role="alert" className="arap-presets-status-error">
                 ⚠ {errorMessage}
               </div>
             )}
           </div>
 
           {/* Save Current Configuration as New Preset */}
-          <div
-            className="arap-presets-save-section"
-            style={{ marginBottom: "14px" }}
-          >
-            <label
-              htmlFor={nameInputId}
-              style={{
-                display: "block",
-                fontSize: "12px",
-                fontWeight: 600,
-                marginBottom: "4px",
-                color: "var(--arap-text, #1e293b)",
-              }}
-            >
+          <div className="arap-presets-save-section">
+            <label htmlFor={nameInputId} className="arap-field-label">
               Save current settings as preset:
             </label>
-            <div style={{ display: "flex", gap: "6px" }}>
+            <div className="arap-presets-save-row">
               <input
                 id={nameInputId}
                 type="text"
-                className="arap-search-input"
-                style={{ flex: 1, padding: "6px 10px", fontSize: "13px" }}
+                className="arap-input arap-search-input"
                 value={presetName}
                 onChange={(e) => {
                   setPresetName(e.target.value);
@@ -300,7 +209,7 @@ export function PresetsController({
               />
               <button
                 type="button"
-                className="arap-btn-sm"
+                className="arap-btn-primary arap-btn-compact"
                 onClick={handleSave}
                 aria-label="Save current preset"
               >
@@ -310,20 +219,10 @@ export function PresetsController({
           </div>
 
           {/* Backup & Transfer (Export / Import) */}
-          <div
-            className="arap-presets-transfer-section"
-            style={{
-              display: "flex",
-              gap: "8px",
-              marginBottom: "14px",
-              paddingBottom: "12px",
-              borderBottom: "1px solid var(--arap-border, #e2e8f0)",
-            }}
-          >
+          <div className="arap-presets-transfer-section">
             <button
               type="button"
-              className="arap-btn-sm"
-              style={{ flex: 1 }}
+              className="arap-btn-secondary"
               onClick={handleExport}
               aria-label="Export settings and presets to JSON file"
             >
@@ -331,8 +230,7 @@ export function PresetsController({
             </button>
             <button
               type="button"
-              className="arap-btn-sm"
-              style={{ flex: 1 }}
+              className="arap-btn-secondary"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Import settings and presets from JSON file"
             >
@@ -340,6 +238,8 @@ export function PresetsController({
             </button>
             <input
               ref={fileInputRef}
+              id={fileInputId}
+              name="arap-preset-import"
               type="file"
               accept=".json,application/json"
               style={{ display: "none" }}
@@ -350,14 +250,7 @@ export function PresetsController({
 
           {/* Saved Presets List */}
           <div className="arap-presets-list-section">
-            <h4
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                marginBottom: "6px",
-                color: "var(--arap-text, #1e293b)",
-              }}
-            >
+            <h4 className="arap-presets-list-heading">
               Saved Presets ({presets.length}):
             </h4>
 
@@ -367,13 +260,7 @@ export function PresetsController({
                 description="Configure your preferences and save them above for quick 1-click access."
               />
             ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                }}
-              >
+              <div className="arap-presets-grid">
                 {presets.map((p) => {
                   const affectedKeys = Object.keys(
                     p.settings,
@@ -385,50 +272,20 @@ export function PresetsController({
                       className="arap-preset-card"
                       role="group"
                       aria-label={`${p.name} preset`}
-                      style={{
-                        padding: "8px 10px",
-                        borderRadius: "6px",
-                        backgroundColor: "var(--arap-bg, #ffffff)",
-                        border: "1px solid var(--arap-border, #e2e8f0)",
-                      }}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        <div>
-                          <strong
-                            style={{
-                              fontSize: "13px",
-                              color: "var(--arap-text, #1e293b)",
-                            }}
-                          >
+                      <div className="arap-preset-card-top">
+                        <div className="arap-preset-card-meta">
+                          <strong className="arap-preset-card-title">
                             {p.name}
                           </strong>
-                          <span
-                            style={{
-                              display: "block",
-                              fontSize: "10px",
-                              color: "var(--arap-muted, #64748b)",
-                            }}
-                          >
+                          <span className="arap-preset-card-date">
                             Saved {new Date(p.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "6px",
-                            alignItems: "center",
-                          }}
-                        >
+                        <div className="arap-preset-card-actions">
                           <button
                             type="button"
-                            className="arap-btn-sm"
+                            className="arap-btn-primary arap-btn-compact"
                             onClick={() => handleApply(p)}
                             aria-label={`Apply preset ${p.name}`}
                           >
@@ -436,12 +293,9 @@ export function PresetsController({
                           </button>
                           <button
                             type="button"
-                            className="arap-btn-sm"
+                            className="arap-btn-danger arap-btn-compact"
                             onClick={() => handleDelete(p)}
                             aria-label={`Delete preset ${p.name}`}
-                            style={{
-                              color: "var(--arap-error, #dc2626)",
-                            }}
                           >
                             Delete
                           </button>
@@ -449,16 +303,13 @@ export function PresetsController({
                       </div>
 
                       {affectedKeys.length > 0 && (
-                        <div
-                          className="arap-profile-chips"
-                          style={{ marginTop: "4px" }}
-                        >
+                        <div className="arap-profile-chips">
                           {affectedKeys.map((key) => {
                             const val = p.settings[key];
                             return (
                               <span key={key} className="arap-profile-chip">
-                                <strong>{formatKeyName(key)}:</strong>{" "}
-                                {formatSettingValue(key, val)}
+                                <strong>{formatPreferenceKey(key)}:</strong>{" "}
+                                {formatPreferenceValue(key, val)}
                               </span>
                             );
                           })}
@@ -471,7 +322,7 @@ export function PresetsController({
             )}
           </div>
         </div>
-      )}
+      </ModalDialog>
     </div>
   );
 }

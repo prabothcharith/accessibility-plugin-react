@@ -23,3 +23,9 @@ export type {
 
 export { ProfilePreviewCard } from "./ProfilePreviewCard";
 export type { ProfilePreviewCardProps } from "./ProfilePreviewCard";
+
+export { ModalDialog } from "./ModalDialog";
+export type { ModalDialogProps } from "./ModalDialog";
+
+export { FeatureGroup } from "./FeatureGroup";
+export type { FeatureGroupProps } from "./FeatureGroup";

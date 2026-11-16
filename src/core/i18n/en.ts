@@ -151,7 +151,7 @@ export const enLocale: Readonly<LocaleStrings> = Object.freeze({
   dictionaryStatusSearching: "Searching...",
   dictionaryStatusFound: (word: string) => `Definition found for "${word}".`,
   dictionaryStatusNotFound: (word: string) =>
-    `No definition found for "${word}". Check your spelling or try a suggestion below.`,
+    `No definition found for "${word}". Check your spelling or try a related accessibility term.`,
   dictionarySuggestionsTitle: "Did you mean:",
   dictionarySourceLocal: "Built-in Glossary",
   dictionarySourceProvider: "Configured Provider",

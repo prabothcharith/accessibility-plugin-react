@@ -175,5 +175,27 @@ describe("A11Y-403: Dictionary Core & Sanitization", () => {
       expect(result.entry?.word).toBe("focus");
       expect(result.entry?.source).toBe("local");
     });
+
+    it("resolves plugin accessibility terms like voice, hyphenated forms, plurals, and fuzzy typos", async () => {
+      const voiceRes = await lookupWord("voice");
+      expect(voiceRes.found).toBe(true);
+      expect(voiceRes.entry?.definition.toLowerCase()).toContain("speech");
+
+      const hyphenRes = await lookupWord("voice-navigation");
+      expect(hyphenRes.found).toBe(true);
+      expect(hyphenRes.entry?.word).toBe("voice navigation");
+
+      const pluralRes = await lookupWord("landmarks");
+      expect(pluralRes.found).toBe(true);
+      expect(pluralRes.entry?.word).toBe("landmark");
+
+      const typoRes = await lookupWord("voise");
+      expect(typoRes.found).toBe(false);
+      expect(typoRes.suggestions).toContain("voice");
+
+      const gibberishRes = await lookupWord("zzzzunknownword");
+      expect(gibberishRes.found).toBe(false);
+      expect(gibberishRes.suggestions).toBeUndefined();
+    });
   });
 });

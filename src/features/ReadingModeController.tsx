@@ -6,11 +6,10 @@ import {
   useRef,
   useId,
   useContext,
-  useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { createPortal } from "react-dom";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { WidgetPortal } from "../core/WidgetPortal";
 import { useAccessibility } from "../core/useAccessibility";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 import { resolveLocaleStrings } from "../core/i18n";
@@ -21,15 +20,6 @@ import {
 
 const FEATURE_KEY = "readingMode";
 const DEFAULT_VALUE = false;
-
-const emptySubscribe = () => () => {};
-function useMounted(): boolean {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-}
 
 export interface ReadingModeControllerProps {
   className?: string;
@@ -69,7 +59,6 @@ export function ReadingModeController({
     "light",
   );
   const [readerScale, setReaderScale] = useState<number>(100);
-  const mounted = useMounted();
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -196,158 +185,138 @@ export function ReadingModeController({
       : `${activeArticle.readingTimeMinutes} min read`
     : "";
 
-  const readerDialog: ReactNode =
-    mounted && activeArticle && typeof document !== "undefined"
-      ? createPortal(
-          <div
-            className="arap-reading-mode-backdrop"
-            data-arap-ui=""
-            data-theme={readerTheme}
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                handleClose();
-              }
-            }}
-          >
+  const readerDialog: ReactNode = activeArticle ? (
+    <WidgetPortal>
+      <div
+        className="arap-reading-mode-backdrop"
+        data-theme={readerTheme}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            handleClose();
+          }
+        }}
+      >
+        <div
+          ref={dialogRef}
+          className="arap-reading-mode-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+          style={{ fontSize: `${readerScale}%` }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.stopPropagation();
+              handleClose();
+            }
+          }}
+        >
+          <div className="arap-reading-mode-header">
+            <div className="arap-reading-mode-meta">
+              <span className="arap-reading-mode-badge" aria-hidden="true">
+                {featureLabel}
+              </span>
+              <span className="arap-reading-mode-stat">{wordCountDisplay}</span>
+              <span className="arap-reading-mode-divider" aria-hidden="true">
+                •
+              </span>
+              <span className="arap-reading-mode-stat">
+                {readingTimeDisplay}
+              </span>
+            </div>
+
             <div
-              ref={dialogRef}
-              className="arap-reading-mode-dialog"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              tabIndex={-1}
-              style={{ fontSize: `${readerScale}%` }}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  e.stopPropagation();
-                  handleClose();
-                }
-              }}
+              className="arap-reading-mode-toolbar"
+              role="toolbar"
+              aria-label="Reader tools"
             >
-              <div className="arap-reading-mode-header">
-                <div className="arap-reading-mode-meta">
-                  <span className="arap-reading-mode-badge" aria-hidden="true">
-                    {featureLabel}
-                  </span>
-                  <span className="arap-reading-mode-stat">
-                    {wordCountDisplay}
-                  </span>
-                  <span
-                    className="arap-reading-mode-divider"
-                    aria-hidden="true"
-                  >
-                    •
-                  </span>
-                  <span className="arap-reading-mode-stat">
-                    {readingTimeDisplay}
-                  </span>
-                </div>
-
-                <div
-                  className="arap-reading-mode-toolbar"
-                  role="toolbar"
-                  aria-label="Reader tools"
-                >
-                  <div
-                    className="arap-reading-mode-theme-group"
-                    role="group"
-                    aria-label="Reader theme"
-                  >
-                    <button
-                      type="button"
-                      className={`arap-reader-theme-btn ${readerTheme === "light" ? "arap-active" : ""}`}
-                      onClick={() => setReaderTheme("light")}
-                      aria-pressed={readerTheme === "light"}
-                      aria-label="Light theme"
-                    >
-                      Light
-                    </button>
-                    <button
-                      type="button"
-                      className={`arap-reader-theme-btn ${readerTheme === "sepia" ? "arap-active" : ""}`}
-                      onClick={() => setReaderTheme("sepia")}
-                      aria-pressed={readerTheme === "sepia"}
-                      aria-label="Sepia theme"
-                    >
-                      Sepia
-                    </button>
-                    <button
-                      type="button"
-                      className={`arap-reader-theme-btn ${readerTheme === "dark" ? "arap-active" : ""}`}
-                      onClick={() => setReaderTheme("dark")}
-                      aria-pressed={readerTheme === "dark"}
-                      aria-label="Dark theme"
-                    >
-                      Dark
-                    </button>
-                  </div>
-
-                  <div
-                    className="arap-reading-mode-zoom-group"
-                    role="group"
-                    aria-label="Text zoom"
-                  >
-                    <button
-                      type="button"
-                      className="arap-reader-zoom-btn"
-                      onClick={handleZoomOut}
-                      aria-label="Decrease reader text size"
-                      disabled={readerScale <= 90}
-                    >
-                      A-
-                    </button>
-                    <button
-                      type="button"
-                      className="arap-reader-zoom-btn"
-                      onClick={handleZoomIn}
-                      aria-label="Increase reader text size"
-                      disabled={readerScale >= 160}
-                    >
-                      A+
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="arap-reading-mode-close"
-                    onClick={handleClose}
-                    aria-label={closeLabel}
-                    title={closeLabel}
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-
-              <main className="arap-reading-mode-content">
-                <h1 id={titleId} className="arap-reading-mode-title">
-                  {activeArticle.title}
-                </h1>
-                {activeArticle.byline && (
-                  <p className="arap-reading-mode-byline">
-                    {activeArticle.byline}
-                  </p>
-                )}
-                <div
-                  className="arap-reading-mode-body"
-                  dangerouslySetInnerHTML={{ __html: activeArticle.html }}
-                />
-              </main>
-
-              <footer className="arap-reading-mode-footer">
+              <div
+                className="arap-reading-mode-theme-group"
+                role="group"
+                aria-label="Reader theme"
+              >
                 <button
                   type="button"
-                  className="arap-reading-mode-exit-btn"
-                  onClick={handleClose}
+                  className={`arap-reader-theme-btn ${readerTheme === "light" ? "arap-active" : ""}`}
+                  onClick={() => setReaderTheme("light")}
+                  aria-pressed={readerTheme === "light"}
+                  aria-label="Light theme"
                 >
-                  {closeLabel}
+                  Light
                 </button>
-              </footer>
+                <button
+                  type="button"
+                  className={`arap-reader-theme-btn ${readerTheme === "sepia" ? "arap-active" : ""}`}
+                  onClick={() => setReaderTheme("sepia")}
+                  aria-pressed={readerTheme === "sepia"}
+                  aria-label="Sepia theme"
+                >
+                  Sepia
+                </button>
+                <button
+                  type="button"
+                  className={`arap-reader-theme-btn ${readerTheme === "dark" ? "arap-active" : ""}`}
+                  onClick={() => setReaderTheme("dark")}
+                  aria-pressed={readerTheme === "dark"}
+                  aria-label="Dark theme"
+                >
+                  Dark
+                </button>
+              </div>
+
+              <div
+                className="arap-reading-mode-zoom-group"
+                role="group"
+                aria-label="Text zoom"
+              >
+                <button
+                  type="button"
+                  className="arap-reader-zoom-btn"
+                  onClick={handleZoomOut}
+                  aria-label="Decrease reader text size"
+                  disabled={readerScale <= 90}
+                >
+                  A-
+                </button>
+                <button
+                  type="button"
+                  className="arap-reader-zoom-btn"
+                  onClick={handleZoomIn}
+                  aria-label="Increase reader text size"
+                  disabled={readerScale >= 160}
+                >
+                  A+
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="arap-close-btn arap-reading-mode-close"
+                onClick={handleClose}
+                aria-label={closeLabel}
+                title={closeLabel}
+              >
+                ×
+              </button>
             </div>
-          </div>,
-          document.body,
-        )
-      : null;
+          </div>
+
+          <main className="arap-reading-mode-content">
+            <h1 id={titleId} className="arap-reading-mode-title">
+              {activeArticle.title}
+            </h1>
+            {activeArticle.byline && (
+              <p className="arap-reading-mode-byline">{activeArticle.byline}</p>
+            )}
+            <div
+              className="arap-reading-mode-body"
+              dangerouslySetInnerHTML={{ __html: activeArticle.html }}
+            />
+          </main>
+        </div>
+      </div>
+    </WidgetPortal>
+  ) : null;
 
   return (
     <>

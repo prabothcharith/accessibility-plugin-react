@@ -2,6 +2,7 @@
 
 import { useContext, useId, useMemo, useRef, useState } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { ModalDialog } from "../core/controls/ModalDialog";
 import { ProfilePreviewCard } from "../core/controls/ProfilePreviewCard";
 import { EmptyState, SearchCount } from "../core/controls/FeatureStatusState";
 import { useProfiles } from "../core/useProfiles";
@@ -82,35 +83,15 @@ export function ProfilesController({
       role="group"
       aria-label={effectiveLabel}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
+      <div className="arap-feature-row-between">
         <span className="arap-label">
           <FeatureIcon name="profiles" />
           <span>
-            <span style={{ display: "block" }}>{effectiveLabel}</span>
+            <span className="arap-label-title">{effectiveLabel}</span>
             {description && (
-              <span
-                style={{
-                  display: "block",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: "var(--arap-muted, #64748b)",
-                  marginTop: "1px",
-                }}
-              >
+              <span className="arap-label-sub">
                 {activeProfile ? (
-                  <span
-                    style={{
-                      color: "var(--arap-primary, #2563eb)",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <span className="arap-profile-inline-active">
                     Active: {activeProfile.label}
                     {hasOverrides && " (Customized)"}
                   </span>
@@ -121,11 +102,11 @@ export function ProfilesController({
             )}
           </span>
         </span>
-        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+        <div className="arap-nav-actions">
           {activeProfile && (
             <button
               type="button"
-              className="arap-btn-sm"
+              className="arap-btn-secondary arap-btn-compact"
               onClick={handleRevert}
               aria-label="Revert active profile to custom settings"
               title="Revert to custom settings"
@@ -135,79 +116,48 @@ export function ProfilesController({
           )}
           <button
             ref={triggerRef}
-            className="arap-btn-sm"
+            className="arap-btn-secondary arap-btn-compact"
             type="button"
+            aria-haspopup="dialog"
             aria-expanded={isOpen}
             aria-controls={dialogId}
             onClick={() => setIsOpen(!isOpen)}
+            title="Browse 8 curated accessibility profiles"
           >
             {isOpen ? "Close" : "Browse"}
           </button>
         </div>
       </div>
 
-      {isOpen && (
-        <div
-          id={dialogId}
-          className="arap-profiles-panel"
-          style={{
-            marginTop: "12px",
-            paddingTop: "12px",
-            borderTop: "1px solid var(--arap-divider, #e2e8f0)",
-          }}
-        >
+      <ModalDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        id={dialogId}
+        title={effectiveLabel}
+        subtitle={description}
+        icon={<FeatureIcon name="profiles" />}
+        closeLabel="Close profiles dialog"
+        size="full"
+        lockScroll={false}
+        returnFocusTo={triggerRef}
+      >
+        <div className="arap-profiles-panel">
           {activeProfile && (
-            <div
-              className="arap-profile-active-banner"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 12px",
-                marginBottom: "12px",
-                background: "rgba(37, 99, 235, 0.08)",
-                border: "1px solid rgba(37, 99, 235, 0.2)",
-                borderRadius: "6px",
-              }}
-            >
+            <div className="arap-profile-active-banner" role="status">
               <div>
-                <span
-                  style={{
-                    display: "block",
-                    fontWeight: 600,
-                    fontSize: "13px",
-                    color: "var(--arap-primary, #2563eb)",
-                  }}
-                >
+                <span className="arap-profile-active-banner-title">
                   ✓ Current Profile: {activeProfile.label}
                 </span>
-                <span
-                  style={{
-                    display: "block",
-                    fontSize: "11px",
-                    color: "var(--arap-muted, #64748b)",
-                  }}
-                >
+                <span className="arap-profile-active-banner-sub">
                   {hasOverrides
                     ? "Your custom adjustments survive alongside this profile."
-                    : "Neutral suggestion applied. Adjust any setting freely."}
+                    : "Neutral suggestion applied. Adjust any setting freely, or revert below."}
                 </span>
               </div>
-              <button
-                type="button"
-                className="arap-btn-sm"
-                onClick={handleRevert}
-                aria-label="Revert active profile"
-              >
-                Revert to Custom
-              </button>
             </div>
           )}
 
-          <div
-            className="arap-navigator-search"
-            style={{ marginBottom: "10px" }}
-          >
+          <div className="arap-navigator-search">
             <label htmlFor={searchInputId} className="arap-sr-only">
               Filter profiles
             </label>
@@ -241,15 +191,7 @@ export function ProfilesController({
             query={search}
           />
 
-          <div
-            className="arap-profiles-list"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-              marginTop: "8px",
-            }}
-          >
+          <div className="arap-profiles-grid">
             {filteredProfiles.length === 0 ? (
               <EmptyState
                 title="No profiles found"
@@ -271,7 +213,7 @@ export function ProfilesController({
             )}
           </div>
         </div>
-      )}
+      </ModalDialog>
     </div>
   );
 }

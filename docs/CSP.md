@@ -37,6 +37,15 @@ This guide explains how `accessibility-plugin-react` operates under Content Secu
   ```
   If `data:` is omitted from `img-src`, the browser will fall back to native system cursors.
 
+### D. Bundled Manrope UI Typography (`font-src`)
+
+- **Default UI font:** The library bundles the variable **Manrope** typeface locally (`dist/fonts/Manrope-VariableFont_wght.ttf` for standalone CSS imports, and inlined `data:font/ttf;base64,...` within the runtime injected styles in `dist/index.mjs` / `dist/index.js`) with zero external font CDN calls.
+- **Recommended directive:**
+  ```text
+  font-src 'self' data:;
+  ```
+  If `data:` is omitted from `font-src`, import `accessibility-plugin-react/style.css` so your bundler serves `dist/fonts/Manrope-VariableFont_wght.ttf` from `'self'`.
+
 ---
 
 ## 2. Next.js App Router Strict CSP Recipe
@@ -54,7 +63,7 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline';
   style-src-attr 'unsafe-inline';
   img-src 'self' data:;
-  font-src 'self';
+  font-src 'self' data:;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
@@ -106,7 +115,7 @@ export function middleware(request: NextRequest) {
     style-src 'self' 'nonce-${nonce}';
     style-src-attr 'unsafe-inline';
     img-src 'self' data:;
-    font-src 'self';
+    font-src 'self' data:;
     base-uri 'self';
     form-action 'self';
   `
@@ -159,7 +168,7 @@ For Vite applications, configure CSP headers either through your production web 
         style-src 'self' 'unsafe-inline';
         style-src-attr 'unsafe-inline';
         img-src 'self' data:;
-        font-src 'self';
+        font-src 'self' data:;
       "
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

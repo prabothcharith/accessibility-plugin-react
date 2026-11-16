@@ -172,4 +172,34 @@ describe("A11Y-104 Accessible launcher and non-modal widget panel", () => {
     expect(screen.queryByRole("region")).toBeNull();
     expect(trigger).toHaveFocus();
   });
+
+  it("propagates data-arap-font from FontFamilyController onto .arap-root and supports collapsible FeatureGroup", () => {
+    render(
+      <Widget>
+        <API.FeatureGroup id="grp-font" title="Typography">
+          <API.FontFamilyController />
+        </API.FeatureGroup>
+        <API.FeatureGroup
+          id="grp-exp"
+          title="Experimental"
+          collapsible
+          defaultExpanded={false}
+        >
+          <API.SmartContrastController />
+        </API.FeatureGroup>
+      </Widget>,
+    );
+
+    fireEvent.click(screen.getByLabelText("Accessibility"));
+    const root = document.querySelector(".arap-root") as HTMLElement;
+    expect(root.getAttribute("data-arap-font")).toBe("default");
+
+    fireEvent.click(screen.getByRole("button", { name: "Dyslexia" }));
+    expect(root.getAttribute("data-arap-font")).toBe("dyslexia-option");
+
+    const expToggle = screen.getByRole("button", { name: /Experimental/i });
+    expect(expToggle).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(expToggle);
+    expect(expToggle).toHaveAttribute("aria-expanded", "true");
+  });
 });

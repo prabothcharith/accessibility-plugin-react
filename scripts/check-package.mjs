@@ -27,6 +27,8 @@ for (const file of [
   "dist/index.d.ts",
   "dist/index.d.mts",
   "dist/style.css",
+  "dist/fonts/Manrope-VariableFont_wght.ttf",
+  "dist/fonts/OFL.txt",
   "LICENSE",
   "NOTICE",
 ])
@@ -43,8 +45,21 @@ for (const file of ["dist/index.mjs", "dist/index.js"]) {
     `Missing automatic CSS injection: ${file}`,
   );
   assert(bundle.includes(".arap-root"), `Missing bundled widget CSS: ${file}`);
+  assert(bundle.includes("Manrope"), `Missing bundled Manrope font: ${file}`);
+  assert(
+    bundle.includes("data:font/ttf;base64,"),
+    `Missing inlined Manrope data URI in ${file}`,
+  );
+  assert(
+    !bundle.includes("./fonts/Manrope-VariableFont_wght.ttf"),
+    `Relative Manrope font URL leaked into ${file}`,
+  );
 }
 const css = await readFile("dist/style.css", "utf8");
+assert(
+  css.includes("./fonts/Manrope-VariableFont_wght.ttf"),
+  "Standalone dist/style.css should reference ./fonts/Manrope-VariableFont_wght.ttf",
+);
 assert(
   !/(^|\})\s*(html|body|:root|\*)\s*\{/.test(css),
   "Global reset detected",

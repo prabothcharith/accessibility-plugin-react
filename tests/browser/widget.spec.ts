@@ -304,6 +304,9 @@ test("A11Y-304 accessibility profiles: previews eight suggestions, applies atomi
   const host = page.locator("#host");
   await expect(host).toHaveCSS("background-color", "rgb(0, 0, 0)");
 
+  // Close Profiles modal to adjust individual settings in main panel
+  await page.getByRole("button", { name: "Close profiles dialog" }).click();
+
   // User independent override: change contrastMode to dark
   const darkBtn = page
     .getByRole("group", { name: "Contrast Mode" })
@@ -311,7 +314,8 @@ test("A11Y-304 accessibility profiles: previews eight suggestions, applies atomi
   await darkBtn.click();
   await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
 
-  // Revert profile
+  // Reopen Profiles modal and revert profile
+  await browseBtn.click();
   const revertBtn = page.getByRole("button", {
     name: "Revert Color Blind profile",
   });
@@ -339,7 +343,7 @@ test("A11Y-305 custom presets: saves named preset, persists across display reset
   const host = page.locator("#host");
   await expect(host).toHaveCSS("background-color", "rgb(15, 23, 42)");
 
-  // Open PresetsController
+  // Open PresetsController modal
   const presetsBtn = page.locator(
     "button[aria-controls='arap-presets-dialog']",
   );
@@ -357,11 +361,15 @@ test("A11Y-305 custom presets: saves named preset, persists across display reset
   ).toBeVisible();
   await expect(page.getByText("Night Preset", { exact: true })).toBeVisible();
 
+  // Close Presets modal before clicking Reset All in panel footer
+  await page.getByRole("button", { name: "Close presets dialog" }).click();
+
   // Reset All display preferences
   await page.getByRole("button", { name: "Reset All", exact: true }).click();
   await expect(host).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 
-  // Night Preset survived Reset All!
+  // Reopen Presets modal: Night Preset survived Reset All!
+  await presetsBtn.click();
   await expect(page.getByText("Night Preset", { exact: true })).toBeVisible();
 
   // Apply saved preset
@@ -1968,4 +1976,297 @@ test("A11Y-501: full supported matrix verification - zoom reflow, forced-colors,
   await page.getByLabel("Close accessibility settings").click();
   await expect(trigger).toBeFocused();
   await page.emulateMedia({ forcedColors: "none" });
+});
+
+test("bundled Manrope default UI font and fontFamily synchronization (#189)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  const root = page.locator(".arap-root").first();
+  await expect(root).toHaveAttribute("data-arap-font", "default");
+  const defaultFont = await root.evaluate(
+    (el) => getComputedStyle(el).fontFamily,
+  );
+  expect(defaultFont.toLowerCase()).toContain("manrope");
+  const loadedManropeFonts = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return Array.from(document.fonts)
+      .filter((font) => font.family.toLowerCase().includes("manrope"))
+      .map((font) => ({ family: font.family, status: font.status }));
+  });
+  expect(loadedManropeFonts.some((font) => font.status === "loaded")).toBe(
+    true,
+  );
+  expect(loadedManropeFonts.some((font) => font.status === "error")).toBe(
+    false,
+  );
+
+  const fontGroup = page.getByRole("group", {
+    name: /Readable Font|Font Family/i,
+  });
+  await fontGroup.getByRole("button", { name: "Legible" }).click();
+  await expect(root).toHaveAttribute("data-arap-font", "legible");
+  const legibleFont = await root.evaluate(
+    (el) => getComputedStyle(el).fontFamily,
+  );
+  expect(legibleFont).not.toBe(defaultFont);
+
+  await fontGroup.getByRole("button", { name: "Dyslexia" }).click();
+  await expect(root).toHaveAttribute("data-arap-font", "dyslexia-option");
+  const dyslexiaFont = await root.evaluate(
+    (el) => getComputedStyle(el).fontFamily,
+  );
+  expect(dyslexiaFont.toLowerCase()).toContain("opendyslexic");
+});
+
+test("desktop-only resizable panel via keyboard/handle and mobile non-resizable (#186, #185)", async ({
+  page,
+}, info) => {
+  if (info.project.name === "mobile") {
+    await page.goto("/");
+    await page.getByLabel("Accessibility", { exact: true }).click();
+    const panel = page.getByRole("region", { name: "Accessibility settings" });
+    await expect(
+      page.getByRole("separator", { name: "Resize accessibility panel" }),
+    ).not.toBeVisible();
+    const noOverflow = await panel.evaluate(
+      (el) => el.scrollWidth <= el.clientWidth + 1,
+    );
+    expect(noOverflow).toBe(true);
+    return;
+  }
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  const panel = page.getByRole("region", { name: "Accessibility settings" });
+  const initialBox = await panel.boundingBox();
+  expect(initialBox!.width).toBeGreaterThanOrEqual(440);
+
+  const resizeHandle = page.getByRole("separator", {
+    name: "Resize accessibility panel",
+  });
+  await expect(resizeHandle).toBeVisible();
+  await resizeHandle.focus();
+  await page.keyboard.press("ArrowLeft");
+  const widenedBox = await panel.boundingBox();
+  expect(widenedBox!.width).toBeGreaterThan(initialBox!.width);
+
+  await page.keyboard.press("Home");
+  const resetBox = await panel.boundingBox();
+  expect(Math.round(resetBox!.width)).toBe(Math.round(initialBox!.width));
+
+  // Narrow viewport (< 1024px) hides resize handle cleanly without horizontal overflow
+  await page.setViewportSize({ width: 320, height: 640 });
+  await expect(resizeHandle).not.toBeVisible();
+  const noOverflow = await panel.evaluate(
+    (el) => el.scrollWidth <= el.clientWidth + 1,
+  );
+  expect(noOverflow).toBe(true);
+});
+
+test("reading aid isolation against aggressive host CSS and higher modal z-index (#193)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.addStyleTag({
+    content: `div { margin: 24px !important; padding: 20px !important; border: 6px solid red !important; transform: rotate(3deg) !important; }`,
+  });
+
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await page.getByRole("button", { name: "Reading Guide" }).click();
+
+  const guide = page.locator(".arap-reading-guide");
+  await expect(guide).toBeVisible();
+  const styles = await guide.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      margin: cs.margin,
+      padding: cs.padding,
+      transform: cs.transform,
+      zIndex: Number(cs.zIndex),
+    };
+  });
+  expect(styles.margin).toBe("0px");
+  expect(styles.padding).toBe("0px");
+  expect(styles.transform).toBe("none");
+  expect(styles.zIndex).toBe(2147482000);
+
+  // Panel sits cleanly above reading guide
+  const panelZ = await page
+    .getByRole("region", { name: "Accessibility settings" })
+    .evaluate((el) => Number(getComputedStyle(el).zIndex));
+  expect(panelZ).toBeGreaterThan(styles.zIndex);
+});
+
+test("dictionary looks up 'voice' and Sinhala host translation skips widget UI (#187, #188)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Dictionary lookup for 'voice'
+  await page.getByRole("button", { name: /Dictionary/i }).click();
+  const dictDialog = page.getByRole("dialog", { name: /Dictionary/i });
+  await expect(dictDialog).toBeVisible();
+  await dictDialog.getByRole("searchbox").fill("voice");
+  await dictDialog.getByRole("button", { name: "Look up" }).click();
+  await expect(
+    dictDialog.getByRole("heading", { level: 3, name: "voice" }),
+  ).toBeVisible();
+  await dictDialog.getByRole("button", { name: /close dictionary/i }).click();
+  await expect(dictDialog).not.toBeVisible();
+
+  // Expand Experimental Prototypes group if collapsed (e.g. next-app demo)
+  const expToggle = page.getByRole("button", {
+    name: /Experimental Prototypes/i,
+  });
+  if ((await expToggle.count()) > 0) {
+    const expanded = await expToggle.getAttribute("aria-expanded");
+    if (expanded === "false") {
+      await expToggle.click();
+    }
+  }
+
+  // Sinhala host translation leaves widget UI untouched
+  const translationGroup = page.getByTestId("translation-controller");
+  await translationGroup
+    .getByRole("button", { name: "Review & Grant Consent" })
+    .click();
+  await translationGroup
+    .getByRole("button", { name: "Grant Consent", exact: true })
+    .click();
+  await translationGroup.getByLabel(/Target Language/i).selectOption("si");
+  await translationGroup
+    .getByRole("button", { name: "Translate Page" })
+    .click();
+
+  const hostSample = page.locator("main p, #host p").first();
+  await expect(hostSample).toContainText("[TR]");
+  await expect(
+    translationGroup.getByRole("button", { name: "Restore Original" }),
+  ).toBeVisible();
+});
+
+test("read-aloud mini-player 44px targets, form field id/name compliance, and 320x200 zoom layout (#185, #191, #192)", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.speak = (utterance: SpeechSynthesisUtterance) => {
+      utterance.onstart?.(new Event("start") as SpeechSynthesisEvent);
+    };
+    window.speechSynthesis.cancel = () => {};
+    window.speechSynthesis.pause = () => {};
+    window.speechSynthesis.resume = () => {};
+  });
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  // Check Read Aloud floating bar targets >= 44px and sits below modals
+  const readAloudCard = page.getByRole("group", { name: "Read aloud" });
+  const playBtn = readAloudCard.getByRole("button", { name: "Read aloud" });
+  if (await playBtn.isVisible().catch(() => false)) {
+    await playBtn.click();
+    const playbackBar = page.getByRole("region", {
+      name: "Read aloud playback bar",
+    });
+    await expect(playbackBar).toBeVisible();
+    const barZ = await playbackBar.evaluate((el) =>
+      Number(getComputedStyle(el).zIndex),
+    );
+    expect(barZ).toBeGreaterThan(2147483000);
+    expect(barZ).toBeLessThan(2147483100);
+    const barBtns = playbackBar.locator("button");
+    const btnCount = await barBtns.count();
+    for (let i = 0; i < btnCount; i++) {
+      const box = await barBtns.nth(i).boundingBox();
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+    }
+    await playbackBar.getByRole("button", { name: /Stop/i }).click();
+    await expect(playbackBar).not.toBeVisible();
+  }
+
+  // Verify modal inputs carry id or name attributes
+  const openShortcutsBtn = page.getByRole("button", {
+    name: "Open Keyboard Shortcuts",
+  });
+  if ((await openShortcutsBtn.count()) > 0) {
+    await openShortcutsBtn.click();
+    const dialog = page.getByRole("dialog", { name: /Keyboard Shortcuts/i });
+    await expect(dialog).toBeVisible();
+    const missingIds = await dialog.evaluate(
+      (el) =>
+        Array.from(el.querySelectorAll("input, select, textarea")).filter(
+          (field) => !field.getAttribute("id") && !field.getAttribute("name"),
+        ).length,
+    );
+    expect(missingIds).toBe(0);
+    await dialog.getByRole("button", { name: /Close/i }).click();
+  }
+
+  // 400%-zoom equivalent CSS viewport (320x200) keeps modals and panel overflow-free
+  await page.setViewportSize({ width: 320, height: 200 });
+  const dictBtn = page.getByRole("button", { name: /Dictionary/i });
+  await dictBtn.click();
+  const dictDialog = page.getByRole("dialog", { name: /Dictionary/i });
+  await expect(dictDialog).toBeVisible();
+  const dictBox = await dictDialog.boundingBox();
+  expect(dictBox!.width).toBeLessThanOrEqual(320);
+  const dictOverflow = await dictDialog.evaluate(
+    (el) => el.scrollWidth <= el.clientWidth + 1,
+  );
+  expect(dictOverflow).toBe(true);
+  await dictDialog.getByRole("button", { name: /close dictionary/i }).click();
+});
+
+test("reading guide and mask nudge arrows render outside the plugin panel and work when closed (#199)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByLabel("Accessibility", { exact: true }).click();
+
+  const panel = page.getByRole("region", { name: "Accessibility settings" });
+  await panel.getByRole("button", { name: "Reading Guide" }).click();
+  await expect(panel.getByText("Move Guide")).toHaveCount(0);
+
+  // Close panel so only external floating controls remain visible
+  await page.getByLabel("Close accessibility settings").click();
+  await expect(panel).not.toBeVisible();
+
+  const guide = page.locator(".arap-reading-guide");
+  await expect(guide).toBeVisible();
+  const topBefore = await guide.evaluate((el) => parseFloat(el.style.top));
+
+  const guideUp = page.getByRole("button", { name: "Move reading guide up" });
+  const guideDown = page.getByRole("button", {
+    name: "Move reading guide down",
+  });
+  await expect(guideUp).toBeVisible();
+  await expect(guideDown).toBeVisible();
+  const upBox = (await guideUp.boundingBox())!;
+  expect(upBox.width).toBeGreaterThanOrEqual(44);
+  expect(upBox.height).toBeGreaterThanOrEqual(44);
+
+  await guideDown.click();
+  const topAfterDown = await guide.evaluate((el) => parseFloat(el.style.top));
+  expect(topAfterDown).toBeGreaterThan(topBefore);
+
+  await guideUp.click();
+  const topAfterUp = await guide.evaluate((el) => parseFloat(el.style.top));
+  expect(topAfterUp).toBeLessThan(topAfterDown);
+
+  // Also verify Reading Mask external nudge arrows + internal height-only control
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await panel.getByRole("button", { name: "Reading Mask" }).click();
+  await expect(panel.getByText("Move Window")).toHaveCount(0);
+  await expect(panel.getByText("Window Height")).toBeVisible();
+  await page.getByLabel("Close accessibility settings").click();
+
+  const maskDown = page.getByRole("button", { name: "Move reading mask down" });
+  await expect(maskDown).toBeVisible();
 });
