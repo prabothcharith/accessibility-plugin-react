@@ -300,5 +300,48 @@ describe("A11Y-409: Host-Content Translation Adapter Architecture", () => {
       session.restore();
       expect(p.textContent).toBe("Accessible web application");
     });
+
+    it("excludes [data-arap-ui], .arap-root, select/option elements, normalizes BCP-47 tags, and translates offline Sinhala phrases", async () => {
+      const widgetRoot = document.createElement("div");
+      widgetRoot.setAttribute("data-arap-ui", "");
+      widgetRoot.className = "arap-root";
+      widgetRoot.innerHTML = `<button>Target UI Button</button>`;
+
+      const selectEl = document.createElement("select");
+      const optEl = document.createElement("option");
+      optEl.value = "si";
+      optEl.textContent = "Sinhala Option";
+      selectEl.appendChild(optEl);
+
+      const hostHeading = document.createElement("h1");
+      hostHeading.textContent = "Accessibility Plugin React";
+
+      document.body.append(widgetRoot, selectEl, hostHeading);
+
+      expect(isSensitiveElement(widgetRoot.firstElementChild!)).toBe(true);
+      expect(isSensitiveElement(optEl)).toBe(true);
+
+      const adapter = createOfflineMockTranslationAdapter({ latencyMs: 0 });
+      const consentRecord: TranslationConsentRecord = {
+        status: "granted",
+        userAcknowledgedRisks: true,
+      };
+
+      const session = await translateHostContent({
+        rootElement: document.body,
+        provider: adapter,
+        targetLanguage: "si-LK",
+        consentRecord,
+      });
+
+      expect(session.active).toBe(true);
+      expect(widgetRoot.textContent).toBe("Target UI Button");
+      expect(optEl.textContent).toBe("Sinhala Option");
+      expect(hostHeading.textContent).toContain("[TR]");
+      expect(hostHeading.textContent).toMatch(/[\u0D80-\u0DFF]/);
+
+      session.restore();
+      expect(hostHeading.textContent).toBe("Accessibility Plugin React");
+    });
   });
 });

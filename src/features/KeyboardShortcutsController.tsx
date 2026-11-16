@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useRef,
-  useContext,
-  useId,
-  type ReactNode,
-  useSyncExternalStore,
-} from "react";
-import { createPortal } from "react-dom";
+import { useState, useEffect, useRef, useContext, useId } from "react";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { ModalDialog } from "../core/controls/ModalDialog";
 import { resolveLocaleStrings } from "../core/i18n";
 import { useAccessibility } from "../core/useAccessibility";
 import {
@@ -28,8 +20,6 @@ export interface KeyboardShortcutsControllerProps {
   label?: string;
   description?: string;
 }
-
-const emptySubscribe = () => () => {};
 
 export function KeyboardShortcutsController({
   className = "",
@@ -55,16 +45,10 @@ export function KeyboardShortcutsController({
   const [isError, setIsError] = useState(false);
 
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
   const remapInputRef = useRef<HTMLInputElement>(null);
-  const previousActiveElement = useRef<HTMLElement | null>(null);
-
-  const titleId = useId();
-  const isClient = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
+  const enabledCheckboxId = useId();
+  const searchInputId = useId();
+  const remapInputId = useId();
 
   const controllerLabel =
     label ?? strings.shortcutsTitle ?? "Keyboard Shortcuts";
@@ -76,10 +60,6 @@ export function KeyboardShortcutsController({
   const closeLabel = strings.shortcutsClose ?? "Close Keyboard Shortcuts";
 
   const handleOpen = () => {
-    if (typeof document !== "undefined") {
-      previousActiveElement.current =
-        document.activeElement as HTMLElement | null;
-    }
     setStatusMessage(null);
     setRemapTargetId(null);
     setIsOpen(true);
@@ -89,64 +69,7 @@ export function KeyboardShortcutsController({
     setIsOpen(false);
     setRemapTargetId(null);
     setStatusMessage(null);
-    if (previousActiveElement.current) {
-      previousActiveElement.current.focus();
-    } else {
-      triggerRef.current?.focus();
-    }
   };
-
-  const handleCloseRef = useRef(handleClose);
-  useEffect(() => {
-    handleCloseRef.current = handleClose;
-  });
-
-  // Focus management and Escape key in dialog
-  useEffect(() => {
-    if (!isOpen || !dialogRef.current) return;
-
-    dialogRef.current.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.stopPropagation();
-        if (remapTargetId) {
-          setRemapTargetId(null);
-          setStatusMessage("Remapping cancelled.");
-          setIsError(false);
-        } else {
-          handleCloseRef.current();
-        }
-        return;
-      }
-
-      if (event.key === "Tab") {
-        const dialog = dialogRef.current;
-        if (!dialog) return;
-
-        const focusable = dialog.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown, { capture: true });
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown, { capture: true });
-    };
-  }, [isOpen, remapTargetId]);
 
   // Focus remap input when remap mode activates
   useEffect(() => {
@@ -297,241 +220,6 @@ export function KeyboardShortcutsController({
     { id: "tools", label: "Tools" },
   ];
 
-  const dialogPortal: ReactNode =
-    isClient && isOpen && typeof document !== "undefined"
-      ? createPortal(
-          <div
-            className="arap-shortcuts-backdrop"
-            data-arap-ui=""
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                handleClose();
-              }
-            }}
-          >
-            <div
-              ref={dialogRef}
-              className="arap-shortcuts-dialog"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              tabIndex={-1}
-            >
-              <div className="arap-shortcuts-header">
-                <div>
-                  <h2 id={titleId} className="arap-shortcuts-title">
-                    <FeatureIcon name="keyboardShortcuts" />
-                    <span>{controllerLabel}</span>
-                  </h2>
-                  <p className="arap-shortcuts-subtitle">
-                    {controllerDescription}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="arap-shortcuts-close-btn"
-                  onClick={handleClose}
-                  aria-label={closeLabel}
-                >
-                  ×
-                </button>
-              </div>
-
-              {/* Global shortcut toggle switch */}
-              <div className="arap-shortcuts-global-toggle">
-                <label className="arap-shortcuts-toggle-label">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(shortcutsEnabled)}
-                    onChange={(e) => setShortcutsEnabled(e.target.checked)}
-                    className="arap-checkbox"
-                  />
-                  <span>
-                    <strong>
-                      {strings.shortcutsEnabledLabel ??
-                        "Enable Global Keyboard Shortcuts"}
-                    </strong>
-                    <span className="arap-shortcuts-toggle-desc">
-                      Allows triggering accessibility tools with keyboard keys
-                      from anywhere on the page
-                    </span>
-                  </span>
-                </label>
-              </div>
-
-              {/* Filter controls */}
-              <div className="arap-shortcuts-toolbar">
-                <div
-                  className="arap-shortcuts-categories"
-                  role="tablist"
-                  aria-label="Shortcut categories"
-                >
-                  {categories.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeCategory === c.id}
-                      className={`arap-category-pill ${activeCategory === c.id ? "arap-category-pill-active" : ""}`}
-                      onClick={() => setActiveCategory(c.id)}
-                    >
-                      {c.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="arap-shortcuts-search">
-                  <input
-                    type="search"
-                    className="arap-search-input"
-                    placeholder={
-                      strings.shortcutsSearchPlaceholder ??
-                      "Filter shortcuts..."
-                    }
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    aria-label="Filter shortcuts"
-                  />
-                </div>
-              </div>
-
-              {/* Status announcement */}
-              {statusMessage && (
-                <div
-                  className={`arap-shortcuts-status ${isError ? "arap-shortcuts-status-error" : ""}`}
-                  role="status"
-                  aria-live="polite"
-                >
-                  {statusMessage}
-                </div>
-              )}
-
-              {/* Remap Active Input Card */}
-              {remapTargetId && (
-                <div className="arap-shortcuts-remap-card">
-                  <div className="arap-shortcuts-remap-header">
-                    <strong>
-                      Remapping:{" "}
-                      {stringMap[
-                        DEFAULT_SHORTCUTS.find((s) => s.id === remapTargetId)
-                          ?.labelKey || ""
-                      ] ?? remapTargetId}
-                    </strong>
-                    <button
-                      type="button"
-                      className="arap-btn-link"
-                      onClick={() => setRemapTargetId(null)}
-                    >
-                      {strings.shortcutsCancel ?? "Cancel"}
-                    </button>
-                  </div>
-                  <input
-                    ref={remapInputRef}
-                    type="text"
-                    className="arap-remap-input"
-                    value={
-                      remapDraft || "Press combination (e.g. Alt+Shift+Z)..."
-                    }
-                    readOnly
-                    onKeyDown={handleRemapKeyDown}
-                    aria-label="Press key combination to remap"
-                  />
-                  <small className="arap-shortcuts-remap-help">
-                    Press your new combination or Escape to cancel. Reserved
-                    browser keys (e.g. Ctrl+U, Ctrl+R) are protected.
-                  </small>
-                </div>
-              )}
-
-              {/* Shortcuts List */}
-              <div className="arap-shortcuts-list-container">
-                {filteredShortcuts.length === 0 ? (
-                  <div className="arap-navigator-empty" role="status">
-                    No shortcuts match your search.
-                  </div>
-                ) : (
-                  <ul className="arap-shortcuts-list" role="list">
-                    {filteredShortcuts.map((shortcut) => {
-                      const activeKey = resolveActiveShortcut(
-                        shortcut.id,
-                        customShortcuts,
-                      );
-                      const keyParts = activeKey.split("+");
-                      const isCustom = Boolean(customShortcuts?.[shortcut.id]);
-
-                      return (
-                        <li key={shortcut.id} className="arap-shortcut-item">
-                          <div className="arap-shortcut-info">
-                            <span className="arap-shortcut-label">
-                              {stringMap[shortcut.labelKey] ?? shortcut.id}
-                              {isCustom && (
-                                <span
-                                  className="arap-badge-custom"
-                                  title="Custom remapped shortcut"
-                                >
-                                  Custom
-                                </span>
-                              )}
-                            </span>
-                            <span className="arap-shortcut-desc">
-                              {stringMap[shortcut.descriptionKey] ?? ""}
-                            </span>
-                          </div>
-
-                          <div className="arap-shortcut-actions">
-                            <div
-                              className="arap-shortcut-keys"
-                              aria-label={`Current key: ${activeKey}`}
-                            >
-                              {keyParts.map((kp, idx) => (
-                                <span key={idx}>
-                                  <kbd className="arap-kbd">{kp}</kbd>
-                                  {idx < keyParts.length - 1 && " + "}
-                                </span>
-                              ))}
-                            </div>
-
-                            {shortcut.allowRemap && (
-                              <button
-                                type="button"
-                                className="arap-btn-sm"
-                                onClick={() => handleStartRemap(shortcut)}
-                                aria-label={`Remap ${stringMap[shortcut.labelKey] ?? shortcut.id}`}
-                              >
-                                {strings.shortcutsRemap ?? "Remap"}
-                              </button>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-
-              {/* Footer */}
-              <div className="arap-shortcuts-footer">
-                <button
-                  type="button"
-                  className="arap-btn-secondary"
-                  onClick={handleResetShortcuts}
-                >
-                  {strings.shortcutsReset ?? "Reset to Defaults"}
-                </button>
-                <button
-                  type="button"
-                  className="arap-btn-primary"
-                  onClick={handleClose}
-                >
-                  {closeLabel}
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )
-      : null;
-
   return (
     <>
       <div
@@ -539,36 +227,242 @@ export function KeyboardShortcutsController({
         role="group"
         aria-label={controllerLabel}
       >
-        <span className="arap-label">
-          <FeatureIcon name="keyboardShortcuts" />
-          <span>
-            <span style={{ display: "block" }}>{controllerLabel}</span>
-            <span
-              style={{
-                display: "block",
-                fontSize: "11px",
-                fontWeight: 400,
-                color: "var(--arap-muted, #64748b)",
-                marginTop: "1px",
-              }}
-            >
-              {controllerDescription}
+        <div className="arap-feature-row-between">
+          <span className="arap-label">
+            <FeatureIcon name="keyboardShortcuts" />
+            <span>
+              <span className="arap-label-title">{controllerLabel}</span>
+              <span className="arap-label-sub">{controllerDescription}</span>
             </span>
           </span>
-        </span>
-        <button
-          ref={triggerRef}
-          type="button"
-          className="arap-btn-sm"
-          onClick={handleOpen}
-          aria-expanded={isOpen}
-          aria-label={openLabel}
-        >
-          {openLabel}
-        </button>
+          <button
+            ref={triggerRef}
+            type="button"
+            className="arap-btn-secondary arap-btn-compact"
+            onClick={handleOpen}
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            aria-label={openLabel}
+          >
+            {isOpen ? "Close" : "Open"}
+          </button>
+        </div>
       </div>
 
-      {dialogPortal}
+      <ModalDialog
+        isOpen={isOpen}
+        onClose={handleClose}
+        id="arap-shortcuts-dialog"
+        title={controllerLabel}
+        subtitle={controllerDescription}
+        icon={<FeatureIcon name="keyboardShortcuts" />}
+        closeLabel={closeLabel}
+        size="full"
+        lockScroll={false}
+        disableEscapeClose={Boolean(remapTargetId)}
+        returnFocusTo={triggerRef}
+        footer={
+          <div className="arap-shortcuts-footer">
+            <button
+              type="button"
+              className="arap-btn-secondary"
+              onClick={handleResetShortcuts}
+            >
+              {strings.shortcutsReset ?? "Reset to Defaults"}
+            </button>
+          </div>
+        }
+      >
+        <div className="arap-shortcuts-dialog-body">
+          {/* Global shortcut toggle switch */}
+          <div className="arap-shortcuts-global-toggle">
+            <label
+              htmlFor={enabledCheckboxId}
+              className="arap-shortcuts-toggle-label"
+            >
+              <input
+                id={enabledCheckboxId}
+                name="arap-shortcuts-enabled"
+                type="checkbox"
+                checked={Boolean(shortcutsEnabled)}
+                onChange={(e) => setShortcutsEnabled(e.target.checked)}
+                className="arap-checkbox"
+              />
+              <span>
+                <strong>
+                  {strings.shortcutsEnabledLabel ??
+                    "Enable Global Keyboard Shortcuts"}
+                </strong>
+                <span className="arap-shortcuts-toggle-desc">
+                  Allows triggering accessibility tools with keyboard keys from
+                  anywhere on the page
+                </span>
+              </span>
+            </label>
+          </div>
+
+          {/* Filter controls */}
+          <div className="arap-shortcuts-toolbar">
+            <div
+              className="arap-shortcuts-categories"
+              role="tablist"
+              aria-label="Shortcut categories"
+            >
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeCategory === c.id}
+                  className={`arap-category-pill ${activeCategory === c.id ? "arap-category-pill-active" : ""}`}
+                  onClick={() => setActiveCategory(c.id)}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="arap-shortcuts-search">
+              <input
+                id={searchInputId}
+                name="arap-shortcuts-search"
+                type="search"
+                className="arap-search-input"
+                placeholder={
+                  strings.shortcutsSearchPlaceholder ?? "Filter shortcuts..."
+                }
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label="Filter shortcuts"
+              />
+              {search && (
+                <button
+                  type="button"
+                  className="arap-search-clear"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear shortcut filter"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Status announcement */}
+          {statusMessage && (
+            <div
+              className={`arap-shortcuts-status ${isError ? "arap-shortcuts-status-error" : ""}`}
+              role="status"
+              aria-live="polite"
+            >
+              {statusMessage}
+            </div>
+          )}
+
+          {/* Remap Active Input Card */}
+          {remapTargetId && (
+            <div className="arap-shortcuts-remap-card">
+              <div className="arap-shortcuts-remap-header">
+                <strong>
+                  Remapping:{" "}
+                  {stringMap[
+                    DEFAULT_SHORTCUTS.find((s) => s.id === remapTargetId)
+                      ?.labelKey || ""
+                  ] ?? remapTargetId}
+                </strong>
+                <button
+                  type="button"
+                  className="arap-btn-ghost arap-btn-compact"
+                  onClick={() => setRemapTargetId(null)}
+                >
+                  {strings.shortcutsCancel ?? "Cancel"}
+                </button>
+              </div>
+              <input
+                ref={remapInputRef}
+                id={remapInputId}
+                name="arap-shortcuts-remap"
+                type="text"
+                className="arap-remap-input"
+                value={remapDraft || "Press combination (e.g. Alt+Shift+Z)..."}
+                readOnly
+                onKeyDown={handleRemapKeyDown}
+                aria-label="Press key combination to remap"
+              />
+              <small className="arap-shortcuts-remap-help">
+                Press your new combination or Escape to cancel. Reserved browser
+                keys (e.g. Ctrl+U, Ctrl+R) are protected.
+              </small>
+            </div>
+          )}
+
+          {/* Shortcuts List */}
+          <div className="arap-shortcuts-list-container">
+            {filteredShortcuts.length === 0 ? (
+              <div className="arap-navigator-empty" role="status">
+                No shortcuts match your search.
+              </div>
+            ) : (
+              <ul className="arap-shortcuts-list" role="list">
+                {filteredShortcuts.map((shortcut) => {
+                  const activeKey = resolveActiveShortcut(
+                    shortcut.id,
+                    customShortcuts,
+                  );
+                  const keyParts = activeKey.split("+");
+                  const isCustom = Boolean(customShortcuts?.[shortcut.id]);
+
+                  return (
+                    <li key={shortcut.id} className="arap-shortcut-item">
+                      <div className="arap-shortcut-info">
+                        <span className="arap-shortcut-label">
+                          {stringMap[shortcut.labelKey] ?? shortcut.id}
+                          {isCustom && (
+                            <span
+                              className="arap-badge-custom"
+                              title="Custom remapped shortcut"
+                            >
+                              Custom
+                            </span>
+                          )}
+                        </span>
+                        <span className="arap-shortcut-desc">
+                          {stringMap[shortcut.descriptionKey] ?? ""}
+                        </span>
+                      </div>
+
+                      <div className="arap-shortcut-actions">
+                        <div
+                          className="arap-shortcut-keys"
+                          aria-label={`Current key: ${activeKey}`}
+                        >
+                          {keyParts.map((kp, idx) => (
+                            <span key={idx}>
+                              <kbd className="arap-kbd">{kp}</kbd>
+                              {idx < keyParts.length - 1 && " + "}
+                            </span>
+                          ))}
+                        </div>
+
+                        {shortcut.allowRemap && (
+                          <button
+                            type="button"
+                            className="arap-btn-secondary arap-btn-compact"
+                            onClick={() => handleStartRemap(shortcut)}
+                            aria-label={`Remap ${stringMap[shortcut.labelKey] ?? shortcut.id}`}
+                          >
+                            {strings.shortcutsRemap ?? "Remap"}
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      </ModalDialog>
     </>
   );
 }

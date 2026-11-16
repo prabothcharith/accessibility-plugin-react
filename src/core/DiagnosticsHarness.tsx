@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { AccessibilityContext } from "./AccessibilityContext";
 import {
   type DiagnosticIssue,
   type DiagnosticsConfig,
@@ -30,6 +31,7 @@ export function DiagnosticsHarness({
     process.env &&
     process.env.NODE_ENV === "production";
 
+  const ctx = useContext(AccessibilityContext);
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [report, setReport] = useState<DiagnosticsReport | null>(() => {
@@ -90,6 +92,8 @@ export function DiagnosticsHarness({
     <div
       className={`arap-diagnostics-harness arap-root ${className}`.trim()}
       data-arap-diagnostics
+      data-arap-ui=""
+      data-arap-font={ctx?.activeFont ?? "default"}
     >
       {!isOpen ? (
         <button

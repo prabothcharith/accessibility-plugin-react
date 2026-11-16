@@ -300,6 +300,8 @@ export {
   EmptyState,
   ErrorState,
   ProfilePreviewCard,
+  ModalDialog,
+  FeatureGroup,
 } from "./core/controls";
 export type {
   ToggleControlProps,
@@ -313,6 +315,8 @@ export type {
   EmptyStateProps,
   ErrorStateProps,
   ProfilePreviewCardProps,
+  ModalDialogProps,
+  FeatureGroupProps,
 } from "./core/controls";
 
 // Menu Customization & Reordering (A11Y-404)

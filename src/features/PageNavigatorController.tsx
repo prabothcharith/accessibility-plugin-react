@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useId } from "react";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { ModalDialog } from "../core/controls/ModalDialog";
 import {
   scanHeadings,
   scanLandmarks,
@@ -40,6 +41,9 @@ export function PageNavigatorController({
   const [landmarks, setLandmarks] = useState<LandmarkItem[]>([]);
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [search, setSearch] = useState("");
+  const [activeNavKey, setActiveNavKey] = useState<string | null>(null);
+  const [navStatus, setNavStatus] = useState("");
+  const searchInputId = useId();
 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -52,6 +56,7 @@ export function PageNavigatorController({
 
   const handleOpen = () => {
     refreshStructure();
+    setNavStatus("");
     setIsOpen(true);
   };
 
@@ -66,14 +71,13 @@ export function PageNavigatorController({
     return subscribePageStructure(refreshStructure);
   }, [isOpen, refreshStructure]);
 
-  // Focus management when opening dialog
-  useEffect(() => {
-    if (isOpen) {
-      dialogRef.current?.focus();
-    }
-  }, [isOpen]);
-
-  const handleNavigate = (element: HTMLElement) => {
+  const handleNavigate = (
+    element: HTMLElement,
+    navKey: string,
+    announceText: string,
+  ) => {
+    setActiveNavKey(navKey);
+    setNavStatus(`Navigated to ${announceText}`);
     navigateToElement(element, {
       onComplete: () => {
         if (closeOnNavigate) {
@@ -109,37 +113,21 @@ export function PageNavigatorController({
       role="group"
       aria-label={label}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
+      <div className="arap-feature-row-between">
         <span className="arap-label">
           <FeatureIcon name="pageNavigator" />
           <span>
-            <span style={{ display: "block" }}>{label}</span>
+            <span className="arap-label-title">{label}</span>
             {description && (
-              <span
-                style={{
-                  display: "block",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: "var(--arap-muted, #64748b)",
-                  marginTop: "1px",
-                }}
-              >
-                {description}
-              </span>
+              <span className="arap-label-sub">{description}</span>
             )}
           </span>
         </span>
         <button
           ref={triggerRef}
-          className="arap-btn-sm"
+          className="arap-btn-secondary arap-btn-compact"
           type="button"
+          aria-haspopup="dialog"
           aria-expanded={isOpen}
           aria-controls="arap-page-navigator-dialog"
           onClick={() => {
@@ -154,7 +142,21 @@ export function PageNavigatorController({
         </button>
       </div>
 
-      {isOpen && (
+      <ModalDialog
+        isOpen={isOpen}
+        onClose={handleClose}
+        id="arap-page-navigator-modal"
+        title={label}
+        subtitle={description}
+        icon={<FeatureIcon name="pageNavigator" />}
+        closeLabel="Close Page Navigator"
+        size="full"
+        trapFocus={false}
+        lockScroll={false}
+        ariaModal={false}
+        initialFocusRef={dialogRef}
+        returnFocusTo={triggerRef}
+      >
         <div
           ref={dialogRef}
           id="arap-page-navigator-dialog"
@@ -235,14 +237,36 @@ export function PageNavigatorController({
 
           <div className="arap-navigator-search-box">
             <input
+              id={searchInputId}
+              name="arap-navigator-filter"
               type="search"
-              className="arap-navigator-search"
+              className="arap-search-input arap-navigator-search"
               placeholder={`Filter ${activeTab}...`}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               aria-label={`Filter ${activeTab}`}
             />
+            {search && (
+              <button
+                type="button"
+                className="arap-search-clear"
+                onClick={() => setSearch("")}
+                aria-label={`Clear ${activeTab} filter`}
+              >
+                ×
+              </button>
+            )}
           </div>
+
+          {navStatus && (
+            <div
+              className="arap-navigator-status"
+              role="status"
+              aria-live="polite"
+            >
+              {navStatus}
+            </div>
+          )}
 
           <div className="arap-navigator-content">
             {activeTab === "headings" && (
@@ -259,28 +283,39 @@ export function PageNavigatorController({
                   </div>
                 ) : (
                   <ul className="arap-navigator-list" role="list">
-                    {filteredHeadings.map((h, i) => (
-                      <li key={`${h.id}-${i}`} className="arap-navigator-item">
-                        <button
-                          type="button"
-                          className="arap-navigator-jump-btn"
-                          style={{
-                            paddingLeft: `${Math.max(8, (h.level - 1) * 12 + 8)}px`,
-                          }}
-                          onClick={() => handleNavigate(h.element)}
-                        >
-                          <span
-                            className="arap-navigator-badge arap-navigator-badge-h"
-                            aria-hidden="true"
+                    {filteredHeadings.map((h, i) => {
+                      const navKey = `h-${h.id}-${i}`;
+                      const isActive = activeNavKey === navKey;
+                      return (
+                        <li key={navKey} className="arap-navigator-item">
+                          <button
+                            type="button"
+                            className={`arap-navigator-jump-btn ${isActive ? "arap-is-active" : ""}`}
+                            aria-current={isActive ? "location" : undefined}
+                            style={{
+                              paddingLeft: `${Math.max(12, (h.level - 1) * 14 + 12)}px`,
+                            }}
+                            onClick={() =>
+                              handleNavigate(
+                                h.element,
+                                navKey,
+                                `H${h.level}: ${h.text}`,
+                              )
+                            }
                           >
-                            H{h.level}
-                          </span>
-                          <span className="arap-navigator-item-text">
-                            {h.text}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
+                            <span
+                              className="arap-navigator-badge arap-navigator-badge-h"
+                              aria-hidden="true"
+                            >
+                              H{h.level}
+                            </span>
+                            <span className="arap-navigator-item-text">
+                              {h.text}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>
@@ -300,25 +335,36 @@ export function PageNavigatorController({
                   </div>
                 ) : (
                   <ul className="arap-navigator-list" role="list">
-                    {filteredLandmarks.map((l, i) => (
-                      <li key={`${l.id}-${i}`} className="arap-navigator-item">
-                        <button
-                          type="button"
-                          className="arap-navigator-jump-btn"
-                          onClick={() => handleNavigate(l.element)}
-                        >
-                          <span
-                            className="arap-navigator-badge arap-navigator-badge-l"
-                            aria-hidden="true"
+                    {filteredLandmarks.map((l, i) => {
+                      const navKey = `l-${l.id}-${i}`;
+                      const isActive = activeNavKey === navKey;
+                      return (
+                        <li key={navKey} className="arap-navigator-item">
+                          <button
+                            type="button"
+                            className={`arap-navigator-jump-btn ${isActive ? "arap-is-active" : ""}`}
+                            aria-current={isActive ? "location" : undefined}
+                            onClick={() =>
+                              handleNavigate(
+                                l.element,
+                                navKey,
+                                `${l.type} landmark: ${l.label}`,
+                              )
+                            }
                           >
-                            {l.type.toUpperCase()}
-                          </span>
-                          <span className="arap-navigator-item-text">
-                            {l.label}
-                          </span>
-                        </button>
-                      </li>
-                    ))}
+                            <span
+                              className="arap-navigator-badge arap-navigator-badge-l"
+                              aria-hidden="true"
+                            >
+                              {l.type.toUpperCase()}
+                            </span>
+                            <span className="arap-navigator-item-text">
+                              {l.label}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>
@@ -338,53 +384,61 @@ export function PageNavigatorController({
                   </div>
                 ) : (
                   <ul className="arap-navigator-list" role="list">
-                    {filteredLinks.map((lnk, i) => (
-                      <li
-                        key={`${lnk.id}-${i}`}
-                        className="arap-navigator-item"
-                      >
-                        <button
-                          type="button"
-                          className="arap-navigator-jump-btn"
-                          onClick={() => handleNavigate(lnk.element)}
-                        >
-                          <span
-                            className={`arap-navigator-badge ${lnk.isExternal ? "arap-navigator-badge-ext" : "arap-navigator-badge-link"}`}
-                            aria-hidden="true"
+                    {filteredLinks.map((lnk, i) => {
+                      const navKey = `lnk-${lnk.id}-${i}`;
+                      const isActive = activeNavKey === navKey;
+                      return (
+                        <li key={navKey} className="arap-navigator-item">
+                          <button
+                            type="button"
+                            className={`arap-navigator-jump-btn ${isActive ? "arap-is-active" : ""}`}
+                            aria-current={isActive ? "location" : undefined}
+                            onClick={() =>
+                              handleNavigate(
+                                lnk.element,
+                                navKey,
+                                `link: ${lnk.text}`,
+                              )
+                            }
                           >
-                            {lnk.isExternal
-                              ? "EXT"
-                              : lnk.isHash
-                                ? "ANCHOR"
-                                : "LINK"}
-                          </span>
-                          <span className="arap-navigator-item-text">
-                            <span>{lnk.text}</span>
-                            {lnk.isAmbiguous && (
-                              <span
-                                className="arap-navigator-badge arap-navigator-badge-warning"
-                                title="Uninformative link text (e.g. 'click here')"
-                              >
-                                Ambiguous
-                              </span>
-                            )}
                             <span
-                              className="arap-navigator-subtext"
+                              className={`arap-navigator-badge ${lnk.isExternal ? "arap-navigator-badge-ext" : "arap-navigator-badge-link"}`}
                               aria-hidden="true"
                             >
-                              {lnk.href}
+                              {lnk.isExternal
+                                ? "EXT"
+                                : lnk.isHash
+                                  ? "ANCHOR"
+                                  : "LINK"}
                             </span>
-                          </span>
-                        </button>
-                      </li>
-                    ))}
+                            <span className="arap-navigator-item-text">
+                              <span>{lnk.text}</span>
+                              {lnk.isAmbiguous && (
+                                <span
+                                  className="arap-navigator-badge arap-navigator-badge-warning"
+                                  title="Uninformative link text (e.g. 'click here')"
+                                >
+                                  Ambiguous
+                                </span>
+                              )}
+                              <span
+                                className="arap-navigator-subtext"
+                                aria-hidden="true"
+                              >
+                                {lnk.href}
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>
             )}
           </div>
         </div>
-      )}
+      </ModalDialog>
     </div>
   );
 }

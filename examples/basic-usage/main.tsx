@@ -4,7 +4,7 @@ import {
   AccessibilityPlugin,
   AccessibilityButton,
   AccessibilityList,
-  TextScaleController,
+  FeatureGroup,
   FontSizeController,
   LineHeightController,
   LetterSpacingController,
@@ -12,11 +12,9 @@ import {
   ParagraphSpacingController,
   FontFamilyController,
   TextAlignController,
-  ContrastController,
   ContrastModeController,
   SaturationController,
   InvertColorsController,
-  GrayscaleController,
   LinkHighlightController,
   HighlightFocusController,
   ReduceMotionController,
@@ -39,6 +37,18 @@ import {
   ResetController,
 } from "accessibility-plugin-react";
 
+const DECORATIVE_BANNER_SVG =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="90" viewBox="0 0 320 90"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0%" stop-color="#dbeafe"/><stop offset="100%" stop-color="#ede9fe"/></linearGradient></defs><rect width="320" height="90" rx="12" fill="url(#g)"/><circle cx="48" cy="45" r="22" fill="#93c5fd" opacity="0.7"/><circle cx="110" cy="45" r="14" fill="#c4b5fd" opacity="0.8"/><text x="148" y="50" font-family="sans-serif" font-size="14" fill="#1e3a8a">Decorative divider pattern</text></svg>',
+  );
+
+const INFORMATIVE_DIAGRAM_SVG =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="90" viewBox="0 0 320 90"><rect width="320" height="90" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><rect x="20" y="23" width="96" height="44" rx="8" fill="#1d4ed8"/><text x="68" y="50" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff">44px Min</text><text x="140" y="42" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Target Contrast 7.2:1</text><text x="140" y="60" font-family="sans-serif" font-size="12" fill="#475569">Informative graphic (preserved)</text></svg>',
+  );
+
 function App() {
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "article">(
@@ -60,38 +70,80 @@ function App() {
         description="Adjust display settings"
       />
       <AccessibilityList title="Accessibility preferences">
-        <ProfilesController />
-        <PresetsController />
-        <TextScaleController />
-        <FontSizeController />
-        <LineHeightController />
-        <LetterSpacingController />
-        <WordSpacingController />
-        <ParagraphSpacingController />
-        <FontFamilyController />
-        <TextAlignController />
-        <ContrastModeController />
-        <ContrastController />
-        <SmartContrastController />
-        <SaturationController />
-        <InvertColorsController />
-        <GrayscaleController />
-        <LinkHighlightController />
-        <HighlightFocusController />
-        <ReduceMotionController />
-        <TooltipsController />
-        <ReadingMaskController />
-        <ReadingGuideController />
-        <BigCursorController />
-        <HideImagesController />
-        <HideVideosController />
-        <PageNavigatorController />
-        <ReadingModeController />
-        <KeyboardShortcutsController />
-        <ReadAloudController />
-        <DictionaryController />
-        <VoiceNavigationController />
-        <TranslationController />
+        <FeatureGroup
+          id="grp-setup"
+          title="Quick Setup"
+          description="Profiles and saved configurations"
+        >
+          <ProfilesController />
+          <PresetsController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="grp-typography"
+          title="Text & Typography"
+          description="Font sizing, typeface, and spacing"
+        >
+          <FontSizeController />
+          <FontFamilyController />
+          <LineHeightController />
+          <LetterSpacingController />
+          <WordSpacingController />
+          <ParagraphSpacingController />
+          <TextAlignController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="grp-color"
+          title="Color & Contrast"
+          description="Contrast themes, saturation, and focus emphasis"
+        >
+          <ContrastModeController />
+          <SaturationController />
+          <InvertColorsController />
+          <LinkHighlightController />
+          <HighlightFocusController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="grp-reading"
+          title="Reading Aids & Media"
+          description="Focus guides, speech, motion, and media visibility"
+        >
+          <ReadingModeController />
+          <ReadAloudController />
+          <ReadingGuideController />
+          <ReadingMaskController />
+          <BigCursorController />
+          <TooltipsController />
+          <ReduceMotionController />
+          <HideImagesController />
+          <HideVideosController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="grp-tools"
+          title="Navigation & Tools"
+          description="Outline explorer, dictionary lookup, and keyboard shortcuts"
+        >
+          <PageNavigatorController />
+          <DictionaryController />
+          <KeyboardShortcutsController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="grp-experimental"
+          title="Experimental Prototypes"
+          description="Opt-in adaptive contrast, voice commands, and translation"
+          badge="Beta"
+          collapsible
+          defaultExpanded={false}
+        >
+          <SmartContrastController />
+          <VoiceNavigationController />
+          <TranslationController />
+        </FeatureGroup>
+
         <ResetController />
       </AccessibilityList>
 
@@ -144,7 +196,10 @@ function App() {
             </p>
             <div style={{ marginTop: "12px" }}>
               <input
+                id="host-protected-input"
+                name="host-protected-input"
                 type="text"
+                aria-label="Protected input field"
                 placeholder="Protected input field"
                 style={{
                   padding: "8px 12px",
@@ -155,24 +210,63 @@ function App() {
                 }}
               />
             </div>
-            <h2>Decorative Images</h2>
+            <h2>Decorative &amp; Informative Media</h2>
             <p>
-              Decorative images below are eligible to be hidden when the Hide
-              Images mode is activated:
+              Hide Images conceals purely decorative visuals below while keeping
+              informative diagrams visible. Hide Videos hides video players
+              while preserving layout space.
             </p>
-            <img
-              src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=300&q=80"
-              alt=""
+            <div
               style={{
-                borderRadius: "8px",
-                maxWidth: "100%",
-                height: "auto",
-                marginTop: "8px",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "12px",
+                marginTop: "10px",
               }}
-            />
+            >
+              <img
+                src={DECORATIVE_BANNER_SVG}
+                alt=""
+                width={320}
+                height={90}
+                data-decorative="true"
+                style={{
+                  borderRadius: "8px",
+                  maxWidth: "100%",
+                  height: "auto",
+                }}
+              />
+              <img
+                src={INFORMATIVE_DIAGRAM_SVG}
+                alt="Diagram showing 44px minimum target size and 7.2:1 contrast"
+                width={320}
+                height={90}
+                style={{
+                  borderRadius: "8px",
+                  maxWidth: "100%",
+                  height: "auto",
+                }}
+              />
+            </div>
+            <div style={{ marginTop: "14px" }}>
+              <video
+                controls
+                width={320}
+                height={180}
+                poster={DECORATIVE_BANNER_SVG}
+                aria-label="Sample product accessibility walkthrough video"
+                style={{
+                  borderRadius: "8px",
+                  maxWidth: "100%",
+                  background: "#0f172a",
+                }}
+              >
+                <track kind="captions" label="English captions" default />
+              </video>
+            </div>
           </div>
         ) : (
-          <div className="card">
+          <article className="card">
             <h1>Simulated Route: Long Article</h1>
             <p>
               This view simulates navigating to a reading-heavy page to test
@@ -191,7 +285,13 @@ function App() {
               how the container adjusts naturally without layout truncation or
               unintended scrollbars.
             </p>
-          </div>
+            <h2>Section 2: Semantic Landmarks &amp; Reading Mode</h2>
+            <p>
+              Semantic landmarks and structured headings allow Page Navigator
+              and Reading Mode to isolate primary prose cleanly even when
+              toggling between dark mode, custom typography, and live routes.
+            </p>
+          </article>
         )}
       </main>
     </AccessibilityPlugin>

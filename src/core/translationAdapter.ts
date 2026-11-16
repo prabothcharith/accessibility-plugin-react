@@ -156,10 +156,24 @@ export function isSensitiveElement(element: Element | null): boolean {
 
     // Widget UI elements (must not translate widget UI through host adapter)
     if (
+      curr.hasAttribute("data-arap-ui") ||
+      curr.hasAttribute("data-arap-diagnostics") ||
+      curr.classList.contains("arap-root") ||
       curr.hasAttribute("data-arap-portal") ||
       curr.hasAttribute("data-arap-widget") ||
       curr.classList.contains("arap-widget-container") ||
       curr.id === "arap-portal-root"
+    ) {
+      return true;
+    }
+
+    // Native selects and free-text form fields whose option labels/values should not mutate
+    if (
+      tag === "select" ||
+      tag === "option" ||
+      tag === "optgroup" ||
+      tag === "textarea" ||
+      tag === "datalist"
     ) {
       return true;
     }
@@ -301,8 +315,13 @@ export function applyTranslations(
     if (trans && item.node.isConnected) {
       const sanitized = sanitizeTranslationOutput(trans);
       if (sanitized) {
-        item.node.textContent = sanitized;
-        item.translatedText = sanitized;
+        const leading =
+          item.node.previousSibling && /^\s/.test(item.originalText) ? " " : "";
+        const trailing =
+          item.node.nextSibling && /\s$/.test(item.originalText) ? " " : "";
+        const finalText = `${leading}${sanitized}${trailing}`;
+        item.node.textContent = finalText;
+        item.translatedText = finalText;
         appliedList.push({ node: item.node, original: item.originalText });
       }
     }
@@ -321,6 +340,383 @@ export function applyTranslations(
   };
 }
 
+const OFFLINE_PHRASE_LEXICON: Record<string, Record<string, string>> = {
+  si: {
+    "skip to main content": "ප්‍රධාන අන්තර්ගතයට යන්න",
+    overview: "සමාලෝචනය",
+    about: "අප ගැන",
+    news: "පුවත්",
+    contact: "සම්බන්ධ වන්න",
+    home: "මුල් පිටුව",
+    "accessibility plugin react": "ප්‍රවේශ්‍යතා ප්ලගිනය (React)",
+    "welcome to the accessibility demo":
+      "ප්‍රවේශ්‍යතා ආදර්ශනයට සාදරයෙන් පිළිගනිමු",
+    "accessibility controls showcase": "ප්‍රවේශ්‍යතා පාලන ප්‍රදර්ශනය",
+    "hello accessibility": "ආයුබෝවන් ප්‍රවේශ්‍යතාව",
+    "sample content": "නියැදි අන්තර්ගතය",
+    "secondary section": "ද්විතීයික කොටස",
+    "read more": "තව කියවන්න",
+    "learn more": "තව දැනගන්න",
+    "example landscape": "නියැදි භූ දර්ශනය",
+    "decorative divider": "අලංකාර බෙදුම",
+  },
+  ta: {
+    "skip to main content": "முதன்மை உள்ளடக்கத்திற்குச் செல்லவும்",
+    overview: "கண்ணோட்டம்",
+    about: "எங்களைப் பற்றி",
+    news: "செய்திகள்",
+    contact: "தொடர்பு கொள்ள",
+    home: "முகப்பு",
+    "accessibility plugin react": "அணுகல்தன்மை செருகுநிரல் (React)",
+    "welcome to the accessibility demo":
+      "அணுகல்தன்மை செயல்முறைக்கு வரவேற்கிறோம்",
+    "accessibility controls showcase": "அணுகல்தன்மை கட்டுப்பாடுகள் காட்சி",
+    "hello accessibility": "வணக்கம் அணுகல்தன்மை",
+    "sample content": "மாதிரி உள்ளடக்கம்",
+    "secondary section": "இரண்டாம் பிரிவு",
+    "read more": "மேலும் படிக்கவும்",
+    "learn more": "மேலும் அறிய",
+  },
+  es: {
+    "skip to main content": "Saltar al contenido principal",
+    overview: "Resumen",
+    about: "Acerca de",
+    news: "Noticias",
+    contact: "Contacto",
+    home: "Inicio",
+    "accessibility plugin react": "Complemento de Accesibilidad React",
+    "welcome to the accessibility demo":
+      "Bienvenido a la demostración de accesibilidad",
+    "accessibility controls showcase":
+      "Exhibición de controles de accesibilidad",
+    "hello accessibility": "Hola Accesibilidad",
+    "sample content": "Contenido de ejemplo",
+    "secondary section": "Sección secundaria",
+    "read more": "Leer más",
+    "learn more": "Más información",
+  },
+  fr: {
+    "skip to main content": "Aller au contenu principal",
+    overview: "Aperçu",
+    about: "À propos",
+    news: "Actualités",
+    contact: "Contact",
+    home: "Accueil",
+    "accessibility plugin react": "Extension d'accessibilité React",
+    "welcome to the accessibility demo":
+      "Bienvenue dans la démonstration d'accessibilité",
+    "accessibility controls showcase":
+      "Présentation des contrôles d'accessibilité",
+    "hello accessibility": "Bonjour l'accessibilité",
+    "sample content": "Contenu d'exemple",
+    "secondary section": "Section secondaire",
+    "read more": "Lire la suite",
+    "learn more": "En savoir plus",
+  },
+  de: {
+    "skip to main content": "Zum Hauptinhalt springen",
+    overview: "Übersicht",
+    about: "Über uns",
+    news: "Neuigkeiten",
+    contact: "Kontakt",
+    home: "Startseite",
+    "accessibility plugin react": "Barrierefreiheits-Plugin React",
+    "welcome to the accessibility demo":
+      "Willkommen zur Barrierefreiheits-Demo",
+    "accessibility controls showcase":
+      "Präsentation der Barrierefreiheits-Steuerung",
+    "hello accessibility": "Hallo Barrierefreiheit",
+    "sample content": "Beispielinhalt",
+    "secondary section": "Sekundärer Abschnitt",
+    "read more": "Mehr lesen",
+    "learn more": "Mehr erfahren",
+  },
+  ja: {
+    "skip to main content": "メインコンテンツへスキップ",
+    overview: "概要",
+    about: "概要",
+    news: "ニュース",
+    contact: "お問い合わせ",
+    home: "ホーム",
+    "accessibility plugin react": "アクセシビリティプラグイン React",
+    "welcome to the accessibility demo": "アクセシビリティデモへようこそ",
+    "hello accessibility": "こんにちは アクセシビリティ",
+    "read more": "続きを読む",
+    "learn more": "詳細を見る",
+  },
+  zh: {
+    "skip to main content": "跳至主要内容",
+    overview: "概览",
+    about: "关于",
+    news: "新闻",
+    contact: "联系我们",
+    home: "首页",
+    "accessibility plugin react": "无障碍插件 React",
+    "welcome to the accessibility demo": "欢迎来到无障碍演示",
+    "hello accessibility": "你好，无障碍",
+    "read more": "阅读更多",
+    "learn more": "了解更多",
+  },
+};
+
+const OFFLINE_WORD_LEXICON: Record<string, Record<string, string>> = {
+  si: {
+    accessibility: "ප්‍රවේශ්‍යතාව",
+    accessible: "ප්‍රවේශ්‍ය",
+    article: "ලිපිය",
+    button: "බොත්තම",
+    close: "වසන්න",
+    color: "වර්ණය",
+    colors: "වර්ණ",
+    content: "අන්තර්ගතය",
+    contrast: "ප්‍රතිවිරෝධතාව",
+    control: "පාලනය",
+    controls: "පාලන",
+    custom: "අභිරුචි",
+    dark: "අඳුරු",
+    demo: "ආදර්ශනය",
+    design: "නිර්මාණය",
+    display: "දර්ශනය",
+    documentation: "ලේඛන",
+    example: "උදාහරණය",
+    feature: "විශේෂාංගය",
+    features: "විශේෂාංග",
+    focus: "අවධානය",
+    font: "අකුරු",
+    guide: "මාර්ගෝපදේශය",
+    heading: "ශීර්ෂය",
+    headings: "ශීර්ෂ",
+    help: "උදව්",
+    high: "ඉහළ",
+    image: "රූපය",
+    images: "රූප",
+    keyboard: "යතුරුපුවරුව",
+    language: "භාෂාව",
+    layout: "පිරිසැලසුම",
+    light: "ආලෝක",
+    link: "සබැඳිය",
+    links: "සබැඳි",
+    main: "ප්‍රධාන",
+    menu: "මෙනුව",
+    mode: "මාදිලිය",
+    motion: "චලනය",
+    navigation: "සංචාලනය",
+    page: "පිටුව",
+    paragraph: "ඡේදය",
+    plugin: "ප්ලගිනය",
+    preferences: "මනාපයන්",
+    profile: "පැතිකඩ",
+    reading: "කියවීම",
+    reset: "යළි පිහිටුවන්න",
+    sample: "නියැදි",
+    screen: "තිරය",
+    search: "සෙවීම",
+    section: "කොටස",
+    settings: "සැකසුම්",
+    size: "ප්‍රමාණය",
+    text: "පෙළ",
+    theme: "තේමාව",
+    tools: "මෙවලම්",
+    translation: "පරිවේශනය",
+    video: "වීඩියෝ",
+    videos: "වීඩියෝ",
+    voice: "හඬ",
+    welcome: "සාදරයෙන් පිළිගනිමු",
+  },
+  ta: {
+    accessibility: "அணுகல்தன்மை",
+    accessible: "அணுகக்கூடிய",
+    article: "கட்டுரை",
+    content: "உள்ளடக்கம்",
+    contrast: "மாறுபாடு",
+    controls: "கட்டுப்பாடுகள்",
+    demo: "செயல்முறை",
+    example: "உதாரணம்",
+    features: "அம்சங்கள்",
+    focus: "கவனம்",
+    font: "எழுத்துரு",
+    guide: "வழிகாட்டி",
+    heading: "தலைப்பு",
+    help: "உதவி",
+    high: "உயர்",
+    image: "படம்",
+    images: "படங்கள்",
+    keyboard: "விசைப்பலகை",
+    language: "மொழி",
+    light: "ஒளி",
+    links: "இணைப்புகள்",
+    main: "முதன்மை",
+    menu: "பட்டியல்",
+    mode: "பயன்முறை",
+    navigation: "வழிசெலுத்தல்",
+    page: "பக்கம்",
+    reading: "வாசிப்பு",
+    sample: "மாதிரி",
+    section: "பிரிவு",
+    settings: "அமைப்புகள்",
+    text: "உரை",
+    tools: "கருவிகள்",
+    video: "காணொளி",
+    voice: "குரல்",
+    welcome: "வரவேற்கிறோம்",
+  },
+  es: {
+    accessibility: "accesibilidad",
+    article: "artículo",
+    content: "contenido",
+    contrast: "contraste",
+    controls: "controles",
+    demo: "demostración",
+    example: "ejemplo",
+    features: "funciones",
+    focus: "enfoque",
+    font: "fuente",
+    guide: "guía",
+    heading: "encabezado",
+    help: "ayuda",
+    high: "alto",
+    image: "imagen",
+    images: "imágenes",
+    keyboard: "teclado",
+    language: "idioma",
+    light: "claro",
+    links: "enlaces",
+    main: "principal",
+    mode: "modo",
+    navigation: "navegación",
+    page: "página",
+    reading: "lectura",
+    sample: "ejemplo",
+    section: "sección",
+    settings: "ajustes",
+    text: "texto",
+    tools: "herramientas",
+    video: "vídeo",
+    voice: "voz",
+    welcome: "bienvenido",
+  },
+  fr: {
+    accessibility: "accessibilité",
+    article: "article",
+    content: "contenu",
+    contrast: "contraste",
+    controls: "contrôles",
+    demo: "démonstration",
+    example: "exemple",
+    features: "fonctionnalités",
+    focus: "focus",
+    font: "police",
+    guide: "guide",
+    heading: "titre",
+    help: "aide",
+    image: "image",
+    keyboard: "clavier",
+    language: "langue",
+    light: "clair",
+    links: "liens",
+    main: "principal",
+    mode: "mode",
+    navigation: "navigation",
+    page: "page",
+    reading: "lecture",
+    sample: "exemple",
+    section: "section",
+    settings: "paramètres",
+    text: "texte",
+    tools: "outils",
+    video: "vidéo",
+    voice: "voix",
+    welcome: "bienvenue",
+  },
+  de: {
+    accessibility: "Barrierefreiheit",
+    article: "Artikel",
+    content: "Inhalt",
+    contrast: "Kontrast",
+    controls: "Steuerung",
+    demo: "Demo",
+    example: "Beispiel",
+    features: "Funktionen",
+    focus: "Fokus",
+    font: "Schriftart",
+    guide: "Leitfaden",
+    heading: "Überschrift",
+    help: "Hilfe",
+    image: "Bild",
+    keyboard: "Tastatur",
+    language: "Sprache",
+    light: "hell",
+    links: "Links",
+    main: "Haupt",
+    mode: "Modus",
+    navigation: "Navigation",
+    page: "Seite",
+    reading: "Lesen",
+    sample: "Beispiel",
+    section: "Abschnitt",
+    settings: "Einstellungen",
+    text: "Text",
+    tools: "Werkzeuge",
+    video: "Video",
+    voice: "Sprache",
+    welcome: "Willkommen",
+  },
+  ja: {
+    accessibility: "アクセシビリティ",
+    article: "記事",
+    content: "コンテンツ",
+    contrast: "コントラスト",
+    demo: "デモ",
+    features: "機能",
+    help: "ヘルプ",
+    navigation: "ナビゲーション",
+    page: "ページ",
+    reading: "リーディング",
+    settings: "設定",
+    text: "テキスト",
+    welcome: "ようこそ",
+  },
+  zh: {
+    accessibility: "无障碍",
+    article: "文章",
+    content: "内容",
+    contrast: "对比度",
+    demo: "演示",
+    features: "功能",
+    help: "帮助",
+    navigation: "导航",
+    page: "页面",
+    reading: "阅读",
+    settings: "设置",
+    text: "文本",
+    welcome: "欢迎",
+  },
+};
+
+function translateOfflineText(raw: string, targetLanguage: string): string {
+  const baseLang = targetLanguage.trim().toLowerCase().split("-")[0];
+  const trimmed = raw.trim();
+  const lower = trimmed.toLowerCase().replace(/\s+/g, " ");
+  const phrases = OFFLINE_PHRASE_LEXICON[baseLang];
+  if (phrases && phrases[lower]) {
+    return phrases[lower];
+  }
+  const words = OFFLINE_WORD_LEXICON[baseLang];
+  if (!words) {
+    return trimmed;
+  }
+  let matchedCount = 0;
+  const converted = trimmed.replace(/\b([A-Za-z]+)\b/g, (word) => {
+    const replacement = words[word.toLowerCase()];
+    if (replacement) {
+      matchedCount += 1;
+      return replacement;
+    }
+    return word;
+  });
+  return matchedCount > 0 ? converted : trimmed;
+}
+
 /**
  * Creates an offline, mock translation adapter for development and testing.
  * Operates 100% locally with zero network requests.
@@ -331,6 +727,7 @@ export function createOfflineMockTranslationAdapter(options?: {
   supportedLanguages?: string[];
 }): TranslationAdapter {
   const latency = options?.latencyMs ?? 10;
+  const hasCustomPrefix = options?.prefix !== undefined;
   const prefix = options?.prefix ?? "[TR]";
   const supported = options?.supportedLanguages ?? [
     "es",
@@ -367,7 +764,9 @@ export function createOfflineMockTranslationAdapter(options?: {
 
       const translations: TranslatedItem[] = request.texts.map((t) => ({
         original: t,
-        translated: `${prefix} ${t}`,
+        translated: hasCustomPrefix
+          ? `${prefix} ${t}`
+          : `${prefix} ${translateOfflineText(t, request.targetLanguage)}`,
         detectedSourceLanguage: request.sourceLanguage || "en",
       }));
 
@@ -428,9 +827,14 @@ export async function translateHostContent(options: {
       ? await provider.supportedTargetLanguages()
       : provider.supportedTargetLanguages;
 
+  const normalizedTarget = targetLanguage.trim().toLowerCase();
+  const baseTarget = normalizedTarget.split("-")[0];
+  const supportedNormalized = supported.map((s) => s.trim().toLowerCase());
+
   if (
     supported.length > 0 &&
-    !supported.includes(targetLanguage.toLowerCase())
+    !supportedNormalized.includes(normalizedTarget) &&
+    !supportedNormalized.includes(baseTarget)
   ) {
     throw new TranslationError(
       TRANSLATION_ERROR_CODES.UNSUPPORTED_LANGUAGE,

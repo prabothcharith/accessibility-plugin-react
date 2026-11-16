@@ -345,7 +345,9 @@ describe("A11Y-301: Cursor enlargement, reading mask and reading guide", () => {
     it("allows adjusting mask window height via stepper buttons", () => {
       render(
         <TestFixture>
-          <ReadingMaskController minHeight={40} maxHeight={200} step={20} />
+          <div data-arap-ui="">
+            <ReadingMaskController minHeight={40} maxHeight={200} step={20} />
+          </div>
         </TestFixture>,
       );
 
@@ -469,6 +471,39 @@ describe("A11Y-301: Cursor enlargement, reading mask and reading guide", () => {
       fireEvent.click(screen.getByRole("button", { name: "Reset All" }));
       expect(document.querySelector(".arap-reading-guide")).toBeNull();
       expect(document.querySelector(".arap-reading-mask")).toBeNull();
+    });
+
+    it("ignores pointer events over [data-arap-ui], isolates geometry/z-index, and preserves mask Y position across height updates", () => {
+      render(
+        <TestFixture>
+          <div data-arap-ui="">
+            <ReadingMaskController minHeight={40} maxHeight={200} step={20} />
+          </div>
+        </TestFixture>,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: "Reading Mask" }));
+      const mask = document.querySelector(".arap-reading-mask") as HTMLElement;
+      expect(mask.style.zIndex).toBe("2147482000");
+      expect(mask.style.margin).toBe("0px");
+
+      // Move mask to clientY = 200 (halfHeight = 50 -> top = 150)
+      fireEvent.mouseMove(document, { clientY: 200 });
+      expect(parseInt(mask.style.top, 10)).toBe(150);
+
+      // Pointer event originating inside [data-arap-ui] must not yank mask position
+      const uiBtn = screen.getByRole("button", {
+        name: "Increase reading mask height",
+      });
+      fireEvent.mouseMove(uiBtn, { clientY: 420 });
+      expect(parseInt(mask.style.top, 10)).toBe(150);
+
+      // Increase height to 120px: Y=200 center stays preserved (200 - 60 = 140px)
+      fireEvent.click(uiBtn);
+      const updatedMask = document.querySelector(
+        ".arap-reading-mask",
+      ) as HTMLElement;
+      expect(parseInt(updatedMask.style.top, 10)).toBe(140);
     });
   });
 });

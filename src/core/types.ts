@@ -32,6 +32,7 @@ export interface AccessibilityContextValue {
   locale?: string;
   statementUrl?: string;
   largeControls?: boolean;
+  activeFont?: string;
   effectScope?: string | HTMLElement | { current: HTMLElement | null } | null;
   nonce?: string;
 }

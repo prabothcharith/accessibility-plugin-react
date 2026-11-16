@@ -16,6 +16,78 @@ export interface ProfilePreviewCardProps {
   style?: CSSProperties;
 }
 
+export function formatPreferenceKey(key: string): string {
+  switch (key) {
+    case "fontScale":
+    case "fontSize":
+      return "Font Size";
+    case "fontFamily":
+      return "Font Family";
+    case "lineHeight":
+      return "Line Height";
+    case "letterSpacing":
+      return "Letter Spacing";
+    case "wordSpacing":
+      return "Word Spacing";
+    case "paragraphSpacing":
+      return "Paragraph Spacing";
+    case "contrastMode":
+    case "contrast":
+      return "Contrast";
+    case "reduceMotion":
+      return "Reduce Motion";
+    case "textAlign":
+      return "Text Align";
+    case "highlightLinks":
+    case "linkHighlight":
+      return "Highlight Links";
+    case "highlightFocus":
+    case "focusOutline":
+      return "Focus Outline";
+    case "cursorSize":
+    case "bigCursor":
+      return "Big Cursor";
+    case "readerMode":
+    case "readingMode":
+      return "Reading Mode";
+    case "readingGuide":
+      return "Reading Guide";
+    case "readingMask":
+      return "Reading Mask";
+    case "saturation":
+      return "Saturation";
+    case "grayscale":
+      return "Grayscale";
+    case "hideDecorativeImages":
+    case "hideImages":
+      return "Hide Images";
+    case "hideVideos":
+      return "Hide Videos";
+    case "tooltips":
+    case "accessibleTooltips":
+      return "Tooltips";
+    default: {
+      const spaced = key.replace(/([A-Z])/g, " $1").trim();
+      return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+    }
+  }
+}
+
+export function formatPreferenceValue(
+  key: keyof AccessibilityPreferences,
+  val: unknown,
+): string {
+  if (typeof val === "boolean") return val ? "On" : "Off";
+  if (key === "fontScale" && typeof val === "number")
+    return `${Math.round(val * 100)}%`;
+  if (key === "lineHeight" && typeof val === "number")
+    return `${Math.round(val * 100)}%`;
+  if (val === null || val === undefined) return "Original";
+  const str = String(val);
+  if (str === "dyslexia-option" || str === "dyslexia") return "Dyslexia";
+  return str.includes("-") ? str.replace(/-/g, " ") : str;
+}
+
 export function ProfilePreviewCard({
   profile,
   isActive,
@@ -28,48 +100,6 @@ export function ProfilePreviewCard({
   const affectedKeys = Object.keys(
     profile.settings,
   ) as (keyof AccessibilityPreferences)[];
-
-  const formatKeyName = (key: string): string => {
-    switch (key) {
-      case "fontScale":
-        return "Font Size";
-      case "lineHeight":
-        return "Line Height";
-      case "contrastMode":
-        return "Contrast";
-      case "reduceMotion":
-        return "Reduce Motion";
-      case "textAlign":
-        return "Text Align";
-      case "highlightLinks":
-        return "Highlight Links";
-      case "highlightFocus":
-        return "Highlight Focus";
-      case "cursorSize":
-        return "Cursor Size";
-      case "readerMode":
-        return "Reading Mode";
-      case "saturation":
-        return "Saturation";
-      case "hideDecorativeImages":
-        return "Hide Images";
-      default:
-        return key.replace(/([A-Z])/g, " $1").trim();
-    }
-  };
-
-  const formatSettingValue = (
-    key: keyof AccessibilityPreferences,
-    val: unknown,
-  ): string => {
-    if (typeof val === "boolean") return val ? "On" : "Off";
-    if (key === "fontScale" && typeof val === "number")
-      return `${Math.round(val * 100)}%`;
-    if (key === "lineHeight" && typeof val === "number")
-      return `${Math.round(val * 100)}%`;
-    if (val === null || val === undefined) return "Original";
-    return String(val);
-  };
 
   return (
     <div
@@ -100,8 +130,8 @@ export function ProfilePreviewCard({
             const val = profile.settings[key];
             return (
               <span key={key} className="arap-profile-chip">
-                <strong>{formatKeyName(key)}:</strong>{" "}
-                {formatSettingValue(key, val)}
+                <strong>{formatPreferenceKey(key)}:</strong>{" "}
+                {formatPreferenceValue(key, val)}
               </span>
             );
           })}
@@ -112,7 +142,7 @@ export function ProfilePreviewCard({
         {isActive ? (
           <button
             type="button"
-            className="arap-profile-revert-btn"
+            className="arap-btn-secondary arap-profile-revert-btn"
             onClick={onRevert}
             aria-label={`Revert ${profile.label} profile`}
           >
@@ -121,7 +151,7 @@ export function ProfilePreviewCard({
         ) : (
           <button
             type="button"
-            className="arap-profile-apply-btn"
+            className="arap-btn-primary arap-profile-apply-btn"
             onClick={() => onApply(profile)}
             aria-label={`Apply ${profile.label} profile`}
           >

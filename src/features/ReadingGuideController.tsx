@@ -1,6 +1,7 @@
 "use client";
 
 import { FeatureIcon } from "../core/FeatureIcon";
+import { WidgetPortal } from "../core/WidgetPortal";
 import { useAccessibility } from "../core/useAccessibility";
 import { nudgeReadingAid } from "../core/effects";
 
@@ -28,79 +29,63 @@ export function ReadingGuideController({
   };
 
   return (
-    <div
-      className="arap-feature arap-feature-expandable"
-      role="group"
-      aria-label="Reading Guide"
-    >
-      <div
-        className="arap-feature-header"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <span className="arap-label">
-          <FeatureIcon name={FEATURE_KEY} />
-          <span>Reading Guide</span>
-        </span>
-        <button
-          className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
-          onClick={() => setValue(!value)}
-          aria-label="Reading Guide"
-          aria-pressed={value}
-          type="button"
-        >
-          <span className="arap-toggle-knob" aria-hidden="true" />
-        </button>
-      </div>
-
-      {value && (
+    <>
+      <div className="arap-feature" role="group" aria-label="Reading Guide">
         <div
-          className="arap-subcontrols"
+          className="arap-feature-header"
           style={{
-            marginTop: "8px",
-            paddingTop: "8px",
-            borderTop: "1px solid var(--arap-divider, #e5e7eb)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
           }}
         >
-          <span
-            style={{
-              fontSize: "0.85rem",
-              color: "var(--arap-muted, #4b5563)",
-            }}
-          >
-            Move Guide
+          <span className="arap-label">
+            <FeatureIcon name={FEATURE_KEY} />
+            <span>Reading Guide</span>
           </span>
-          <div className="arap-controls">
+          <button
+            className={`arap-toggle ${value ? "arap-toggle-active" : ""}`}
+            onClick={() => setValue(!value)}
+            aria-label="Reading Guide"
+            aria-pressed={value}
+            type="button"
+          >
+            <span className="arap-toggle-knob" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {value && (
+        <WidgetPortal>
+          <div
+            className="arap-reading-aid-nudge"
+            data-aid="guide"
+            role="region"
+            aria-label="Reading guide position"
+          >
             <button
-              className="arap-btn-sm"
+              className="arap-btn-secondary arap-reading-aid-nudge-btn"
               onClick={handleNudgeUp}
               aria-label="Move reading guide up"
-              title="Alt+Up Arrow"
+              title="Move reading guide up (Alt+Up Arrow)"
               type="button"
             >
               ↑
             </button>
             <button
-              className="arap-btn-sm"
+              className="arap-btn-secondary arap-reading-aid-nudge-btn"
               onClick={handleNudgeDown}
               aria-label="Move reading guide down"
-              title="Alt+Down Arrow"
+              title="Move reading guide down (Alt+Down Arrow)"
               type="button"
             >
               ↓
             </button>
           </div>
-        </div>
+        </WidgetPortal>
       )}
-    </div>
+    </>
   );
 }
 

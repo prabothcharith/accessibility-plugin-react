@@ -7,10 +7,9 @@ import {
   useId,
   useContext,
   useCallback,
-  useSyncExternalStore,
 } from "react";
-import { createPortal } from "react-dom";
 import { FeatureIcon } from "../core/FeatureIcon";
+import { WidgetPortal } from "../core/WidgetPortal";
 import { useAccessibility } from "../core/useAccessibility";
 import { AccessibilityContext } from "../core/AccessibilityContext";
 import { resolveLocaleStrings } from "../core/i18n";
@@ -22,15 +21,6 @@ import {
   ReadAloudSession,
   type ReadAloudState,
 } from "../core/readAloud";
-
-const emptySubscribe = () => () => {};
-function useMounted(): boolean {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false,
-  );
-}
 
 export interface ReadAloudControllerProps {
   className?: string;
@@ -78,7 +68,6 @@ export function ReadAloudController({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const sessionRef = useRef<ReadAloudSession | null>(null);
-  const mounted = useMounted();
   const titleId = useId();
   const voiceSelectId = useId();
 
@@ -268,7 +257,7 @@ export function ReadAloudController({
             {!isActive ? (
               <button
                 type="button"
-                className="arap-btn-action arap-read-aloud-play-btn"
+                className="arap-btn-primary arap-btn-action arap-read-aloud-play-btn"
                 onClick={handlePlay}
                 aria-label={
                   selectedText
@@ -286,7 +275,7 @@ export function ReadAloudController({
             ) : isPlaying ? (
               <button
                 type="button"
-                className="arap-btn-action arap-read-aloud-pause-btn"
+                className="arap-btn-primary arap-btn-action arap-read-aloud-pause-btn"
                 onClick={handlePause}
                 aria-label={strings.readAloudPause ?? "Pause reading"}
               >
@@ -296,7 +285,7 @@ export function ReadAloudController({
             ) : (
               <button
                 type="button"
-                className="arap-btn-action arap-read-aloud-resume-btn"
+                className="arap-btn-primary arap-btn-action arap-read-aloud-resume-btn"
                 onClick={handleResume}
                 aria-label={strings.readAloudResume ?? "Resume reading"}
               >
@@ -385,7 +374,7 @@ export function ReadAloudController({
               </label>
               <select
                 id={voiceSelectId}
-                className="arap-read-aloud-select"
+                className="arap-select arap-read-aloud-select"
                 value={voiceUri ?? ""}
                 onChange={(e) => setVoiceUri(e.target.value || null)}
               >
@@ -404,10 +393,8 @@ export function ReadAloudController({
       )}
 
       {/* Floating Read-Aloud Mini-Player Bar (shown when active) */}
-      {mounted &&
-        isActive &&
-        typeof document !== "undefined" &&
-        createPortal(
+      {isActive && (
+        <WidgetPortal>
           <div
             className="arap-read-aloud-bar"
             role="region"
@@ -464,9 +451,9 @@ export function ReadAloudController({
                 </button>
               </div>
             </div>
-          </div>,
-          document.body,
-        )}
+          </div>
+        </WidgetPortal>
+      )}
     </div>
   );
 }

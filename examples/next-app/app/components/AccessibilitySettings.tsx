@@ -4,7 +4,7 @@ import {
   AccessibilityPlugin,
   AccessibilityButton,
   AccessibilityList,
-  TextScaleController,
+  FeatureGroup,
   FontSizeController,
   LineHeightController,
   LetterSpacingController,
@@ -12,11 +12,9 @@ import {
   ParagraphSpacingController,
   FontFamilyController,
   ContrastModeController,
-  ContrastController,
   SmartContrastController,
   SaturationController,
   InvertColorsController,
-  GrayscaleController,
   LinkHighlightController,
   HighlightFocusController,
   ReduceMotionController,
@@ -47,38 +45,80 @@ export function AccessibilitySettings() {
         description="Adjust your display and reading preferences"
       />
       <AccessibilityList title="Accessibility preferences">
-        <ProfilesController />
-        <PresetsController />
-        <TextScaleController />
-        <FontSizeController />
-        <LineHeightController />
-        <LetterSpacingController />
-        <WordSpacingController />
-        <ParagraphSpacingController />
-        <FontFamilyController />
-        <TextAlignController />
-        <ContrastModeController />
-        <ContrastController />
-        <SmartContrastController />
-        <SaturationController />
-        <InvertColorsController />
-        <GrayscaleController />
-        <LinkHighlightController />
-        <HighlightFocusController />
-        <ReduceMotionController />
-        <TooltipsController />
-        <ReadingMaskController />
-        <ReadingGuideController />
-        <BigCursorController />
-        <HideImagesController />
-        <HideVideosController />
-        <PageNavigatorController />
-        <ReadingModeController />
-        <KeyboardShortcutsController />
-        <ReadAloudController />
-        <DictionaryController />
-        <VoiceNavigationController />
-        <TranslationController />
+        <FeatureGroup
+          id="next-grp-setup"
+          title="Quick Setup"
+          description="Profiles and saved configurations"
+        >
+          <ProfilesController />
+          <PresetsController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="next-grp-typography"
+          title="Text & Typography"
+          description="Font sizing, typeface, and spacing"
+        >
+          <FontSizeController />
+          <FontFamilyController />
+          <LineHeightController />
+          <LetterSpacingController />
+          <WordSpacingController />
+          <ParagraphSpacingController />
+          <TextAlignController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="next-grp-color"
+          title="Color & Contrast"
+          description="Contrast themes, saturation, and focus emphasis"
+        >
+          <ContrastModeController />
+          <SaturationController />
+          <InvertColorsController />
+          <LinkHighlightController />
+          <HighlightFocusController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="next-grp-reading"
+          title="Reading Aids & Media"
+          description="Focus guides, speech, motion, and media visibility"
+        >
+          <ReadingModeController />
+          <ReadAloudController />
+          <ReadingGuideController />
+          <ReadingMaskController />
+          <BigCursorController />
+          <TooltipsController />
+          <ReduceMotionController />
+          <HideImagesController />
+          <HideVideosController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="next-grp-tools"
+          title="Navigation & Tools"
+          description="Outline explorer, dictionary lookup, and keyboard shortcuts"
+        >
+          <PageNavigatorController />
+          <DictionaryController />
+          <KeyboardShortcutsController />
+        </FeatureGroup>
+
+        <FeatureGroup
+          id="next-grp-experimental"
+          title="Experimental Prototypes"
+          description="Opt-in adaptive contrast, voice commands, and translation"
+          badge="Beta"
+          collapsible
+          defaultExpanded={false}
+        >
+          <SmartContrastController />
+          <VoiceNavigationController />
+          <TranslationController />
+        </FeatureGroup>
+
         <ResetController />
       </AccessibilityList>
     </AccessibilityPlugin>

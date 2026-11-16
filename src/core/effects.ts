@@ -573,6 +573,11 @@ export function getScriptSpacingConstraints(
  */
 export function isFunctionalOrMeaningfulImage(el: Element): boolean {
   try {
+    // Never hide widget or diagnostic UI assets
+    if (el.closest("[data-arap-ui], [data-arap-diagnostics], .arap-root")) {
+      return true;
+    }
+
     // 1. Linked or interactive controls: images inside buttons, links, inputs, or interactive roles
     if (
       el.closest(
@@ -1082,15 +1087,21 @@ function applyToElements(
     if (values.hideImages) {
       if (isEligibleDecorativeImage(el)) {
         set(el, "visibility", "hidden");
+        if (el.matches("picture")) {
+          const childImg = el.querySelector("img");
+          if (childImg instanceof HTMLElement) {
+            set(childImg, "visibility", "hidden");
+          }
+        }
       }
       if (!isFunctionalOrMeaningfulImage(el)) {
         const inlineBg = el.style.backgroundImage;
-        if (inlineBg && inlineBg !== "none") {
+        if (inlineBg && /url\(/i.test(inlineBg)) {
           set(el, "background-image", "none");
         } else {
           try {
             const computedBg = getComputedStyle(el).backgroundImage;
-            if (computedBg && computedBg !== "none") {
+            if (computedBg && /url\(/i.test(computedBg)) {
               set(el, "background-image", "none");
             }
           } catch {
@@ -1103,7 +1114,7 @@ function applyToElements(
     if (
       values.hideVideos &&
       el.matches(
-        'video, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="player.vimeo.com/video/"]',
+        'video, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="youtu.be/"], iframe[src*="player.vimeo.com/video/"], iframe[src*="player.twitch.tv/"], iframe[src*="dailymotion.com/embed/"], iframe[src*="loom.com/embed/"], iframe[src*="wistia."], iframe[data-src*="youtube"], iframe[data-src*="vimeo"], iframe[data-src*="twitch.tv"], iframe[data-src*="dailymotion"], iframe[data-src*="loom.com"]',
       )
     )
       set(el, "visibility", "hidden");
@@ -1506,6 +1517,8 @@ export function nudgeReadingAid(
   }
 }
 
+const readingAidLastY: Record<string, number> = {};
+
 function readingAid(
   mask: boolean,
   height: number = 100,
@@ -1527,11 +1540,19 @@ function readingAid(
   const aidHeight = mask ? Math.max(40, Math.min(400, height)) : 4;
   const halfHeight = mask ? aidHeight / 2 : 0;
 
-  el.style.cssText = `position:fixed;left:0;right:0;top:50%;height:${aidHeight}px;pointer-events:none;z-index:2147482999;${
+  // Hardened inline resets so host global `div` styles cannot deform reading aids.
+  el.style.cssText = `position:fixed;left:0;right:0;top:50%;width:100vw;max-width:none;min-width:0;min-height:0;height:${aidHeight}px;margin:0;padding:0;outline:none;transform:none;filter:none;opacity:1;transition:none;animation:none;box-sizing:border-box;pointer-events:none;z-index:2147482000;${
     mask
-      ? "background:transparent;box-shadow:0 0 0 200vmax rgba(0,0,0,.65)"
-      : "background:#2563eb;border:1px solid white"
+      ? "border:none;background:transparent;box-shadow:0 0 0 200vmax rgba(0,0,0,.65)"
+      : "background:#2563eb;border:1px solid #ffffff;box-shadow:0 1px 4px rgba(0,0,0,.28)"
   }`;
+  el.style.setProperty("position", "fixed", "important");
+  el.style.setProperty("margin", "0", "important");
+  el.style.setProperty("padding", "0", "important");
+  el.style.setProperty("transform", "none", "important");
+  el.style.setProperty("filter", "none", "important");
+  el.style.setProperty("opacity", "1", "important");
+  el.style.setProperty("z-index", "2147482000", "important");
   el.style.setProperty("pointer-events", "none", "important");
   el.style.setProperty("user-select", "none", "important");
   el.style.setProperty("-webkit-user-select", "none", "important");
@@ -1539,10 +1560,14 @@ function readingAid(
 
   document.body.appendChild(el);
 
-  let currentY =
+  const defaultY =
     typeof window !== "undefined" && window.innerHeight
       ? window.innerHeight / 2
       : 300;
+  let currentY =
+    typeof readingAidLastY[featureKey] === "number"
+      ? readingAidLastY[featureKey]
+      : defaultY;
   let trackedFocusEl: HTMLElement | null = null;
 
   const clampY = (y: number) => {
@@ -1555,13 +1580,22 @@ function readingAid(
 
   const move = (y: number) => {
     currentY = clampY(y);
+    readingAidLastY[featureKey] = currentY;
     el.style.top = `${Math.max(0, currentY - halfHeight)}px`;
   };
 
-  // Center immediately
+  // Apply initial/preserved Y immediately
   move(currentY);
 
   const pointer = (event: MouseEvent | PointerEvent) => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest(
+        "[data-arap-ui], [data-arap-diagnostics], .arap-root",
+      )
+    ) {
+      return;
+    }
     if (typeof event.clientY === "number" && !isNaN(event.clientY)) {
       trackedFocusEl = null;
       move(event.clientY);
@@ -1569,6 +1603,14 @@ function readingAid(
   };
 
   const touch = (event: TouchEvent) => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest(
+        "[data-arap-ui], [data-arap-diagnostics], .arap-root",
+      )
+    ) {
+      return;
+    }
     if (event.touches && event.touches.length > 0) {
       trackedFocusEl = null;
       move(event.touches[0].clientY);
@@ -1641,7 +1683,6 @@ function readingAid(
   document.addEventListener("touchstart", touch, { passive: true });
   document.addEventListener("focusin", focus);
   document.addEventListener("arap:nudge-reading-aid", nudge);
-  document.addEventListener("keydown", keydown);
   window.addEventListener("scroll", scroll, { passive: true });
   window.addEventListener("resize", viewport, { passive: true });
   window.addEventListener("keydown", keydown);
@@ -1658,7 +1699,6 @@ function readingAid(
     document.removeEventListener("touchstart", touch);
     document.removeEventListener("focusin", focus);
     document.removeEventListener("arap:nudge-reading-aid", nudge);
-    document.removeEventListener("keydown", keydown);
     window.removeEventListener("scroll", scroll);
     window.removeEventListener("resize", viewport);
     window.removeEventListener("keydown", keydown);
@@ -1727,6 +1767,15 @@ export function useBuiltinEffects(
             record.target === targetRoot
           ) {
             hasRootAttributeChange = true;
+          } else if (
+            (values.hideImages || values.hideVideos) &&
+            record.target instanceof HTMLElement &&
+            !record.target.closest(
+              "[data-arap-ui], [data-arap-diagnostics], .arap-root",
+            ) &&
+            record.target.matches("img, picture, video, iframe")
+          ) {
+            added.push(record.target);
           }
         } else if (record.type === "childList") {
           if (
@@ -1758,11 +1807,23 @@ export function useBuiltinEffects(
       }
     });
 
+    const attributeFilter = ["class", "data-theme", "dir", "lang"];
+    if (values.hideImages || values.hideVideos) {
+      attributeFilter.push(
+        "src",
+        "data-src",
+        "alt",
+        "role",
+        "aria-hidden",
+        "data-decorative",
+      );
+    }
+
     const observerOptions: MutationObserverInit = {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ["class", "data-theme", "dir", "lang"],
+      attributeFilter,
     };
 
     if (targetRoot) {
@@ -1831,7 +1892,10 @@ export function useBuiltinEffects(
   }, [values, optionsOrScope]);
 
   useEffect(() => {
-    if (!values.readingMask) return;
+    if (!values.readingMask) {
+      delete readingAidLastY.readingMask;
+      return;
+    }
     const height =
       typeof values.readingMaskHeight === "number"
         ? values.readingMaskHeight
@@ -1842,14 +1906,21 @@ export function useBuiltinEffects(
   }, [values.readingMask, values.readingMaskHeight, onDisable]);
 
   useEffect(() => {
-    if (!values.readingGuide) return;
+    if (!values.readingGuide) {
+      delete readingAidLastY.readingGuide;
+      return;
+    }
     return readingAid(false, 4, onDisable);
   }, [values.readingGuide, onDisable]);
 
   useEffect(() => {
     if (!values.tooltips && !values.accessibleTooltips) return;
-    return enableAccessibleTooltips();
-  }, [values.tooltips, values.accessibleTooltips]);
+    const activeFont =
+      typeof values.fontFamily === "string" && values.fontFamily.trim()
+        ? values.fontFamily.trim()
+        : "default";
+    return enableAccessibleTooltips(activeFont);
+  }, [values.tooltips, values.accessibleTooltips, values.fontFamily]);
 }
 
 /**
@@ -2012,14 +2083,24 @@ export function positionTooltip(tooltip: HTMLElement, target: Element) {
   tooltip.setAttribute("data-placement", placement);
 }
 
-export function enableAccessibleTooltips(): () => void {
+export function enableAccessibleTooltips(
+  fontFamily: string = "default",
+): () => void {
   if (typeof document === "undefined") return () => {};
 
+  const safeFont =
+    fontFamily === "legible" ||
+    fontFamily === "dyslexia-option" ||
+    fontFamily === "dyslexia"
+      ? fontFamily
+      : "default";
+
   let tooltipEl: HTMLDivElement | null = document.createElement("div");
-  tooltipEl.className = "arap-accessible-tooltip";
+  tooltipEl.className = "arap-root arap-accessible-tooltip";
   tooltipEl.setAttribute("role", "presentation");
   tooltipEl.setAttribute("aria-hidden", "true");
   tooltipEl.setAttribute("data-arap-ui", "true");
+  tooltipEl.setAttribute("data-arap-font", safeFont);
   document.body.appendChild(tooltipEl);
 
   let activeTarget: Element | null = null;
@@ -2035,10 +2116,11 @@ export function enableAccessibleTooltips(): () => void {
     activeTarget = target;
     if (!tooltipEl || !document.body.contains(tooltipEl)) {
       tooltipEl = document.createElement("div");
-      tooltipEl.className = "arap-accessible-tooltip";
+      tooltipEl.className = "arap-root arap-accessible-tooltip";
       tooltipEl.setAttribute("role", "presentation");
       tooltipEl.setAttribute("aria-hidden", "true");
       tooltipEl.setAttribute("data-arap-ui", "true");
+      tooltipEl.setAttribute("data-arap-font", safeFont);
       document.body.appendChild(tooltipEl);
     }
     tooltipEl.textContent = text;
