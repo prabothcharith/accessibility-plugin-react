@@ -156,7 +156,7 @@ export const siLocale: Readonly<LocaleStrings> = Object.freeze({
   dictionaryStatusFound: (word: string) =>
     `"${word}" සඳහා අර්ථ දැක්වීම හමු විය.`,
   dictionaryStatusNotFound: (word: string) =>
-    `"${word}" සඳහා අර්ථ දැක්වීමක් හමු නොවීය. අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න හෝ පහත යෝජනාවක් උත්සාහ කරන්න.`,
+    `"${word}" සඳහා අර්ථ දැක්වීමක් හමු නොවීය. අක්ෂර වින්‍යාසය පරීක්ෂා කරන්න හෝ වෙනත් වචනයක් උත්සාහ කරන්න.`,
   dictionarySuggestionsTitle: "ඔබ අදහස් කළේ මෙයද:",
   dictionarySourceLocal: "පද්ධතියේ පාරිභාෂික ශබ්දකෝෂය",
   dictionarySourceProvider: "වින්‍යාසගත සේවාව",
