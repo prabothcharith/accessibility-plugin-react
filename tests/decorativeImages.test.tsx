@@ -7,6 +7,7 @@ import {
   AccessibilityList,
   HideImagesController,
   HideDecorativeImagesController,
+  HideVideosController,
   ResetController,
   isEligibleDecorativeImage,
   isFunctionalOrMeaningfulImage,
@@ -381,5 +382,39 @@ describe("HideImagesController & HideDecorativeImagesController integration", ()
     expect(
       (host.querySelector("#deco-bg") as HTMLElement).style.backgroundImage,
     ).toContain("banner.png");
+  });
+
+  it("preserves CSS gradient backgrounds and widget UI icons while hiding decorative <picture> and video embeds", () => {
+    const { host } = renderFixture(
+      <>
+        <HideImagesController />
+        <HideVideosController />
+      </>,
+    );
+
+    const gradientBox = document.createElement("div");
+    gradientBox.style.backgroundImage = "linear-gradient(to right, #fff, #000)";
+    const pic = document.createElement("picture");
+    const picImg = document.createElement("img");
+    picImg.setAttribute("alt", "");
+    pic.appendChild(picImg);
+
+    const ytEmbed = document.createElement("iframe");
+    ytEmbed.src = "https://youtu.be/dQw4w9WgXcQ";
+    const mapEmbed = document.createElement("iframe");
+    mapEmbed.src = "https://maps.google.com/maps?q=colombo";
+    host.append(gradientBox, pic, ytEmbed, mapEmbed);
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Images" }));
+    expect(gradientBox.style.backgroundImage).toContain("linear-gradient");
+    expect(pic.style.visibility).toBe("hidden");
+    expect(picImg.style.visibility).toBe("hidden");
+
+    const widgetIcon = document.querySelector("[data-arap-ui]");
+    expect(isFunctionalOrMeaningfulImage(widgetIcon!)).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Videos" }));
+    expect(ytEmbed.style.visibility).toBe("hidden");
+    expect(mapEmbed.style.visibility).toBe("");
   });
 });

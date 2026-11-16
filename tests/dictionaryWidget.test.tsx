@@ -193,4 +193,31 @@ describe("A11Y-403: DictionaryController Component", () => {
       screen.queryByRole("heading", { level: 3, name: /focus/i }),
     ).toBeNull();
   });
+
+  it("displays starter chips when idle and truthfully omits nonexistent suggestion copy on unknown terms", async () => {
+    renderFeatures(<A.DictionaryController />);
+    fireEvent.click(screen.getByRole("button", { name: /dictionary/i }));
+
+    const dialog = screen.getByRole("dialog");
+    const voiceChip = within(dialog).getByRole("button", { name: "voice" });
+    fireEvent.click(voiceChip);
+
+    await waitFor(() => {
+      expect(
+        within(dialog).getByRole("heading", { level: 3, name: /voice/i }),
+      ).toBeDefined();
+    });
+
+    const input = screen.getByRole("searchbox");
+    fireEvent.change(input, { target: { value: "zzzznotaword" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^look up$/i }));
+
+    await waitFor(() => {
+      const alert = within(dialog).getByRole("alert");
+      expect(alert.textContent).toContain(
+        'No definition found for "zzzznotaword"',
+      );
+      expect(alert.textContent).not.toContain("try a suggestion below");
+    });
+  });
 });

@@ -4,7 +4,7 @@ The owner selected the Clean light concept on 2026-10-13. It establishes the def
 
 ## Principles implemented
 
-- 400px maximum panel width, rounded border and soft shadow. The panel fits narrow screens, safe areas and existing four placements.
+- 460px default desktop panel width (380–720px pointer/keyboard resizable on fine-pointer desktop viewports >=1024px wide; non-resizable and full-bleed responsive down to 320px/400% zoom), rounded border, Manrope default UI typography synced with `fontFamily` presets (`default`, `legible`, `dyslexia-option`), and spacious full-viewport dialogs (`ModalDialog`) for search-heavy views.
 - Strong heading with optional supporting description; the close control keeps its accessible name and 44px target.
 - Compact label/value rows on desktop. Steppers stack below labels on small screens so neither labels nor targets are squeezed.
 - Cohesive decorative SVG icons. Existing names and native controls remain the semantic interface.

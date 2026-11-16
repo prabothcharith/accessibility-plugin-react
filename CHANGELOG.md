@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- UI, accessibility, modal, typography, and bug-fix improvements (#182, #183, #184, #185, #186, #187, #188, #189, #190, #191, #192, #193, #194, #195, #196, #197):
+  - Bundle SIL Open Font License 1.1 variable **Manrope** typeface locally (`dist/fonts/Manrope-VariableFont_wght.ttf` and inline data-URI `@font-face`), and synchronize `fontFamily` changes (`default`, `legible`, `dyslexia-option`) across `.arap-root`, panels, portals, modals, reading mode, playback bar, and accessible tooltips via `activeFont` / `data-arap-font` (#189).
+  - Add reusable `ModalDialog` and collapsible `FeatureGroup` primitives, default `"experimental"` collapsible group (`smartContrast`, `voiceNavigation`, `translation`), and move search-heavy views (`Profiles`, `Presets`, `Page Navigator`, `Dictionary`, `Keyboard Shortcuts`) into spacious responsive modals (#183, #195, #197).
+  - Widen default desktop panel to `460px` and add desktop-only (`>= 1024px` fine-pointer) transient pointer + keyboard panel resizing with clamped viewport bounds (#185, #186).
+  - Fix `.arap-btn-sm` stepper scoping, `.arap-feature-expandable` flex layout, unstyled `.arap-feature-btn`, duplicate search clear icons, duplicate footer close/revert controls, and primary blue CTA hierarchy (#182, #184, #191, #192, #196).
+  - Expand offline local dictionary glossaries (`"voice"`, `"voice navigation"`, `"read aloud"`, `"translation"`, `"keyboard"`, `"landmark"`, etc.) with fuzzy typo suggestions and truthful empty states (#188).
+  - Fix host-content translation boundaries (`[data-arap-ui]`, `.arap-root`, `<select>`/`<option>`), BCP-47 subtag normalization, offline multi-language lexicon translation (`[TR] ...`), dynamic DOM observation, live language switching, and visible status banner (#187).
+  - Harden reading guide and reading mask geometry/z-index isolation (`2147482000`), ignore pointer tracking over widget UI, remove duplicate `document` `keydown` listener, preserve vertical mask position across height changes, preserve CSS gradients under `hideImages`, and expand video embed hiding under `hideVideos` (#193, #194).
+  - Clean up examples (`examples/basic-usage` and `examples/next-app`) to remove duplicate controllers, group sections cleanly, and include offline SVG and `<video>` media fixtures (#194, #196, #197).
+
 ## 2.29.2 — 2026-11-11
 
 - Replace rate-limited Bundlephobia badge in `README.md` with high-reliability edge-rendered `bundlejs` badge.

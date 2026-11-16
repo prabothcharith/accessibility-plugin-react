@@ -182,4 +182,17 @@ describe("FeatureMenu and AccessibilityList menu customization (A11Y-404)", () =
 
     consoleWarnSpy.mockRestore();
   });
+
+  it("renders built-in Experimental Prototypes group collapsed by default when grouped", () => {
+    render(
+      <AccessibilityPlugin>
+        <FeatureMenu grouped={true} />
+      </AccessibilityPlugin>,
+    );
+
+    const expToggle = screen.getByRole("button", {
+      name: /Experimental Prototypes/i,
+    });
+    expect(expToggle).toHaveAttribute("aria-expanded", "false");
+  });
 });
