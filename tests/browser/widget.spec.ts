@@ -1877,6 +1877,22 @@ test("voice navigation research prototype renders with prototype badge, commands
 test("host-content translation adapter architecture renders with consent prompt, translation, and restoration (A11Y-409)", async ({
   page,
 }) => {
+  await page.route(
+    "https://translate.googleapis.com/translate_a/single*",
+    async (route) => {
+      const url = new URL(route.request().url());
+      const q = url.searchParams.get("q") ?? "";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          [[`Traducido: ${q}`, q, null, null, 3]],
+          null,
+          "en",
+        ]),
+      });
+    },
+  );
   await page.goto("http://127.0.0.1:7311/");
 
   // Open widget
@@ -1914,17 +1930,18 @@ test("host-content translation adapter architecture renders with consent prompt,
   // Trigger translation
   await translateBtn.click();
 
-  // Sample paragraph should contain translated text from local mock adapter
+  // Sample paragraph should contain translated text without [TR] prefix
   const sample = page.locator("#sample");
-  await expect(sample).toContainText("[TR]");
+  await expect(sample).toContainText("Traducido:");
+  await expect(sample).not.toContainText("[TR]");
 
   // Restore original
   const restoreBtn = ctrl.getByRole("button", { name: "Restore Original" });
   await expect(restoreBtn).toBeVisible();
   await restoreBtn.click();
 
-  // Sample paragraph should no longer contain [TR]
-  await expect(sample).not.toContainText("[TR]");
+  // Sample paragraph should no longer contain translated text
+  await expect(sample).not.toContainText("Traducido:");
 });
 
 test("A11Y-501: full supported matrix verification - zoom reflow, forced-colors, and 44px touch targets", async ({
@@ -2105,6 +2122,22 @@ test("reading aid isolation against aggressive host CSS and higher modal z-index
 test("dictionary looks up 'voice' and Sinhala host translation skips widget UI (#187, #188)", async ({
   page,
 }) => {
+  await page.route(
+    "https://translate.googleapis.com/translate_a/single*",
+    async (route) => {
+      const url = new URL(route.request().url());
+      const q = url.searchParams.get("q") ?? "";
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          [[`පරිවර්තනය: ${q}`, q, null, null, 3]],
+          null,
+          "en",
+        ]),
+      });
+    },
+  );
   await page.goto("/");
   await page.getByLabel("Accessibility", { exact: true }).click();
 
@@ -2140,15 +2173,25 @@ test("dictionary looks up 'voice' and Sinhala host translation skips widget UI (
     .getByRole("button", { name: "Grant Consent", exact: true })
     .click();
   await translationGroup.getByLabel(/Target Language/i).selectOption("si");
+  const hostSample = page.locator("main p, #host p").first();
+  const originalText = (await hostSample.textContent()) ?? "";
   await translationGroup
     .getByRole("button", { name: "Translate Page" })
     .click();
 
-  const hostSample = page.locator("main p, #host p").first();
-  await expect(hostSample).toContainText("[TR]");
+  await expect(hostSample).toContainText(/[\u0D80-\u0DFF]/);
+  await expect(hostSample).not.toContainText("[TR]");
   await expect(
     translationGroup.getByRole("button", { name: "Restore Original" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Reset All", exact: true }),
+  ).toBeVisible();
+
+  await translationGroup
+    .getByRole("button", { name: "Restore Original" })
+    .click();
+  await expect(hostSample).toHaveText(originalText);
 });
 
 test("read-aloud mini-player 44px targets, form field id/name compliance, and 320x200 zoom layout (#185, #191, #192)", async ({

@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   isSensitiveElement,
   extractTranslatableNodes,
   sanitizeTranslationOutput,
   applyTranslations,
   createOfflineMockTranslationAdapter,
+  createGoogleTranslateAdapter,
   translateHostContent,
   TRANSLATION_ERROR_CODES,
   TranslationError,
@@ -342,6 +343,95 @@ describe("A11Y-409: Host-Content Translation Adapter Architecture", () => {
 
       session.restore();
       expect(hostHeading.textContent).toBe("Accessibility Plugin React");
+    });
+  });
+
+  describe("createGoogleTranslateAdapter", () => {
+    it("joins multi-segment Google Translate arrays without [TR] prefix and caches results", async () => {
+      const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+        const url = new URL(String(input));
+        const q = url.searchParams.get("q") ?? "";
+        const payload = [
+          [
+            [`Hola `, q, null, null, 3],
+            [`mundo`, q, null, null, 3],
+          ],
+          null,
+          "en",
+        ];
+        return new Response(JSON.stringify(payload), { status: 200 });
+      });
+
+      const adapter = createGoogleTranslateAdapter({
+        fetchImpl: fetchMock as unknown as typeof fetch,
+      });
+
+      expect(adapter.id).toBe("google-translate-adapter");
+      expect(adapter.name).toBe("Google Translate");
+
+      const first = await adapter.translate({
+        texts: ["  Hello world ", "Hello world"],
+        targetLanguage: "es",
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(first.translations[0].translated).toBe("  Hola mundo ");
+      expect(first.translations[1].translated).toBe("Hola mundo");
+      expect(first.translations[0].translated).not.toContain("[TR]");
+
+      await adapter.translate({
+        texts: ["Hello world"],
+        targetLanguage: "es",
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("falls back to clean offline translation without [TR] when fetch fails and throws when fallback disabled", async () => {
+      const failingFetch = vi.fn(async () => {
+        throw new Error("Network down");
+      });
+
+      const fallbackAdapter = createGoogleTranslateAdapter({
+        fetchImpl: failingFetch as unknown as typeof fetch,
+      });
+
+      const res = await fallbackAdapter.translate({
+        texts: ["Accessibility"],
+        targetLanguage: "si",
+      });
+      expect(res.translations[0].translated).not.toContain("[TR]");
+      expect(res.translations[0].translated).toMatch(/[\u0D80-\u0DFF]/);
+
+      const strictAdapter = createGoogleTranslateAdapter({
+        fetchImpl: failingFetch as unknown as typeof fetch,
+        fallbackToOffline: false,
+      });
+      await expect(
+        strictAdapter.translate({
+          texts: ["Accessibility"],
+          targetLanguage: "si",
+        }),
+      ).rejects.toThrow(TranslationError);
+    });
+
+    it("throws ABORTED when AbortSignal is already cancelled", async () => {
+      const adapter = createGoogleTranslateAdapter({
+        fetchImpl: vi.fn() as unknown as typeof fetch,
+      });
+      const controller = new AbortController();
+      controller.abort();
+
+      try {
+        await adapter.translate({
+          texts: ["Hello world"],
+          targetLanguage: "es",
+          signal: controller.signal,
+        });
+        expect.unreachable("Expected abort error");
+      } catch (err) {
+        expect((err as TranslationError).code).toBe(
+          TRANSLATION_ERROR_CODES.ABORTED,
+        );
+      }
     });
   });
 });
