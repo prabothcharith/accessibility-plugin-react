@@ -417,4 +417,38 @@ describe("HideImagesController & HideDecorativeImagesController integration", ()
     expect(ytEmbed.style.visibility).toBe("hidden");
     expect(mapEmbed.style.visibility).toBe("");
   });
+
+  it("hides empty-alt and data-decorative images wrapped inside <figure> and restores on toggle off (#201)", () => {
+    const { host } = renderFixture(<HideImagesController />);
+
+    const figure = document.createElement("figure");
+    const emptyAltInFigure = document.createElement("img");
+    emptyAltInFigure.setAttribute("alt", "");
+    emptyAltInFigure.src = "banner.png";
+
+    const markedWithAltInFigure = document.createElement("img");
+    markedWithAltInFigure.setAttribute("alt", "Calm shoreline");
+    markedWithAltInFigure.setAttribute("data-decorative", "true");
+    markedWithAltInFigure.src = "shoreline.png";
+
+    const meaningfulInFigure = document.createElement("img");
+    meaningfulInFigure.setAttribute("alt", "Editorial figure");
+    meaningfulInFigure.src = "editorial.png";
+
+    figure.append(emptyAltInFigure, markedWithAltInFigure, meaningfulInFigure);
+    host.appendChild(figure);
+
+    const toggle = screen.getByRole("button", { name: "Hide Images" });
+    fireEvent.click(toggle);
+
+    expect(emptyAltInFigure.style.visibility).toBe("hidden");
+    expect(markedWithAltInFigure.style.visibility).toBe("hidden");
+    expect(meaningfulInFigure.style.visibility).toBe("");
+
+    fireEvent.click(toggle);
+
+    expect(emptyAltInFigure.style.visibility).toBe("");
+    expect(markedWithAltInFigure.style.visibility).toBe("");
+    expect(meaningfulInFigure.style.visibility).toBe("");
+  });
 });

@@ -780,6 +780,221 @@ export function createOfflineMockTranslationAdapter(options?: {
   };
 }
 
+export interface GoogleTranslateAdapterOptions {
+  endpoint?: string;
+  concurrency?: number;
+  fallbackToOffline?: boolean;
+  fetchImpl?: typeof fetch;
+}
+
+const GOOGLE_TRANSLATE_DEFAULT_ENDPOINT =
+  "https://translate.googleapis.com/translate_a/single";
+
+const GOOGLE_TRANSLATE_SUPPORTED_LANGUAGES = [
+  "es",
+  "fr",
+  "de",
+  "si",
+  "ta",
+  "ja",
+  "zh",
+  "ar",
+  "hi",
+  "pt",
+  "ru",
+  "ko",
+  "it",
+  "nl",
+];
+
+const LETTER_OR_SCRIPT_PATTERN = /\p{L}/u;
+
+function parseGoogleTranslateResponse(data: unknown): string {
+  if (!Array.isArray(data) || !Array.isArray(data[0])) {
+    return "";
+  }
+  const parts: string[] = [];
+  for (const segment of data[0]) {
+    if (Array.isArray(segment) && typeof segment[0] === "string") {
+      parts.push(segment[0]);
+    }
+  }
+  return parts.join("");
+}
+
+/**
+ * Creates a client-side Google Translate adapter using the CORS-enabled
+ * translate_a/single endpoint, with optional in-memory caching and offline fallback.
+ */
+export function createGoogleTranslateAdapter(
+  options?: GoogleTranslateAdapterOptions,
+): TranslationAdapter {
+  const endpoint = options?.endpoint ?? GOOGLE_TRANSLATE_DEFAULT_ENDPOINT;
+  const concurrency = Math.max(1, options?.concurrency ?? 6);
+  const fallbackToOffline = options?.fallbackToOffline ?? true;
+  const resolvedFetch =
+    options?.fetchImpl ??
+    (typeof fetch !== "undefined" ? fetch.bind(globalThis) : undefined);
+  const cache = new Map<string, string>();
+
+  return {
+    id: "google-translate-adapter",
+    name: "Google Translate",
+    description:
+      "Client-side machine translation powered by Google Translate with automatic offline fallback.",
+    privacyPolicyUrl: "https://policies.google.com/privacy",
+    dataRetention: "transient",
+    dataResidency: "global",
+    supportedTargetLanguages: GOOGLE_TRANSLATE_SUPPORTED_LANGUAGES,
+    translate: async (
+      request: TranslationRequest,
+    ): Promise<TranslationResponse> => {
+      if (request.signal?.aborted) {
+        throw new TranslationError(
+          TRANSLATION_ERROR_CODES.ABORTED,
+          "Translation request was aborted.",
+        );
+      }
+
+      const sourceLang = (request.sourceLanguage || "auto")
+        .trim()
+        .toLowerCase();
+      const baseTarget = request.targetLanguage
+        .trim()
+        .toLowerCase()
+        .split("-")[0];
+
+      const pendingKeys: string[] = [];
+      const seenKeys = new Set<string>();
+
+      for (const raw of request.texts) {
+        const trimmed = raw.trim();
+        if (!trimmed || !LETTER_OR_SCRIPT_PATTERN.test(trimmed)) {
+          continue;
+        }
+        const cacheKey = `${sourceLang}:${baseTarget}:${trimmed}`;
+        if (!cache.has(cacheKey) && !seenKeys.has(trimmed)) {
+          seenKeys.add(trimmed);
+          pendingKeys.push(trimmed);
+        }
+      }
+
+      let cursor = 0;
+      const translateSingle = async (textKey: string): Promise<void> => {
+        if (request.signal?.aborted) {
+          throw new TranslationError(
+            TRANSLATION_ERROR_CODES.ABORTED,
+            "Translation request was aborted.",
+          );
+        }
+
+        const cacheKey = `${sourceLang}:${baseTarget}:${textKey}`;
+        if (!resolvedFetch) {
+          if (!fallbackToOffline) {
+            throw new TranslationError(
+              TRANSLATION_ERROR_CODES.NETWORK_ERROR,
+              "Fetch API is not available for Google Translate requests.",
+            );
+          }
+          cache.set(
+            cacheKey,
+            translateOfflineText(textKey, request.targetLanguage),
+          );
+          return;
+        }
+
+        const url = `${endpoint}?client=gtx&sl=${encodeURIComponent(
+          sourceLang,
+        )}&tl=${encodeURIComponent(baseTarget)}&dt=t&q=${encodeURIComponent(
+          textKey,
+        )}`;
+
+        try {
+          const response = await resolvedFetch(url, {
+            method: "GET",
+            signal: request.signal,
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          const json: unknown = await response.json();
+          const parsed = sanitizeTranslationOutput(
+            parseGoogleTranslateResponse(json),
+          );
+          cache.set(cacheKey, parsed || textKey);
+        } catch (err: unknown) {
+          const isAbort =
+            request.signal?.aborted ||
+            (err instanceof Error && err.name === "AbortError") ||
+            (err instanceof TranslationError &&
+              err.code === TRANSLATION_ERROR_CODES.ABORTED);
+          if (isAbort) {
+            throw new TranslationError(
+              TRANSLATION_ERROR_CODES.ABORTED,
+              "Translation request was aborted.",
+              err,
+            );
+          }
+          if (!fallbackToOffline) {
+            const msg = err instanceof Error ? err.message : String(err);
+            throw new TranslationError(
+              TRANSLATION_ERROR_CODES.NETWORK_ERROR,
+              `Google Translate request failed: ${msg}`,
+              err,
+            );
+          }
+          cache.set(
+            cacheKey,
+            translateOfflineText(textKey, request.targetLanguage),
+          );
+        }
+      };
+
+      const workerCount = Math.min(concurrency, pendingKeys.length);
+      if (workerCount > 0) {
+        const workers = Array.from({ length: workerCount }, async () => {
+          while (cursor < pendingKeys.length) {
+            const nextIndex = cursor;
+            cursor += 1;
+            const key = pendingKeys[nextIndex];
+            if (key !== undefined) {
+              await translateSingle(key);
+            }
+          }
+        });
+        await Promise.all(workers);
+      }
+
+      const translations: TranslatedItem[] = request.texts.map((raw) => {
+        const trimmed = raw.trim();
+        if (!trimmed || !LETTER_OR_SCRIPT_PATTERN.test(trimmed)) {
+          return {
+            original: raw,
+            translated: raw,
+            detectedSourceLanguage: request.sourceLanguage || "en",
+          };
+        }
+        const leading = raw.match(/^\s*/)?.[0] ?? "";
+        const trailing = raw.match(/\s*$/)?.[0] ?? "";
+        const cacheKey = `${sourceLang}:${baseTarget}:${trimmed}`;
+        const translatedCore = cache.get(cacheKey) ?? trimmed;
+        return {
+          original: raw,
+          translated: `${leading}${translatedCore}${trailing}`,
+          detectedSourceLanguage: request.sourceLanguage || "en",
+        };
+      });
+
+      return {
+        translations,
+        providerId: "google-translate-adapter",
+        timestamp: Date.now(),
+        attribution: "Powered by Google Translate",
+      };
+    },
+  };
+}
+
 /**
  * Coordinates end-to-end host content translation:
  * 1. Verifies user consent status (throws if unprompted, denied, or revoked).

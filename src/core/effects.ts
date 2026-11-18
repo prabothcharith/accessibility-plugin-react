@@ -599,10 +599,10 @@ export function isFunctionalOrMeaningfulImage(el: Element): boolean {
       return true;
     }
 
-    // 3. Charts, graphs, diagrams, and figures
+    // 3. Charts, graphs, and diagrams
     if (
       el.closest(
-        "[role='graphics-document'], [role='graphics-symbol'], [role='figure'], figure, [class*='chart' i], [id*='chart' i], [class*='graph' i], [id*='graph' i], [class*='diagram' i], [id*='diagram' i]",
+        "[role='graphics-document'], [role='graphics-symbol'], [class*='chart' i], [id*='chart' i], [class*='graph' i], [id*='graph' i], [class*='diagram' i], [id*='diagram' i]",
       ) ||
       el.matches(
         "[role='graphics-document'], [role='graphics-symbol'], [aria-roledescription*='chart' i]",
@@ -638,6 +638,35 @@ export function isFunctionalOrMeaningfulImage(el: Element): boolean {
     // 6. Mathematical formulas
     if (el.closest("[role='math'], math, [class*='math' i]")) {
       return true;
+    }
+
+    // Explicit decorative markers override alt/aria-label/title attributes
+    const hasExplicitDecorativeMarker = (node: Element) => {
+      if (
+        node.hasAttribute("data-decorative") &&
+        node.getAttribute("data-decorative") !== "false"
+      ) {
+        return true;
+      }
+      if (
+        node.classList.contains("decorative") ||
+        node.classList.contains("deco")
+      ) {
+        return true;
+      }
+      const nodeRole = node.getAttribute("role");
+      if (nodeRole === "presentation" || nodeRole === "none") {
+        return true;
+      }
+      return node.getAttribute("aria-hidden") === "true";
+    };
+
+    if (
+      hasExplicitDecorativeMarker(el) ||
+      (el.parentElement?.matches("picture") &&
+        hasExplicitDecorativeMarker(el.parentElement))
+    ) {
+      return false;
     }
 
     // 7. Meaningful accessible names or semantic roles
@@ -711,7 +740,8 @@ export function isEligibleDecorativeImage(el: Element): boolean {
 
       // 4. Explicit decorative marker
       if (
-        el.hasAttribute("data-decorative") ||
+        (el.hasAttribute("data-decorative") &&
+          el.getAttribute("data-decorative") !== "false") ||
         el.classList.contains("decorative") ||
         el.classList.contains("deco")
       ) {
@@ -777,6 +807,35 @@ export function resolveEffectScope(
     }
   }
   return document.body ?? null;
+}
+
+function resolveActiveContrastPalette(values: Record<string, unknown>): {
+  activePalette: ContrastPalette | null;
+  fallbackColors: [string, string] | null;
+} {
+  if (isForcedColorsActive()) {
+    return { activePalette: null, fallbackColors: null };
+  }
+  const activeContrastKey =
+    values.contrastMode &&
+    values.contrastMode !== "off" &&
+    values.contrastMode !== "original"
+      ? String(values.contrastMode)
+      : values.contrast !== undefined &&
+          values.contrast !== 0 &&
+          values.contrast !== "0" &&
+          values.contrast !== "off" &&
+          values.contrast !== "original"
+        ? String(values.contrast)
+        : null;
+
+  const activePalette = activeContrastKey
+    ? (CONTRAST_PALETTES[activeContrastKey] ?? null)
+    : null;
+  const fallbackColors = !activePalette
+    ? (palette[String(values.contrast)] ?? null)
+    : null;
+  return { activePalette, fallbackColors };
 }
 
 function applyToElements(
@@ -1035,23 +1094,8 @@ function applyToElements(
   }
 
   // Active contrast mode / palette
-  const activeContrastKey =
-    values.contrastMode &&
-    values.contrastMode !== "off" &&
-    values.contrastMode !== "original"
-      ? String(values.contrastMode)
-      : values.contrast !== undefined &&
-          values.contrast !== 0 &&
-          values.contrast !== "0" &&
-          values.contrast !== "off" &&
-          values.contrast !== "original"
-        ? String(values.contrast)
-        : null;
-
-  const activePalette =
-    activeContrastKey && !isForcedColorsActive()
-      ? CONTRAST_PALETTES[activeContrastKey]
-      : null;
+  const { activePalette, fallbackColors } =
+    resolveActiveContrastPalette(values);
 
   if (activePalette) {
     for (const el of targetElements) {
@@ -1114,14 +1158,13 @@ function applyToElements(
     if (
       values.hideVideos &&
       el.matches(
-        'video, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="youtu.be/"], iframe[src*="player.vimeo.com/video/"], iframe[src*="player.twitch.tv/"], iframe[src*="dailymotion.com/embed/"], iframe[src*="loom.com/embed/"], iframe[src*="wistia."], iframe[data-src*="youtube"], iframe[data-src*="vimeo"], iframe[data-src*="twitch.tv"], iframe[data-src*="dailymotion"], iframe[data-src*="loom.com"]',
+        'video, [data-video], .video-placeholder, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="youtu.be/"], iframe[src*="player.vimeo.com/video/"], iframe[src*="player.twitch.tv/"], iframe[src*="dailymotion.com/embed/"], iframe[src*="loom.com/embed/"], iframe[src*="wistia."], iframe[data-src*="youtube"], iframe[data-src*="vimeo"], iframe[data-src*="twitch.tv"], iframe[data-src*="dailymotion"], iframe[data-src*="loom.com"]',
       )
     )
       set(el, "visibility", "hidden");
-    const colors = palette[String(values.contrast)];
-    if (colors && !activePalette && !isForcedColorsActive()) {
-      set(el, "color", colors[0]);
-      set(el, "background-color", colors[1]);
+    if (fallbackColors) {
+      set(el, "color", fallbackColors[0]);
+      set(el, "background-color", fallbackColors[1]);
     }
     if (
       values.linkHighlight &&
@@ -1239,6 +1282,21 @@ export function applyPageSession(
       // Scoped container: apply filter directly to targetRoot!
       // This protects host fixed elements (navbars, modals) outside targetRoot from filter stacking contexts.
       applyContainerFilter(targetRoot);
+    }
+  }
+
+  const rootContrast = resolveActiveContrastPalette(values);
+  if (targetRoot && !targetRoot.matches(EXCLUDED)) {
+    if (rootContrast.activePalette) {
+      set(targetRoot, "color", rootContrast.activePalette.text);
+      set(
+        targetRoot,
+        "background-color",
+        rootContrast.activePalette.background,
+      );
+    } else if (rootContrast.fallbackColors) {
+      set(targetRoot, "color", rootContrast.fallbackColors[0]);
+      set(targetRoot, "background-color", rootContrast.fallbackColors[1]);
     }
   }
 
@@ -1773,7 +1831,9 @@ export function useBuiltinEffects(
             !record.target.closest(
               "[data-arap-ui], [data-arap-diagnostics], .arap-root",
             ) &&
-            record.target.matches("img, picture, video, iframe")
+            record.target.matches(
+              "img, picture, video, [data-video], .video-placeholder, iframe",
+            )
           ) {
             added.push(record.target);
           }

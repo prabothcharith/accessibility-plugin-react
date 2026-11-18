@@ -295,6 +295,7 @@ Opt-in research prototype controller enabling host application content translati
 - `extractTranslatableNodes(root: Element, maxNodes?: number): TranslatableNode[]`: Traverses DOM tree starting from root and collects translatable text nodes, strictly skipping sensitive elements.
 - `sanitizeTranslationOutput(raw: string): string`: Sanitizes translated strings, stripping control characters and null bytes.
 - `applyTranslations(nodes: TranslatableNode[], translations: string[]): () => void`: Safely assigns translated strings to text nodes via `textContent` and returns an idempotent restore callback.
+- `createGoogleTranslateAdapter(options?: GoogleTranslateAdapterOptions): TranslationAdapter`: Default adapter for `<TranslationController />` querying Google Translate (`translate.googleapis.com/translate_a/single`) after explicit consent, with caching and automatic offline fallback.
 - `createOfflineMockTranslationAdapter(options?): TranslationAdapter`: Creates a local offline mock translation adapter operating with zero network requests.
 - `translateHostContent(options): Promise<TranslationSession>`: Coordinates end-to-end translation, enforcing consent, provider language support, sensitive element exclusion, and DOM restoration.
 - `TRANSLATION_DISCLAIMER`: Constant string disclaimer emphasizing prototype status and zero official WCAG compliance claims.

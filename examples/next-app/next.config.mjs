@@ -6,6 +6,7 @@ const cspHeader = `
   style-src-attr 'unsafe-inline';
   img-src 'self' data:;
   font-src 'self' data:;
+  connect-src 'self' https://translate.googleapis.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';

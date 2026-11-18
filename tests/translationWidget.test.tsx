@@ -191,4 +191,12 @@ describe("A11Y-409: TranslationController Widget Integration", () => {
       .querySelector(".arap-translation-status-banner");
     expect(statusBanner?.textContent).toContain("Sinhala");
   });
+
+  it("defaults to Google Translate adapter metadata in consent and provider details (#201)", () => {
+    renderWidget(<TranslationController />);
+    const title = screen
+      .getByTestId("translation-controller")
+      .querySelector(".arap-provider-title");
+    expect(title?.textContent).toContain("Adapter: Google Translate");
+  });
 });

@@ -6,7 +6,7 @@ import {
   type TranslationConsentRecord,
   type TranslationSession,
   TRANSLATION_DISCLAIMER,
-  createOfflineMockTranslationAdapter,
+  createGoogleTranslateAdapter,
   translateHostContent,
 } from "../core/translationAdapter";
 
@@ -26,6 +26,13 @@ const DEFAULT_TARGET_LANGUAGES = [
   { code: "ta", label: "Tamil (தமிழ்)" },
   { code: "ja", label: "Japanese (日本語)" },
   { code: "zh", label: "Chinese (中文)" },
+  { code: "ar", label: "Arabic (العربية)" },
+  { code: "hi", label: "Hindi (हिन्दी)" },
+  { code: "pt", label: "Portuguese (Português)" },
+  { code: "ru", label: "Russian (Русский)" },
+  { code: "ko", label: "Korean (한국어)" },
+  { code: "it", label: "Italian (Italiano)" },
+  { code: "nl", label: "Dutch (Nederlands)" },
 ];
 
 export const TranslationController: React.FC<TranslationControllerProps> = ({
@@ -38,7 +45,7 @@ export const TranslationController: React.FC<TranslationControllerProps> = ({
   const { value: isTranslationEnabled, setValue: setIsTranslationEnabled } =
     useAccessibility<boolean>("translation", false);
   const [provider] = useState<TranslationAdapter>(() => {
-    return customProvider || createOfflineMockTranslationAdapter();
+    return customProvider || createGoogleTranslateAdapter();
   });
 
   const [targetLang, setTargetLang] = useState<string>(defaultTargetLanguage);

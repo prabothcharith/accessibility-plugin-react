@@ -64,6 +64,7 @@ const cspHeader = `
   style-src-attr 'unsafe-inline';
   img-src 'self' data:;
   font-src 'self' data:;
+  connect-src 'self' https://translate.googleapis.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
@@ -116,6 +117,7 @@ export function middleware(request: NextRequest) {
     style-src-attr 'unsafe-inline';
     img-src 'self' data:;
     font-src 'self' data:;
+    connect-src 'self' https://translate.googleapis.com;
     base-uri 'self';
     form-action 'self';
   `
@@ -169,6 +171,7 @@ For Vite applications, configure CSP headers either through your production web 
         style-src-attr 'unsafe-inline';
         img-src 'self' data:;
         font-src 'self' data:;
+        connect-src 'self' https://translate.googleapis.com;
       "
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -185,10 +188,10 @@ For Vite applications, configure CSP headers either through your production web 
 
 ## 4. Verification Checklist
 
-| Requirement                   | Directive                                           | Why It Is Needed                                                                                         |
-| :---------------------------- | :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
-| **Widget UI Styles**          | `style-src 'self'` (with static `style.css` import) | Renders the Clean light widget panel, trigger, and control cards                                         |
-| **Dynamic Host Effects**      | `style-src-attr 'unsafe-inline'`                    | Applies runtime font-size, line-height, and filter adjustments to host elements                          |
-| **Big High-Contrast Cursor**  | `img-src 'self' data:`                              | Allows SVG data URI pointer rendering                                                                    |
-| **No External Font Requests** | `font-src 'self'`                                   | The plugin does not load external web fonts; all font-legibility features use local and system fallbacks |
-| **No Network Calls**          | No special `connect-src`                            | All preferences, state persistence, and effects operate 100% locally on the client                       |
+| Requirement                   | Directive                                                       | Why It Is Needed                                                                                                                                                                                                                                                                                                             |
+| :---------------------------- | :-------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Widget UI Styles**          | `style-src 'self'` (with static `style.css` import)             | Renders the Clean light widget panel, trigger, and control cards                                                                                                                                                                                                                                                             |
+| **Dynamic Host Effects**      | `style-src-attr 'unsafe-inline'`                                | Applies runtime font-size, line-height, and filter adjustments to host elements                                                                                                                                                                                                                                              |
+| **Big High-Contrast Cursor**  | `img-src 'self' data:`                                          | Allows SVG data URI pointer rendering                                                                                                                                                                                                                                                                                        |
+| **No External Font Requests** | `font-src 'self'`                                               | The plugin does not load external web fonts; all font-legibility features use local and system fallbacks                                                                                                                                                                                                                     |
+| **No Network Calls**          | No special `connect-src` (unless using `TranslationController`) | Core preferences, state persistence, and effects operate 100% locally; opt-in `TranslationController` (`createGoogleTranslateAdapter()`) connects to `https://translate.googleapis.com` only after explicit user consent (`connect-src 'self' https://translate.googleapis.com`), with automatic offline fallback if blocked |
