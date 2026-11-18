@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.30.1 — 2026-11-18
+
+- Fix decorative image classification inside `<figure>` and add client-side Google Translate adapter (#201):
+  - Remove `figure` and `[role='figure']` from blocking decorative image hiding in `isFunctionalOrMeaningfulImage()`, prioritize explicit decorative markers (`data-decorative`, `.decorative`, `.deco`, `role="presentation"|"none"`, `aria-hidden="true"`), expand `hideVideos` selectors to cover `[data-video]` / `.video-placeholder`, and apply active contrast palette tokens to `targetRoot`.
+  - Add and export `createGoogleTranslateAdapter()` (querying Google Translate after explicit consent with in-memory caching and clean offline fallback) and set it as the default provider in `TranslationController`.
+  - Update `TRANSLATION.md`, `API.md`, `CSP.md`, and `examples/next-app/next.config.mjs` to document optional `connect-src 'self' https://translate.googleapis.com`.
+
 ## 2.30.0 — 2026-11-16
 
 - UI, accessibility, modal, typography, and bug-fix improvements (#182, #183, #184, #185, #186, #187, #188, #189, #190, #191, #192, #193, #194, #195, #196, #197, #199):

@@ -8,12 +8,12 @@ The host-content translation adapter (**A11Y-409**) provides a decoupled, privac
 
 ### Strict Distinction from Widget Localization
 
-| Dimension            | Widget UI Localization (`docs/LOCALES.md`)      | Host-Content Translation (`docs/TRANSLATION.md`)       |
-| :------------------- | :---------------------------------------------- | :----------------------------------------------------- |
-| **Target Scope**     | Widget buttons, labels, and dialog strings only | Arbitrary host document content (articles, headings)   |
-| **Network Requests** | **Zero** — 100% static bundled locale packs     | **Zero by default** — opt-in custom adapter only       |
-| **Privacy Risk**     | None (no host content read)                     | High (host text transmitted to provider if configured) |
-| **User Consent**     | Not required (local interface strings)          | **Mandatory explicit consent** prior to transmission   |
+| Dimension            | Widget UI Localization (`docs/LOCALES.md`)      | Host-Content Translation (`docs/TRANSLATION.md`)                                                                               |
+| :------------------- | :---------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Target Scope**     | Widget buttons, labels, and dialog strings only | Arbitrary host document content (articles, headings)                                                                           |
+| **Network Requests** | **Zero** — 100% static bundled locale packs     | **Opt-in after consent** — `createGoogleTranslateAdapter()` (default on `<TranslationController />`) or custom/offline adapter |
+| **Privacy Risk**     | None (no host content read)                     | High (host text transmitted to provider if configured)                                                                         |
+| **User Consent**     | Not required (local interface strings)          | **Mandatory explicit consent** prior to transmission                                                                           |
 
 ---
 
@@ -94,11 +94,11 @@ The engine automatically scans element tags, attributes, and ancestor trees (`is
 
 ### 3. Content Security Policy (CSP)
 
-If a host application uses a remote translation API (e.g. Google Cloud, DeepL, LibreTranslate):
+If a host application uses the default Google Translate adapter or a custom remote translation API (e.g. Google Cloud, DeepL, LibreTranslate):
 
 - The host's `connect-src` CSP directive must explicitly permit the provider endpoint:
   ```http
-  Content-Security-Policy: default-src 'self'; connect-src 'self' https://api.deepl.com;
+  Content-Security-Policy: default-src 'self'; connect-src 'self' https://translate.googleapis.com;
   ```
 - If an on-device local model (e.g., Transformers.js via WebAssembly or browser native Translation API `ai.translator`) is used, no external `connect-src` is required, though `wasm-unsafe-eval` may be needed for WebAssembly execution.
 
@@ -139,14 +139,22 @@ session.restore();
 
 ## Example Custom Providers
 
-### 1. Local Offline Mock (Default)
+### 1. Google Translate Adapter (Default on `<TranslationController />`) & Offline Fallback
 
-Included for zero-network development and testing:
+`<TranslationController />` defaults to `createGoogleTranslateAdapter()`, which performs client-side Google Translate requests only after explicit user consent and automatically falls back to local offline lexicons if offline or blocked:
 
 ```typescript
-import { createOfflineMockTranslationAdapter } from "accessibility-plugin-react";
+import {
+  createGoogleTranslateAdapter,
+  createOfflineMockTranslationAdapter,
+} from "accessibility-plugin-react";
 
-const adapter = createOfflineMockTranslationAdapter({
+const googleAdapter = createGoogleTranslateAdapter({
+  fallbackToOffline: true,
+});
+
+// Zero-network alternative for air-gapped development and testing:
+const offlineAdapter = createOfflineMockTranslationAdapter({
   prefix: "[ES]",
   supportedLanguages: ["es", "fr", "de", "si", "ta"],
 });
