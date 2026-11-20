@@ -77,9 +77,21 @@ Screen-reader accessibility acceptance is verified across NVDA (Windows 11 with 
 - **Modal Dialog Focus Trap:** Modals (Keyboard Shortcuts, Dictionary, Translation, Page Navigator) trap Tab and Shift+Tab focus using visibility-safe element queries and return focus to invoking triggers on Escape/Close without leaking focus into background elements.
 - **Zero Automated Violations:** Continuous `@axe-core/playwright` audits across all themes and responsive viewports yield zero detectable WCAG 2.0/2.1/2.2 A/AA violations.
 
+## Representative host-application acceptance (Issue #8)
+
+Representative host-application acceptance is verified across clean packed consumers in production builds:
+
+- **Host Applications Tested:** React 18.3.1 (Vite), React 19.2.0 (Tailwind CSS 3 Vite), Next.js 16.2.10 (App Router, Pages Router, and direct Server Component imports).
+- **Sticky & Fixed Overlay Isolation:** Scoped effects (`effectScope`) and fixed-descendant filter isolation ensure host navigation bars and fixed overlays are not distorted by CSS containing block creation (Issue #13).
+- **Dynamic Content & Font Loading:** Incremental mutation handling without FOUC, late font loading via `document.fonts`, and root attribute observation (`class`, `data-theme`, `dir`, `lang`) without observer feedback loops (Issue #12).
+- **Forms & Interactive Controls:** Protected form controls, buttons, links, tables, code blocks, and math from unwanted font/spacing alterations.
+- **Media Hiding Layout Retention:** Verified that HTML images, pictures, CSS backgrounds, and video elements retain their dimensions when hidden and playback continues non-destructively in the background without layout shifts (Issues #194, #201, #204, #206).
+- **Storage Resilience & Lifecycle Cleanup:** Confirmed fallback to in-memory state on blocked or corrupt `localStorage`, clean cleanup upon provider unmount, and zero orphaned style sheets or detached DOM listeners.
+- **Resolved Sub-issues:** #187 (host translation adapter), #188 (dictionary lookup), #201 (figure decorative markers & Google Translate adapter).
+
 ## Known limits and release gates
 
-1. **Human accessibility testing pending:** VoiceOver/NVDA, physical touch devices, forced-colors visual review, browser zoom 200/400%. Automated axe and emulation do not establish WCAG conformance.
+1. **Human accessibility testing baseline completed:** Screen-reader acceptance (VoiceOver/NVDA/TalkBack, Issue #6), physical devices & zoom reflow (Issue #7), and representative host applications (Issue #8) are verified. Automated axe and emulation do not substitute for continuous human evaluation.
 2. **Local Firefox remains unavailable on this Mac.** The complete Firefox browser scenarios passed on Linux, so the local launch issue does not block automated release verification.
 3. **License resolved for this release:** on 2026-10-13 the owner confirmed authority to license all included code under ISC. LICENSE and package/lock metadata now agree on ISC. Historical GPL/ISC/MIT discrepancies remain recorded in baseline/migration evidence.
 4. **Version 2 identity and channel:** `accessibility-plugin-react@2.0.0` is published under `latest`, superseding the unpublished beta candidate. Registry metadata, integrity, clean React/Next consumers and the browser matrix were verified after npm's publish-time scan completed; see RELEASE.md.
@@ -99,7 +111,7 @@ Merged through PR #17 (movement source `d5e21df`), the trigger persists normaliz
 
 ## Release tracking
 
-[Project #18](https://github.com/users/prabothcharith/projects/18) and [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) track the remaining release work. Owner licensing/identity decisions (#4/#5), documentation correction (#9), final automated candidate checks and npm publication are complete. Human acceptance (#6–#8) and any separately authorized Git tag/GitHub release remain outstanding.
+[Project #18](https://github.com/users/prabothcharith/projects/18) and [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) track the remaining release work. Owner licensing/identity decisions (#4/#5), documentation correction (#9), final automated candidate checks and npm publication are complete. Human acceptance (#6–#8) is verified and resolved; any separately authorized Git tag/GitHub release remains an owner decision.
 
 ## npm identity follow-up
 
