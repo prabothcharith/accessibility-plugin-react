@@ -84,7 +84,7 @@ export function mapProfileSettingsToFeatures(
   }
 
   if (settings.hideDecorativeImages !== undefined) {
-    features.hideImages = settings.hideDecorativeImages;
+    features.hideImages = settings.hideDecorativeImages ? "decorative" : false;
   }
 
   if (settings.fontFamily !== undefined) {

@@ -39,6 +39,15 @@ export const CONTRAST_MODES = [
 ] as const;
 export type ContrastModeValue = (typeof CONTRAST_MODES)[number];
 
+/**
+ * Image hiding modes:
+ * - "all" (default for HideImagesController): hides all host images and CSS-based images while preserving protected controls, CAPTCHAs, charts, maps, QR codes, and math.
+ * - "decorative" (default for HideDecorativeImagesController): hides only explicitly decorative images and non-informative CSS images.
+ */
+export const HIDE_IMAGES_MODES = ["all", "decorative"] as const;
+export type HideImagesMode = (typeof HIDE_IMAGES_MODES)[number];
+export type HideImagesValue = boolean | HideImagesMode;
+
 export const builtins: Record<
   string,
   { defaultValue: unknown; validate: (v: unknown) => boolean }
@@ -129,7 +138,6 @@ export const builtins: Record<
 for (const key of [
   "invertColors",
   "grayscale",
-  "hideImages",
   "hideVideos",
   "bigCursor",
   "readingGuide",
@@ -149,6 +157,11 @@ for (const key of [
     validate: (v) => typeof v === "boolean",
   };
 }
+
+builtins.hideImages = {
+  defaultValue: false,
+  validate: (v) => typeof v === "boolean" || v === "all" || v === "decorative",
+};
 
 builtins.readAloudRate = {
   defaultValue: 1.0,

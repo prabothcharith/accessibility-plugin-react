@@ -1,10 +1,22 @@
 import { useEffect } from "react";
-import { builtins } from "./featureSchema";
+import { builtins, type HideImagesMode } from "./featureSchema";
 import { applySmartContrast } from "./smartContrast";
 import type { FeatureRegistration } from "./types";
 
 const EXCLUDED =
   "[data-arap-ui], [data-arap-ui] *, script, style, link, meta, noscript, template";
+const VIDEO_HIDE_SELECTOR =
+  'video, [data-video], .video-placeholder, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="youtu.be/"], iframe[src*="player.vimeo.com/video/"], iframe[src*="player.twitch.tv/"], iframe[src*="dailymotion.com/embed/"], iframe[src*="loom.com/embed/"], iframe[src*="wistia."], iframe[data-src*="youtube"], iframe[data-src*="vimeo"], iframe[data-src*="twitch.tv"], iframe[data-src*="dailymotion"], iframe[data-src*="loom.com"]';
+const CSS_IMAGE_VALUE_REGEX =
+  /(?:url|-webkit-image-set|image-set|cross-fade)\s*\(/i;
+const HIDE_IMAGES_STYLE_ID = "arap-hide-images-style";
+const HIDE_IMAGES_PSEUDO_CSS = [
+  "[data-arap-hide-before-bg]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::before { background-image: none !important; }",
+  "[data-arap-hide-after-bg]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::after { background-image: none !important; }",
+  "[data-arap-hide-before-content]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::before { visibility: hidden !important; }",
+  "[data-arap-hide-after-content]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::after { visibility: hidden !important; }",
+].join("\n");
+type StyleableElement = HTMLElement | SVGElement;
 export const MAX_HOST_ELEMENTS = 8000;
 const cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M4 2v32l9-9 7 13 6-3-7-12h14z' fill='black' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto`;
 /** Detects whether the user's operating system has forced colors / high contrast active. */
@@ -566,6 +578,219 @@ export function getScriptSpacingConstraints(
   };
 }
 
+const PROTECTED_TOKEN_PATTERNS = {
+  captcha:
+    /(?:^|[\s_-])(?:captcha|recaptcha|hcaptcha|turnstile)(?:$|[\s_-])|captcha/i,
+  chart:
+    /(?:^|[\s_-])(?:chart|charts|graph|graphs|diagram|diagrams|sparkline|plot|highcharts|recharts|echarts|chartjs)(?:$|[\s_-])/i,
+  map: /(?:^|[\s_-])(?:map|maps|leaflet|mapbox|gmap|gmaps|openstreetmap|geomap)(?:$|[\s_-])/i,
+  qr: /(?:^|[\s_-])(?:qr|qrcode|barcode|barcodes)(?:$|[\s_-])/i,
+  math: /(?:^|[\s_-])(?:math|mathjax|katex|formula|equation)(?:$|[\s_-])/i,
+};
+
+const INTERACTIVE_CONTROL_SELECTOR =
+  "button, [role='button'], [role='menuitem'], [role='tab'], input, select, textarea, summary";
+const EXCLUDED_PROTECTED_SELECTOR =
+  "[data-arap-ui], [data-arap-diagnostics], .arap-root, [data-arap-ignore], [data-arap-exempt]";
+
+function hasProtectedToken(
+  raw: string | null | undefined,
+  pattern: RegExp,
+): boolean {
+  if (!raw) return false;
+  const normalized = raw.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+  return pattern.test(normalized);
+}
+
+function getParentCrossingShadow(node: Element): Element | null {
+  if (node.parentElement) return node.parentElement;
+  const root = node.getRootNode?.();
+  if (typeof ShadowRoot !== "undefined" && root instanceof ShadowRoot) {
+    return root.host;
+  }
+  return null;
+}
+
+function findClosestCrossingShadow(
+  el: Element,
+  selector: string,
+): Element | null {
+  let curr: Element | null = el;
+  while (curr) {
+    if (curr.matches(selector)) return curr;
+    curr = getParentCrossingShadow(curr);
+  }
+  return null;
+}
+
+function resolveHideImagesMode(value: unknown): HideImagesMode | null {
+  if (value === true || value === "all") return "all";
+  if (value === "decorative") return "decorative";
+  return null;
+}
+
+function hasExplicitDecorativeMarker(node: Element): boolean {
+  if (
+    node.hasAttribute("data-decorative") &&
+    node.getAttribute("data-decorative") !== "false"
+  ) {
+    return true;
+  }
+  if (
+    node.classList.contains("decorative") ||
+    node.classList.contains("deco")
+  ) {
+    return true;
+  }
+  const nodeRole = node.getAttribute("role");
+  if (nodeRole === "presentation" || nodeRole === "none") {
+    return true;
+  }
+  return node.getAttribute("aria-hidden") === "true";
+}
+
+function isStyleableElement(node: unknown): node is StyleableElement {
+  return (
+    (typeof HTMLElement !== "undefined" && node instanceof HTMLElement) ||
+    (typeof SVGElement !== "undefined" && node instanceof SVGElement)
+  );
+}
+
+function hasInlineCssImage(el: StyleableElement): boolean {
+  const style = el.style;
+  return (
+    CSS_IMAGE_VALUE_REGEX.test(style.backgroundImage) ||
+    CSS_IMAGE_VALUE_REGEX.test(style.background) ||
+    CSS_IMAGE_VALUE_REGEX.test(style.listStyleImage) ||
+    CSS_IMAGE_VALUE_REGEX.test(style.content) ||
+    CSS_IMAGE_VALUE_REGEX.test(style.cssText)
+  );
+}
+
+function isCriticallyProtectedImage(
+  el: Element,
+  mode: HideImagesMode,
+): boolean {
+  try {
+    // Never hide widget UI, diagnostics, or explicit opt-out containers
+    if (findClosestCrossingShadow(el, EXCLUDED_PROTECTED_SELECTOR)) {
+      return true;
+    }
+
+    // Interactive controls (buttons, menu items, tabs, form inputs)
+    if (findClosestCrossingShadow(el, INTERACTIVE_CONTROL_SELECTOR)) {
+      return true;
+    }
+
+    // Links: in decorative mode protect all linked images; in all mode protect icon/image-only links
+    const linkAncestor = findClosestCrossingShadow(el, "a, [role='link']");
+    if (linkAncestor) {
+      if (mode === "decorative") {
+        return true;
+      }
+      if ((linkAncestor.textContent ?? "").trim().length === 0) {
+        return true;
+      }
+    }
+
+    // Self-specific src / alt / title / aria-roledescription checks
+    const src = el.getAttribute("src") ?? "";
+    const alt = el.getAttribute("alt") ?? "";
+    const title = el.getAttribute("title") ?? "";
+    const roleDesc = el.getAttribute("aria-roledescription") ?? "";
+
+    if (
+      /captcha/i.test(src) ||
+      /captcha/i.test(alt) ||
+      /captcha/i.test(title) ||
+      hasProtectedToken(roleDesc, PROTECTED_TOKEN_PATTERNS.chart) ||
+      /[/?.=&_-](?:maps|tiles|openstreetmap|mapbox|leaflet)(?:[/?.=&_-]|$)/i.test(
+        src,
+      ) ||
+      /maps\.googleapis\.com|openstreetmap|mapbox/i.test(src) ||
+      /([/_.\-=?]|^)(?:qr|qrcode|barcode|barcodes)(?:[/_.\-=&]|$)/i.test(src) ||
+      hasProtectedToken(alt, PROTECTED_TOKEN_PATTERNS.qr)
+    ) {
+      return true;
+    }
+
+    // Walk element and ancestors below document.body / document.documentElement
+    const docBody = typeof document !== "undefined" ? document.body : null;
+    const docRoot =
+      typeof document !== "undefined" ? document.documentElement : null;
+    let curr: Element | null = el;
+    while (curr) {
+      if (curr !== el && (curr === docBody || curr === docRoot)) {
+        break;
+      }
+      const idAttr = curr.getAttribute("id");
+      const classAttr =
+        typeof curr.className === "string"
+          ? curr.className
+          : curr.getAttribute("class");
+      const roleAttr = curr.getAttribute("role");
+      const ariaLabelAttr = curr.getAttribute("aria-label");
+
+      // CAPTCHA
+      if (
+        (curr.hasAttribute("data-captcha") &&
+          curr.getAttribute("data-captcha") !== "false") ||
+        hasProtectedToken(idAttr, PROTECTED_TOKEN_PATTERNS.captcha) ||
+        hasProtectedToken(classAttr, PROTECTED_TOKEN_PATTERNS.captcha) ||
+        hasProtectedToken(ariaLabelAttr, PROTECTED_TOKEN_PATTERNS.captcha)
+      ) {
+        return true;
+      }
+
+      // Charts, graphs, and diagrams
+      if (
+        roleAttr === "graphics-document" ||
+        roleAttr === "graphics-symbol" ||
+        hasProtectedToken(idAttr, PROTECTED_TOKEN_PATTERNS.chart) ||
+        hasProtectedToken(classAttr, PROTECTED_TOKEN_PATTERNS.chart)
+      ) {
+        return true;
+      }
+
+      // Maps and geolocation
+      if (
+        (curr.hasAttribute("data-map") &&
+          curr.getAttribute("data-map") !== "false") ||
+        (roleAttr === "region" &&
+          hasProtectedToken(ariaLabelAttr, PROTECTED_TOKEN_PATTERNS.map)) ||
+        hasProtectedToken(idAttr, PROTECTED_TOKEN_PATTERNS.map) ||
+        hasProtectedToken(classAttr, PROTECTED_TOKEN_PATTERNS.map)
+      ) {
+        return true;
+      }
+
+      // QR codes and barcodes
+      if (
+        hasProtectedToken(idAttr, PROTECTED_TOKEN_PATTERNS.qr) ||
+        hasProtectedToken(classAttr, PROTECTED_TOKEN_PATTERNS.qr)
+      ) {
+        return true;
+      }
+
+      // Mathematical formulas
+      if (
+        roleAttr === "math" ||
+        curr.localName === "math" ||
+        hasProtectedToken(idAttr, PROTECTED_TOKEN_PATTERNS.math) ||
+        hasProtectedToken(classAttr, PROTECTED_TOKEN_PATTERNS.math)
+      ) {
+        return true;
+      }
+
+      curr = getParentCrossingShadow(curr);
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+}
+
 /**
  * Determines whether an element represents functional, informative, or protected visual content
  * (e.g., interactive controls, CAPTCHA, charts, graphs, maps, QR codes, or images with meaningful alt/names).
@@ -573,94 +798,11 @@ export function getScriptSpacingConstraints(
  */
 export function isFunctionalOrMeaningfulImage(el: Element): boolean {
   try {
-    // Never hide widget or diagnostic UI assets
-    if (el.closest("[data-arap-ui], [data-arap-diagnostics], .arap-root")) {
-      return true;
-    }
-
-    // 1. Linked or interactive controls: images inside buttons, links, inputs, or interactive roles
-    if (
-      el.closest(
-        "a, button, [role='button'], [role='link'], [role='menuitem'], [role='tab'], input, select, textarea, summary",
-      )
-    ) {
-      return true;
-    }
-
-    // 2. CAPTCHA verification
-    if (
-      el.closest(
-        "[id*='captcha' i], [class*='captcha' i], [aria-label*='captcha' i], [data-captcha]",
-      ) ||
-      el.matches(
-        "[src*='captcha' i], [alt*='captcha' i], [title*='captcha' i], [id*='captcha' i], [class*='captcha' i]",
-      )
-    ) {
-      return true;
-    }
-
-    // 3. Charts, graphs, and diagrams
-    if (
-      el.closest(
-        "[role='graphics-document'], [role='graphics-symbol'], [class*='chart' i], [id*='chart' i], [class*='graph' i], [id*='graph' i], [class*='diagram' i], [id*='diagram' i]",
-      ) ||
-      el.matches(
-        "[role='graphics-document'], [role='graphics-symbol'], [aria-roledescription*='chart' i]",
-      )
-    ) {
-      return true;
-    }
-
-    // 4. Maps and geolocation
-    if (
-      el.closest(
-        "[role='region'][aria-label*='map' i], [class*='map' i], [id*='map' i], [data-map]",
-      ) ||
-      el.matches(
-        "[src*='maps' i], [src*='tiles' i], [src*='openstreetmap' i], [src*='mapbox' i]",
-      )
-    ) {
-      return true;
-    }
-
-    // 5. QR codes and barcodes
-    if (
-      el.closest(
-        "[class*='qr' i], [id*='qr' i], [class*='barcode' i], [id*='barcode' i]",
-      ) ||
-      el.matches(
-        "[src*='qr' i], [alt*='qr' i], [src*='barcode' i], [alt*='barcode' i]",
-      )
-    ) {
-      return true;
-    }
-
-    // 6. Mathematical formulas
-    if (el.closest("[role='math'], math, [class*='math' i]")) {
+    if (isCriticallyProtectedImage(el, "decorative")) {
       return true;
     }
 
     // Explicit decorative markers override alt/aria-label/title attributes
-    const hasExplicitDecorativeMarker = (node: Element) => {
-      if (
-        node.hasAttribute("data-decorative") &&
-        node.getAttribute("data-decorative") !== "false"
-      ) {
-        return true;
-      }
-      if (
-        node.classList.contains("decorative") ||
-        node.classList.contains("deco")
-      ) {
-        return true;
-      }
-      const nodeRole = node.getAttribute("role");
-      if (nodeRole === "presentation" || nodeRole === "none") {
-        return true;
-      }
-      return node.getAttribute("aria-hidden") === "true";
-    };
-
     if (
       hasExplicitDecorativeMarker(el) ||
       (el.parentElement?.matches("picture") &&
@@ -669,7 +811,7 @@ export function isFunctionalOrMeaningfulImage(el: Element): boolean {
       return false;
     }
 
-    // 7. Meaningful accessible names or semantic roles
+    // Meaningful accessible names or semantic roles
     if (el.hasAttribute("alt")) {
       const alt = el.getAttribute("alt")?.trim();
       if (alt && alt.length > 0) return true;
@@ -721,34 +863,37 @@ export function isEligibleDecorativeImage(el: Element): boolean {
       return false;
     }
 
-    if (el.matches("img, picture")) {
+    if (
+      el.matches(
+        "img, picture, object[type^='image/' i], embed[type^='image/' i], svg",
+      )
+    ) {
+      if (el.matches("svg")) {
+        return (
+          !el.parentElement?.closest("svg") && hasExplicitDecorativeMarker(el)
+        );
+      }
+
       // 1. Explicitly decorative alt (alt="" or whitespace-only)
       if (el.hasAttribute("alt") && el.getAttribute("alt")?.trim() === "") {
         return true;
       }
 
-      // 2. Explicitly decorative ARIA role
-      const role = el.getAttribute("role");
-      if (role === "presentation" || role === "none") {
+      // 2. Explicitly decorative ARIA role, aria-hidden, or data-decorative/.decorative/.deco
+      if (hasExplicitDecorativeMarker(el)) {
         return true;
       }
 
-      // 3. Hidden from assistive technologies
-      if (el.getAttribute("aria-hidden") === "true") {
-        return true;
-      }
-
-      // 4. Explicit decorative marker
+      // 3. Inherited decorative marker from parent <picture>
       if (
-        (el.hasAttribute("data-decorative") &&
-          el.getAttribute("data-decorative") !== "false") ||
-        el.classList.contains("decorative") ||
-        el.classList.contains("deco")
+        el.matches("img") &&
+        el.parentElement?.matches("picture") &&
+        hasExplicitDecorativeMarker(el.parentElement)
       ) {
         return true;
       }
 
-      // For <picture>, check child <img> elements
+      // 4. For <picture>, check child <img> elements
       if (el.matches("picture")) {
         const childImg = el.querySelector("img");
         if (childImg && isEligibleDecorativeImage(childImg)) {
@@ -765,6 +910,102 @@ export function isEligibleDecorativeImage(el: Element): boolean {
   return false;
 }
 
+function shouldHideImageElement(el: Element, mode: HideImagesMode): boolean {
+  if (mode === "decorative") {
+    return isEligibleDecorativeImage(el);
+  }
+  try {
+    if (
+      !el.matches(
+        "img, picture, object[type^='image/' i], embed[type^='image/' i], svg",
+      )
+    ) {
+      return false;
+    }
+    if (isCriticallyProtectedImage(el, "all")) {
+      return false;
+    }
+    if (el.matches("svg")) {
+      return (
+        !el.parentElement?.closest("svg") && hasExplicitDecorativeMarker(el)
+      );
+    }
+    if (el.matches("picture")) {
+      const childImgs = el.querySelectorAll("img");
+      for (const childImg of Array.from(childImgs)) {
+        if (isCriticallyProtectedImage(childImg, "all")) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function shouldHideCssImagesOnElement(
+  el: Element,
+  mode: HideImagesMode,
+): boolean {
+  try {
+    if (isCriticallyProtectedImage(el, mode)) {
+      return false;
+    }
+    if (mode === "decorative" && !hasExplicitDecorativeMarker(el)) {
+      if (
+        el.getAttribute("role") === "img" &&
+        ((el.getAttribute("aria-label")?.trim().length ?? 0) > 0 ||
+          (el.getAttribute("aria-labelledby")?.trim().length ?? 0) > 0 ||
+          (el.getAttribute("title")?.trim().length ?? 0) > 0)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function splitSelectorList(selectorText: string): string[] {
+  const parts: string[] = [];
+  let depthParen = 0;
+  let depthBracket = 0;
+  let quote: string | null = null;
+  let start = 0;
+
+  for (let i = 0; i < selectorText.length; i++) {
+    const ch = selectorText[i];
+    if (quote) {
+      if (ch === "\\" && i + 1 < selectorText.length) {
+        i++;
+        continue;
+      }
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+    } else if (ch === "(") {
+      depthParen++;
+    } else if (ch === ")" && depthParen > 0) {
+      depthParen--;
+    } else if (ch === "[") {
+      depthBracket++;
+    } else if (ch === "]" && depthBracket > 0) {
+      depthBracket--;
+    } else if (ch === "," && depthParen === 0 && depthBracket === 0) {
+      parts.push(selectorText.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  const tail = selectorText.slice(start).trim();
+  if (tail) parts.push(tail);
+  return parts;
+}
+
 export type EffectScopeTarget =
   string | HTMLElement | { current: HTMLElement | null } | null | undefined;
 
@@ -776,6 +1017,7 @@ export interface ApplyPageOptions {
 export interface EffectsSession {
   undo: () => void;
   applyIncremental: (addedNodes: HTMLElement[]) => void;
+  applyMediaIncremental?: (nodes: Array<HTMLElement | SVGElement>) => void;
   styledCount: () => number;
   targetRoot?: HTMLElement | null;
 }
@@ -1128,40 +1370,6 @@ function applyToElements(
 
   for (const el of targetElements) {
     if (values.bigCursor && isFinePointer) set(el, "cursor", cursor);
-    if (values.hideImages) {
-      if (isEligibleDecorativeImage(el)) {
-        set(el, "visibility", "hidden");
-        if (el.matches("picture")) {
-          const childImg = el.querySelector("img");
-          if (childImg instanceof HTMLElement) {
-            set(childImg, "visibility", "hidden");
-          }
-        }
-      }
-      if (!isFunctionalOrMeaningfulImage(el)) {
-        const inlineBg = el.style.backgroundImage;
-        if (inlineBg && /url\(/i.test(inlineBg)) {
-          set(el, "background-image", "none");
-        } else {
-          try {
-            const computedBg = getComputedStyle(el).backgroundImage;
-            if (computedBg && /url\(/i.test(computedBg)) {
-              set(el, "background-image", "none");
-            }
-          } catch {
-            // Ignore computed style failures in non-standard environments
-          }
-        }
-      }
-    }
-    // Do not hide unrelated embeds (maps, documents or payment forms).
-    if (
-      values.hideVideos &&
-      el.matches(
-        'video, [data-video], .video-placeholder, iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"], iframe[src*="youtu.be/"], iframe[src*="player.vimeo.com/video/"], iframe[src*="player.twitch.tv/"], iframe[src*="dailymotion.com/embed/"], iframe[src*="loom.com/embed/"], iframe[src*="wistia."], iframe[data-src*="youtube"], iframe[data-src*="vimeo"], iframe[data-src*="twitch.tv"], iframe[data-src*="dailymotion"], iframe[data-src*="loom.com"]',
-      )
-    )
-      set(el, "visibility", "hidden");
     if (fallbackColors) {
       set(el, "color", fallbackColors[0]);
       set(el, "background-color", fallbackColors[1]);
@@ -1222,12 +1430,21 @@ export function applyPageSession(
   }
 
   const targetRoot = resolveEffectScope(effectScope);
+  const hideImagesMode = resolveHideImagesMode(values.hideImages);
   const undo: (() => void)[] = [];
   const styledElements = new WeakSet<HTMLElement>();
+  const hiddenImageElements = new WeakSet<StyleableElement>();
+  const hiddenBgElements = new WeakSet<StyleableElement>();
+  const hiddenListImageElements = new WeakSet<StyleableElement>();
+  const hiddenVideoElements = new WeakSet<StyleableElement>();
+  const hiddenPseudoAttrs = new WeakMap<StyleableElement, Set<string>>();
+  const shadowStyleRoots = new WeakSet<ShadowRoot>();
   let totalStyled = 0;
   const isFinePointer = hasFinePointer();
+  const canInspectPseudoComputed =
+    typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
 
-  function set(element: HTMLElement, property: string, value: string) {
+  function set(element: StyleableElement, property: string, value: string) {
     const previous = element.style.getPropertyValue(property);
     const priority = element.style.getPropertyPriority(property);
     element.style.setProperty(property, value, "important");
@@ -1242,6 +1459,443 @@ export function applyPageSession(
       if (previous) element.style.setProperty(property, previous, priority);
       else element.style.removeProperty(property);
     });
+  }
+
+  function ensurePseudoHideStyle(root: Document | ShadowRoot) {
+    if ("head" in root) {
+      if (!root.head) return;
+      let styleEl = root.getElementById(
+        HIDE_IMAGES_STYLE_ID,
+      ) as HTMLStyleElement | null;
+      if (!styleEl) {
+        styleEl = root.createElement("style");
+        styleEl.id = HIDE_IMAGES_STYLE_ID;
+        styleEl.dataset.arapUi = "";
+        if (nonce) {
+          styleEl.nonce = nonce;
+          styleEl.setAttribute("nonce", nonce);
+        }
+        styleEl.textContent = HIDE_IMAGES_PSEUDO_CSS;
+        root.head.appendChild(styleEl);
+        undo.push(() => {
+          styleEl?.remove();
+        });
+      }
+      return;
+    }
+
+    if (shadowStyleRoots.has(root)) return;
+    shadowStyleRoots.add(root);
+    const styleEl = document.createElement("style");
+    styleEl.dataset.arapUi = "";
+    styleEl.dataset.arapHideImagesShadow = "";
+    if (nonce) {
+      styleEl.nonce = nonce;
+      styleEl.setAttribute("nonce", nonce);
+    }
+    styleEl.textContent = HIDE_IMAGES_PSEUDO_CSS;
+    root.appendChild(styleEl);
+    undo.push(() => {
+      styleEl.remove();
+    });
+  }
+
+  function addPseudoAttr(el: StyleableElement, attr: string) {
+    const tracked = hiddenPseudoAttrs.get(el);
+    if (tracked?.has(attr) && el.getAttribute(attr) === "true") {
+      return;
+    }
+    const hadAttr = el.hasAttribute(attr);
+    const prevVal = el.getAttribute(attr);
+    el.setAttribute(attr, "true");
+    let setAttrs = tracked;
+    if (!setAttrs) {
+      setAttrs = new Set<string>();
+      hiddenPseudoAttrs.set(el, setAttrs);
+    }
+    setAttrs.add(attr);
+    undo.push(() => {
+      if (el.getAttribute(attr) !== "true") return;
+      if (hadAttr && prevVal !== null) el.setAttribute(attr, prevVal);
+      else el.removeAttribute(attr);
+    });
+    if (typeof ShadowRoot !== "undefined") {
+      const rootNode = el.getRootNode?.();
+      if (rootNode instanceof ShadowRoot) {
+        ensurePseudoHideStyle(rootNode);
+      }
+    }
+  }
+
+  function applyMediaBatch(
+    candidates: StyleableElement[],
+    isIncrementalMedia: boolean,
+  ) {
+    if (!hideImagesMode && !values.hideVideos) return;
+
+    const seen = new Set<StyleableElement>();
+    const uniqueCandidates: StyleableElement[] = [];
+    for (const el of candidates) {
+      if (seen.has(el)) continue;
+      seen.add(el);
+      if (el.matches(EXCLUDED)) continue;
+      uniqueCandidates.push(el);
+    }
+    if (uniqueCandidates.length === 0) return;
+
+    type PendingMediaAction = {
+      el: StyleableElement;
+      hideImageVisibility: boolean;
+      hideVideoVisibility: boolean;
+      hideBg: boolean;
+      hideListImg: boolean;
+      pseudoAttrs: string[];
+      pictureChildImgs: HTMLElement[];
+    };
+    const actions: PendingMediaAction[] = [];
+
+    // Read phase: inspect inline + computed styles before mutating DOM to avoid style thrashing
+    for (const el of uniqueCandidates) {
+      let hideImageVisibility = false;
+      let hideVideoVisibility = false;
+      let hideBg = false;
+      let hideListImg = false;
+      const pseudoAttrs: string[] = [];
+      const pictureChildImgs: HTMLElement[] = [];
+
+      if (values.hideVideos && el.matches(VIDEO_HIDE_SELECTOR)) {
+        const needsApply =
+          !hiddenVideoElements.has(el) ||
+          (isIncrementalMedia &&
+            (el.style.getPropertyValue("visibility") !== "hidden" ||
+              el.style.getPropertyPriority("visibility") !== "important"));
+        if (needsApply) {
+          hideVideoVisibility = true;
+        }
+      }
+
+      if (hideImagesMode) {
+        if (shouldHideImageElement(el, hideImagesMode)) {
+          const needsApply =
+            !hiddenImageElements.has(el) ||
+            (isIncrementalMedia &&
+              (el.style.getPropertyValue("visibility") !== "hidden" ||
+                el.style.getPropertyPriority("visibility") !== "important"));
+          if (needsApply) {
+            hideImageVisibility = true;
+          }
+          if (el.matches("picture")) {
+            for (const childImg of Array.from(el.querySelectorAll("img"))) {
+              if (
+                childImg instanceof HTMLElement &&
+                !isCriticallyProtectedImage(childImg, hideImagesMode)
+              ) {
+                const childNeedsApply =
+                  !hiddenImageElements.has(childImg) ||
+                  (isIncrementalMedia &&
+                    (childImg.style.getPropertyValue("visibility") !==
+                      "hidden" ||
+                      childImg.style.getPropertyPriority("visibility") !==
+                        "important"));
+                if (childNeedsApply) {
+                  pictureChildImgs.push(childImg);
+                }
+              }
+            }
+          }
+        }
+
+        if (shouldHideCssImagesOnElement(el, hideImagesMode)) {
+          let computed: CSSStyleDeclaration | null;
+          try {
+            computed = getComputedStyle(el);
+          } catch {
+            computed = null;
+          }
+
+          const inlineBg = el.style.backgroundImage;
+          const inlineBgShorthand = el.style.background;
+          const hasCssBg =
+            CSS_IMAGE_VALUE_REGEX.test(inlineBg) ||
+            CSS_IMAGE_VALUE_REGEX.test(inlineBgShorthand) ||
+            (computed !== null &&
+              CSS_IMAGE_VALUE_REGEX.test(computed.backgroundImage));
+          if (hasCssBg) {
+            const needsApply =
+              !hiddenBgElements.has(el) ||
+              (isIncrementalMedia &&
+                (el.style.getPropertyValue("background-image") !== "none" ||
+                  el.style.getPropertyPriority("background-image") !==
+                    "important"));
+            if (needsApply) {
+              hideBg = true;
+            }
+          }
+
+          const inlineListImg = el.style.listStyleImage;
+          const hasListImg =
+            CSS_IMAGE_VALUE_REGEX.test(inlineListImg) ||
+            (computed !== null &&
+              CSS_IMAGE_VALUE_REGEX.test(computed.listStyleImage));
+          if (hasListImg) {
+            const needsApply =
+              !hiddenListImageElements.has(el) ||
+              (isIncrementalMedia &&
+                (el.style.getPropertyValue("list-style-image") !== "none" ||
+                  el.style.getPropertyPriority("list-style-image") !==
+                    "important"));
+            if (needsApply) {
+              hideListImg = true;
+            }
+          }
+
+          const inlineContent = el.style.content;
+          const hasContentImg =
+            CSS_IMAGE_VALUE_REGEX.test(inlineContent) ||
+            (computed !== null && CSS_IMAGE_VALUE_REGEX.test(computed.content));
+          if (hasContentImg) {
+            const needsApply =
+              !hiddenImageElements.has(el) ||
+              (isIncrementalMedia &&
+                (el.style.getPropertyValue("visibility") !== "hidden" ||
+                  el.style.getPropertyPriority("visibility") !== "important"));
+            if (needsApply) {
+              hideImageVisibility = true;
+            }
+          }
+
+          if (canInspectPseudoComputed) {
+            for (const pseudo of ["before", "after"] as const) {
+              try {
+                const pStyle = getComputedStyle(el, `::${pseudo}`);
+                if (
+                  pStyle.content &&
+                  pStyle.content !== "none" &&
+                  pStyle.content !== "normal"
+                ) {
+                  if (CSS_IMAGE_VALUE_REGEX.test(pStyle.backgroundImage)) {
+                    pseudoAttrs.push(`data-arap-hide-${pseudo}-bg`);
+                  }
+                  if (CSS_IMAGE_VALUE_REGEX.test(pStyle.content)) {
+                    pseudoAttrs.push(`data-arap-hide-${pseudo}-content`);
+                  }
+                }
+              } catch {
+                // Ignore unsupported pseudo computed style access
+              }
+            }
+          }
+        }
+      }
+
+      if (
+        hideImageVisibility ||
+        hideVideoVisibility ||
+        hideBg ||
+        hideListImg ||
+        pseudoAttrs.length > 0 ||
+        pictureChildImgs.length > 0
+      ) {
+        actions.push({
+          el,
+          hideImageVisibility,
+          hideVideoVisibility,
+          hideBg,
+          hideListImg,
+          pseudoAttrs,
+          pictureChildImgs,
+        });
+      }
+    }
+
+    // Write phase
+    const writtenVisibility = new Set<StyleableElement>();
+    for (const action of actions) {
+      if (action.hideImageVisibility || action.hideVideoVisibility) {
+        if (!writtenVisibility.has(action.el)) {
+          set(action.el, "visibility", "hidden");
+          writtenVisibility.add(action.el);
+        }
+        if (action.hideImageVisibility) hiddenImageElements.add(action.el);
+        if (action.hideVideoVisibility) hiddenVideoElements.add(action.el);
+      }
+      for (const childImg of action.pictureChildImgs) {
+        if (!writtenVisibility.has(childImg)) {
+          set(childImg, "visibility", "hidden");
+          writtenVisibility.add(childImg);
+        }
+        hiddenImageElements.add(childImg);
+      }
+      if (action.hideBg) {
+        set(action.el, "background-image", "none");
+        hiddenBgElements.add(action.el);
+      }
+      if (action.hideListImg) {
+        set(action.el, "list-style-image", "none");
+        hiddenListImageElements.add(action.el);
+      }
+      for (const attr of action.pseudoAttrs) {
+        addPseudoAttr(action.el, attr);
+      }
+    }
+  }
+
+  function applyPseudoRulesFromStyleSheets(
+    scopeFilter?: Set<StyleableElement>,
+  ) {
+    if (!hideImagesMode || typeof document === "undefined" || !targetRoot) {
+      return;
+    }
+
+    const activeMode = hideImagesMode;
+    const pendingPseudo: Array<{ el: StyleableElement; attr: string }> = [];
+    const pendingBg: StyleableElement[] = [];
+
+    const collectMatches = (baseSelector: string): StyleableElement[] => {
+      const results: StyleableElement[] = [];
+      try {
+        if (scopeFilter && scopeFilter.size <= 32) {
+          for (const candidate of scopeFilter) {
+            if (
+              !candidate.matches(EXCLUDED) &&
+              candidate.matches(baseSelector)
+            ) {
+              results.push(candidate);
+            }
+          }
+          return results;
+        }
+
+        if (
+          targetRoot === document.body &&
+          document.documentElement &&
+          !document.documentElement.matches(EXCLUDED) &&
+          document.documentElement.matches(baseSelector) &&
+          (!scopeFilter || scopeFilter.has(document.documentElement))
+        ) {
+          results.push(document.documentElement);
+        }
+        if (
+          !targetRoot.matches(EXCLUDED) &&
+          targetRoot.matches(baseSelector) &&
+          (!scopeFilter || scopeFilter.has(targetRoot))
+        ) {
+          results.push(targetRoot);
+        }
+        for (const el of Array.from(
+          targetRoot.querySelectorAll<HTMLElement>(baseSelector),
+        )) {
+          if (!el.matches(EXCLUDED) && (!scopeFilter || scopeFilter.has(el))) {
+            results.push(el);
+          }
+        }
+      } catch {
+        // Ignore complex or unsupported selectors
+      }
+      return results;
+    };
+
+    const visitRuleList = (rules: CSSRuleList) => {
+      for (const rule of Array.from(rules)) {
+        const grouping = rule as CSSMediaRule;
+        if ("cssRules" in rule && grouping.cssRules) {
+          if ("media" in rule && grouping.media?.mediaText) {
+            try {
+              if (
+                typeof window !== "undefined" &&
+                window.matchMedia &&
+                !window.matchMedia(grouping.media.mediaText).matches
+              ) {
+                continue;
+              }
+            } catch {
+              // Ignore invalid media queries
+            }
+          }
+          visitRuleList(grouping.cssRules);
+          continue;
+        }
+
+        const styleRule = rule as CSSStyleRule;
+        if (!styleRule.selectorText || !styleRule.style) continue;
+
+        const bgImg = styleRule.style.getPropertyValue("background-image");
+        const bg = styleRule.style.getPropertyValue("background");
+        const content = styleRule.style.getPropertyValue("content");
+        const hasBgImg =
+          CSS_IMAGE_VALUE_REGEX.test(bgImg) || CSS_IMAGE_VALUE_REGEX.test(bg);
+        const hasContentImg = CSS_IMAGE_VALUE_REGEX.test(content);
+        if (!hasBgImg && !hasContentImg) continue;
+
+        for (const part of splitSelectorList(styleRule.selectorText)) {
+          const pseudoMatch = part.match(/^(.*?)(::?before|::?after)$/i);
+          if (pseudoMatch) {
+            const baseSelector = pseudoMatch[1].trim() || "*";
+            const pseudo = pseudoMatch[2].toLowerCase().endsWith("before")
+              ? "before"
+              : "after";
+            for (const el of collectMatches(baseSelector)) {
+              if (!shouldHideCssImagesOnElement(el, activeMode)) continue;
+              if (hasBgImg) {
+                pendingPseudo.push({
+                  el,
+                  attr: `data-arap-hide-${pseudo}-bg`,
+                });
+              }
+              if (hasContentImg) {
+                pendingPseudo.push({
+                  el,
+                  attr: `data-arap-hide-${pseudo}-content`,
+                });
+              }
+            }
+          } else if (
+            !canInspectPseudoComputed &&
+            hasBgImg &&
+            /(?:-webkit-image-set|image-set|cross-fade)\s*\(/i.test(bgImg || bg)
+          ) {
+            for (const el of collectMatches(part)) {
+              if (
+                shouldHideCssImagesOnElement(el, activeMode) &&
+                !hiddenBgElements.has(el)
+              ) {
+                pendingBg.push(el);
+              }
+            }
+          }
+        }
+      }
+    };
+
+    for (const sheet of Array.from(document.styleSheets)) {
+      if (
+        sheet.ownerNode instanceof Element &&
+        sheet.ownerNode.closest("[data-arap-ui]")
+      ) {
+        continue;
+      }
+      try {
+        if (sheet.cssRules) {
+          visitRuleList(sheet.cssRules);
+        }
+      } catch {
+        // Ignore cross-origin stylesheet SecurityErrors
+      }
+    }
+
+    for (const item of pendingPseudo) {
+      addPseudoAttr(item.el, item.attr);
+    }
+    for (const el of pendingBg) {
+      if (!hiddenBgElements.has(el)) {
+        set(el, "background-image", "none");
+        hiddenBgElements.add(el);
+      }
+    }
+  }
+
+  if (hideImagesMode && typeof document !== "undefined" && document.head) {
+    ensurePseudoHideStyle(document);
   }
 
   const filter = composeFilter(values);
@@ -1446,9 +2100,33 @@ export function applyPageSession(
     set(targetRoot, "cursor", cursor);
   }
 
+  const collectSvgRoots = (root: Element | ShadowRoot): SVGElement[] => {
+    const svgs: SVGElement[] = [];
+    if (
+      root instanceof Element &&
+      root instanceof SVGElement &&
+      root.localName === "svg" &&
+      !root.matches(EXCLUDED) &&
+      !root.parentElement?.closest("svg")
+    ) {
+      svgs.push(root);
+    }
+    for (const s of Array.from(root.querySelectorAll("svg"))) {
+      if (
+        s instanceof SVGElement &&
+        !s.matches(EXCLUDED) &&
+        !s.parentElement?.closest("svg")
+      ) {
+        svgs.push(s);
+      }
+    }
+    return svgs;
+  };
+
   // Initial elements application up to MAX_HOST_ELEMENTS
   if (typeof document !== "undefined" && targetRoot) {
     const allElements: HTMLElement[] = [];
+    const shadowRoots: ShadowRoot[] = [];
     if (targetRoot !== document.body && !targetRoot.matches(EXCLUDED)) {
       allElements.push(targetRoot);
     }
@@ -1461,6 +2139,7 @@ export function applyPageSession(
     for (const el of descendants) {
       if (allElements.length >= MAX_HOST_ELEMENTS) break;
       if (el.shadowRoot && el.shadowRoot.mode === "open") {
+        shadowRoots.push(el.shadowRoot);
         const shadowDescendants = Array.from(
           el.shadowRoot.querySelectorAll<HTMLElement>("*"),
         ).filter((s) => s instanceof HTMLElement && !s.matches(EXCLUDED));
@@ -1475,12 +2154,39 @@ export function applyPageSession(
 
     totalStyled = elements.length;
     applyToElements(elements, values, undo, styledElements, isFinePointer, set);
+
+    if (hideImagesMode || values.hideVideos) {
+      const mediaCandidates: StyleableElement[] = [...elements];
+      if (hideImagesMode) {
+        if (targetRoot === document.body) {
+          if (
+            document.documentElement &&
+            !document.documentElement.matches(EXCLUDED)
+          ) {
+            mediaCandidates.push(document.documentElement);
+          }
+          if (!document.body.matches(EXCLUDED)) {
+            mediaCandidates.push(document.body);
+          }
+        }
+        mediaCandidates.push(...collectSvgRoots(targetRoot));
+        for (const sr of shadowRoots) {
+          mediaCandidates.push(...collectSvgRoots(sr));
+        }
+      }
+      applyMediaBatch(mediaCandidates, false);
+      if (hideImagesMode) {
+        applyPseudoRulesFromStyleSheets();
+      }
+    }
   }
 
   function applyIncremental(addedNodes: HTMLElement[]) {
     if (typeof document === "undefined" || !targetRoot) return;
 
     const candidateElements: HTMLElement[] = [];
+    const incrementalShadowRoots: ShadowRoot[] = [];
+    const scopedAddedRoots: HTMLElement[] = [];
     for (const root of addedNodes) {
       if (root.matches(EXCLUDED)) continue;
 
@@ -1492,6 +2198,8 @@ export function applyPageSession(
       ) {
         continue;
       }
+
+      scopedAddedRoots.push(root);
 
       // If a new direct child was appended to body (or targetRoot) and container filter is active, apply it
       if (
@@ -1512,6 +2220,7 @@ export function applyPageSession(
 
       for (const el of descendants) {
         if (el.shadowRoot && el.shadowRoot.mode === "open") {
+          incrementalShadowRoots.push(el.shadowRoot);
           const shadowDescendants = Array.from(
             el.shadowRoot.querySelectorAll<HTMLElement>("*"),
           ).filter((s) => s instanceof HTMLElement && !s.matches(EXCLUDED));
@@ -1537,6 +2246,75 @@ export function applyPageSession(
         isFinePointer,
         set,
       );
+
+      if (hideImagesMode || values.hideVideos) {
+        const mediaCandidates: StyleableElement[] = [...elementsToStyle];
+        if (hideImagesMode) {
+          for (const root of scopedAddedRoots) {
+            mediaCandidates.push(...collectSvgRoots(root));
+          }
+          for (const sr of incrementalShadowRoots) {
+            mediaCandidates.push(...collectSvgRoots(sr));
+          }
+        }
+        applyMediaBatch(mediaCandidates, true);
+        if (hideImagesMode) {
+          applyPseudoRulesFromStyleSheets(new Set(mediaCandidates));
+        }
+      }
+    }
+  }
+
+  function isWithinTargetScope(node: Element): boolean {
+    if (!targetRoot) return false;
+    if (targetRoot === document.body) return true;
+    let curr: Element | null = node;
+    while (curr) {
+      if (curr === targetRoot || targetRoot.contains(curr)) return true;
+      const rootNode = curr.getRootNode?.();
+      if (typeof ShadowRoot !== "undefined" && rootNode instanceof ShadowRoot) {
+        curr = rootNode.host;
+      } else {
+        break;
+      }
+    }
+    return false;
+  }
+
+  function applyMediaIncremental(nodes: StyleableElement[]) {
+    if (
+      (!hideImagesMode && !values.hideVideos) ||
+      typeof document === "undefined" ||
+      !targetRoot
+    ) {
+      return;
+    }
+
+    const validNodes: StyleableElement[] = [];
+    for (const node of nodes) {
+      if (!isStyleableElement(node) || node.matches(EXCLUDED)) continue;
+      if (!isWithinTargetScope(node)) continue;
+      validNodes.push(node);
+      if (
+        node.parentElement?.matches("picture") &&
+        !node.parentElement.matches(EXCLUDED)
+      ) {
+        validNodes.push(node.parentElement);
+      }
+      if (node.matches("picture")) {
+        for (const childImg of Array.from(node.querySelectorAll("img"))) {
+          if (childImg instanceof HTMLElement && !childImg.matches(EXCLUDED)) {
+            validNodes.push(childImg);
+          }
+        }
+      }
+    }
+
+    if (validNodes.length > 0) {
+      applyMediaBatch(validNodes, true);
+      if (hideImagesMode) {
+        applyPseudoRulesFromStyleSheets(new Set(validNodes));
+      }
     }
   }
 
@@ -1545,6 +2323,7 @@ export function applyPageSession(
       for (const restore of undo.reverse()) restore();
     },
     applyIncremental,
+    applyMediaIncremental,
     styledCount: () => totalStyled,
     targetRoot,
   };
@@ -1795,13 +2574,50 @@ export function useBuiltinEffects(
     let activeSession = applyPageSession(values, optionsOrScope);
     let refreshTimer: ReturnType<typeof setTimeout> | null = null;
     let incrementalTimer: ReturnType<typeof setTimeout> | null = null;
+    let mediaTimer: ReturnType<typeof setTimeout> | null = null;
+    let largeClassTimer: ReturnType<typeof setTimeout> | null = null;
     let pendingAddedNodes: HTMLElement[] = [];
+    const pendingMediaNodes = new Set<StyleableElement>();
+    const pendingLargeClassRoots = new Set<Element>();
 
     const flushIncremental = () => {
       if (pendingAddedNodes.length === 0) return;
       const nodes = pendingAddedNodes;
       pendingAddedNodes = [];
       activeSession.applyIncremental(nodes);
+      observer.takeRecords();
+    };
+
+    const flushMediaIncremental = () => {
+      if (pendingMediaNodes.size === 0) return;
+      const nodes = Array.from(pendingMediaNodes);
+      pendingMediaNodes.clear();
+      activeSession.applyMediaIncremental?.(nodes);
+      observer.takeRecords();
+    };
+
+    const flushLargeClassSubtrees = () => {
+      if (pendingLargeClassRoots.size === 0) return;
+      const roots = Array.from(pendingLargeClassRoots);
+      pendingLargeClassRoots.clear();
+      const collected: StyleableElement[] = [];
+      for (const root of roots) {
+        if (!document.contains(root)) continue;
+        if (isStyleableElement(root) && !root.matches(EXCLUDED)) {
+          collected.push(root);
+        }
+        for (const desc of Array.from(root.querySelectorAll("*"))) {
+          if (collected.length >= MAX_HOST_ELEMENTS) break;
+          if (isStyleableElement(desc) && !desc.matches(EXCLUDED)) {
+            collected.push(desc);
+          }
+        }
+        if (collected.length >= MAX_HOST_ELEMENTS) break;
+      }
+      if (collected.length > 0) {
+        activeSession.applyMediaIncremental?.(collected);
+        observer.takeRecords();
+      }
     };
 
     const scheduleFullRefresh = (delay = 25) => {
@@ -1809,17 +2625,35 @@ export function useBuiltinEffects(
       refreshTimer = setTimeout(() => {
         activeSession.undo();
         activeSession = applyPageSession(values, optionsOrScope);
+        observer.takeRecords();
       }, delay);
     };
 
-    // 1. MutationObserver: incremental for child additions, debounced full refresh for root attributes
+    // 1. MutationObserver: incremental for child additions, media attributes/styles, and debounced full refresh for root attributes
     const observer = new MutationObserver((records) => {
       let hasRootAttributeChange = false;
       const added: HTMLElement[] = [];
+      const mediaNodes: StyleableElement[] = [];
+      const largeClassRoots: Element[] = [];
 
       for (const record of records) {
         if (record.type === "attributes") {
-          if (
+          const attrName = record.attributeName;
+          if (attrName === "style") {
+            if (
+              values.hideImages &&
+              isStyleableElement(record.target) &&
+              !record.target.closest(
+                "[data-arap-ui], [data-arap-diagnostics], .arap-root",
+              ) &&
+              (targetRoot === document.body ||
+                record.target === targetRoot ||
+                Boolean(targetRoot?.contains(record.target))) &&
+              hasInlineCssImage(record.target)
+            ) {
+              mediaNodes.push(record.target);
+            }
+          } else if (
             record.target === document.documentElement ||
             record.target === document.body ||
             record.target === targetRoot
@@ -1827,15 +2661,30 @@ export function useBuiltinEffects(
             hasRootAttributeChange = true;
           } else if (
             (values.hideImages || values.hideVideos) &&
-            record.target instanceof HTMLElement &&
+            isStyleableElement(record.target) &&
             !record.target.closest(
               "[data-arap-ui], [data-arap-diagnostics], .arap-root",
-            ) &&
-            record.target.matches(
-              "img, picture, video, [data-video], .video-placeholder, iframe",
             )
           ) {
-            added.push(record.target);
+            if (attrName === "class" && values.hideImages) {
+              const descendants = record.target.querySelectorAll("*");
+              if (descendants.length <= 200) {
+                mediaNodes.push(record.target);
+                for (const desc of Array.from(descendants)) {
+                  if (isStyleableElement(desc) && !desc.matches(EXCLUDED)) {
+                    mediaNodes.push(desc);
+                  }
+                }
+              } else {
+                largeClassRoots.push(record.target);
+              }
+            } else if (
+              record.target.matches(
+                "img, picture, object[type^='image/' i], embed[type^='image/' i], svg, video, [data-video], .video-placeholder, iframe",
+              )
+            ) {
+              mediaNodes.push(record.target);
+            }
           }
         } else if (record.type === "childList") {
           if (
@@ -1850,6 +2699,12 @@ export function useBuiltinEffects(
               !node.matches("[data-arap-ui]")
             ) {
               added.push(node);
+            } else if (
+              (values.hideImages || values.hideVideos) &&
+              node instanceof SVGElement &&
+              !node.matches("[data-arap-ui]")
+            ) {
+              mediaNodes.push(node);
             }
           }
         }
@@ -1865,6 +2720,22 @@ export function useBuiltinEffects(
         if (incrementalTimer) clearTimeout(incrementalTimer);
         incrementalTimer = setTimeout(flushIncremental, 16);
       }
+
+      if (mediaNodes.length > 0) {
+        for (const node of mediaNodes) {
+          pendingMediaNodes.add(node);
+        }
+        if (mediaTimer) clearTimeout(mediaTimer);
+        mediaTimer = setTimeout(flushMediaIncremental, 16);
+      }
+
+      if (largeClassRoots.length > 0) {
+        for (const root of largeClassRoots) {
+          pendingLargeClassRoots.add(root);
+        }
+        if (largeClassTimer) clearTimeout(largeClassTimer);
+        largeClassTimer = setTimeout(flushLargeClassSubtrees, 50);
+      }
     });
 
     const attributeFilter = ["class", "data-theme", "dir", "lang"];
@@ -1877,6 +2748,9 @@ export function useBuiltinEffects(
         "aria-hidden",
         "data-decorative",
       );
+    }
+    if (values.hideImages) {
+      attributeFilter.push("style");
     }
 
     const observerOptions: MutationObserverInit = {
@@ -1902,9 +2776,13 @@ export function useBuiltinEffects(
     }
 
     if (typeof document !== "undefined" && document.documentElement) {
+      const docRootAttributeFilter = ["class", "data-theme", "dir", "lang"];
+      if (values.hideImages && targetRoot === document.body) {
+        docRootAttributeFilter.push("style");
+      }
       observer.observe(document.documentElement, {
         attributes: true,
-        attributeFilter: ["class", "data-theme", "dir", "lang"],
+        attributeFilter: docRootAttributeFilter,
       });
     }
 
@@ -1944,6 +2822,8 @@ export function useBuiltinEffects(
     return () => {
       if (refreshTimer) clearTimeout(refreshTimer);
       if (incrementalTimer) clearTimeout(incrementalTimer);
+      if (mediaTimer) clearTimeout(mediaTimer);
+      if (largeClassTimer) clearTimeout(largeClassTimer);
       observer.disconnect();
       for (const cleanup of fontCleanups) cleanup();
       window.removeEventListener("resize", resize);

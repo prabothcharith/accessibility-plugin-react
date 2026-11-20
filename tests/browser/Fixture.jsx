@@ -88,6 +88,32 @@ export default function Fixture() {
           alt="Example landscape"
           src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60'%3E%3Crect width='100' height='60' fill='green'/%3E%3C/svg%3E"
         />
+        <div
+          id="sample-css-bg"
+          style={{
+            width: "80px",
+            height: "40px",
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Crect width='80' height='40' fill='navy'/%3E%3C/svg%3E\")",
+          }}
+        >
+          CSS BG
+        </div>
+        <div id="sample-pseudo-bg" className="sample-pseudo-bg">
+          Pseudo image host
+        </div>
+        <img
+          id="sample-chart-img"
+          className="sales-chart"
+          alt="Sales chart"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40'%3E%3Crect width='80' height='40' fill='teal'/%3E%3C/svg%3E"
+        />
+        <a id="sample-icon-link" href="#destination" aria-label="Home">
+          <img
+            alt=""
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='blue'/%3E%3C/svg%3E"
+          />
+        </a>
         <video title="Sample video" />
         <table id="sample-table">
           <tbody>
@@ -180,6 +206,7 @@ export default function Fixture() {
               <A.TextAlignController />
               <A.FontFamilyController />
               <A.HideImagesController />
+              <A.HideDecorativeImagesController />
               <A.HideVideosController />
               <A.BigCursorController />
               <A.ReadingMaskController />
