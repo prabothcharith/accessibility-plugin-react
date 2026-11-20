@@ -11,10 +11,10 @@ const CSS_IMAGE_VALUE_REGEX =
   /(?:url|-webkit-image-set|image-set|cross-fade)\s*\(/i;
 const HIDE_IMAGES_STYLE_ID = "arap-hide-images-style";
 const HIDE_IMAGES_PSEUDO_CSS = [
-  "[data-arap-hide-before-bg]::before { background-image: none !important; }",
-  "[data-arap-hide-after-bg]::after { background-image: none !important; }",
-  "[data-arap-hide-before-content]::before { visibility: hidden !important; }",
-  "[data-arap-hide-after-content]::after { visibility: hidden !important; }",
+  "[data-arap-hide-before-bg]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::before { background-image: none !important; }",
+  "[data-arap-hide-after-bg]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::after { background-image: none !important; }",
+  "[data-arap-hide-before-content]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::before { visibility: hidden !important; }",
+  "[data-arap-hide-after-content]:not(#arap-s1):not(#arap-s2):not(#arap-s3)::after { visibility: hidden !important; }",
 ].join("\n");
 type StyleableElement = HTMLElement | SVGElement;
 export const MAX_HOST_ELEMENTS = 8000;
@@ -2575,8 +2575,10 @@ export function useBuiltinEffects(
     let refreshTimer: ReturnType<typeof setTimeout> | null = null;
     let incrementalTimer: ReturnType<typeof setTimeout> | null = null;
     let mediaTimer: ReturnType<typeof setTimeout> | null = null;
+    let largeClassTimer: ReturnType<typeof setTimeout> | null = null;
     let pendingAddedNodes: HTMLElement[] = [];
     const pendingMediaNodes = new Set<StyleableElement>();
+    const pendingLargeClassRoots = new Set<Element>();
 
     const flushIncremental = () => {
       if (pendingAddedNodes.length === 0) return;
@@ -2594,6 +2596,30 @@ export function useBuiltinEffects(
       observer.takeRecords();
     };
 
+    const flushLargeClassSubtrees = () => {
+      if (pendingLargeClassRoots.size === 0) return;
+      const roots = Array.from(pendingLargeClassRoots);
+      pendingLargeClassRoots.clear();
+      const collected: StyleableElement[] = [];
+      for (const root of roots) {
+        if (!document.contains(root)) continue;
+        if (isStyleableElement(root) && !root.matches(EXCLUDED)) {
+          collected.push(root);
+        }
+        for (const desc of Array.from(root.querySelectorAll("*"))) {
+          if (collected.length >= MAX_HOST_ELEMENTS) break;
+          if (isStyleableElement(desc) && !desc.matches(EXCLUDED)) {
+            collected.push(desc);
+          }
+        }
+        if (collected.length >= MAX_HOST_ELEMENTS) break;
+      }
+      if (collected.length > 0) {
+        activeSession.applyMediaIncremental?.(collected);
+        observer.takeRecords();
+      }
+    };
+
     const scheduleFullRefresh = (delay = 25) => {
       if (refreshTimer) clearTimeout(refreshTimer);
       refreshTimer = setTimeout(() => {
@@ -2608,6 +2634,7 @@ export function useBuiltinEffects(
       let hasRootAttributeChange = false;
       const added: HTMLElement[] = [];
       const mediaNodes: StyleableElement[] = [];
+      const largeClassRoots: Element[] = [];
 
       for (const record of records) {
         if (record.type === "attributes") {
@@ -2640,14 +2667,16 @@ export function useBuiltinEffects(
             )
           ) {
             if (attrName === "class" && values.hideImages) {
-              mediaNodes.push(record.target);
               const descendants = record.target.querySelectorAll("*");
               if (descendants.length <= 200) {
+                mediaNodes.push(record.target);
                 for (const desc of Array.from(descendants)) {
                   if (isStyleableElement(desc) && !desc.matches(EXCLUDED)) {
                     mediaNodes.push(desc);
                   }
                 }
+              } else {
+                largeClassRoots.push(record.target);
               }
             } else if (
               record.target.matches(
@@ -2698,6 +2727,14 @@ export function useBuiltinEffects(
         }
         if (mediaTimer) clearTimeout(mediaTimer);
         mediaTimer = setTimeout(flushMediaIncremental, 16);
+      }
+
+      if (largeClassRoots.length > 0) {
+        for (const root of largeClassRoots) {
+          pendingLargeClassRoots.add(root);
+        }
+        if (largeClassTimer) clearTimeout(largeClassTimer);
+        largeClassTimer = setTimeout(flushLargeClassSubtrees, 50);
       }
     });
 
@@ -2786,6 +2823,7 @@ export function useBuiltinEffects(
       if (refreshTimer) clearTimeout(refreshTimer);
       if (incrementalTimer) clearTimeout(incrementalTimer);
       if (mediaTimer) clearTimeout(mediaTimer);
+      if (largeClassTimer) clearTimeout(largeClassTimer);
       observer.disconnect();
       for (const cleanup of fontCleanups) cleanup();
       window.removeEventListener("resize", resize);

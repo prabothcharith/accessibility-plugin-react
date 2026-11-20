@@ -14,9 +14,11 @@ import {
   HideImagesController,
   HideDecorativeImagesController,
   HideVideosController,
+  PresetsController,
   ResetController,
   isEligibleDecorativeImage,
   isFunctionalOrMeaningfulImage,
+  mapProfileSettingsToFeatures,
 } from "../src";
 
 const injectedStyleTags: HTMLStyleElement[] = [];
@@ -692,5 +694,93 @@ describe("HideImagesController (default all mode) & HideDecorativeImagesControll
     expect(emptyAltInFigure.style.visibility).toBe("");
     expect(markedWithAltInFigure.style.visibility).toBe("");
     expect(meaningfulInFigure.style.visibility).toBe("");
+  });
+
+  it("maps hideDecorativeImages profile preference to decorative mode and preserves decorative-only behavior across preset round-trips", () => {
+    expect(
+      mapProfileSettingsToFeatures({ hideDecorativeImages: true }),
+    ).toEqual({ hideImages: "decorative" });
+    expect(
+      mapProfileSettingsToFeatures({ hideDecorativeImages: false }),
+    ).toEqual({ hideImages: false });
+
+    const { host } = renderFixture(
+      <>
+        <HideDecorativeImagesController label="Hide Decorative Images" />
+        <PresetsController />
+      </>,
+    );
+
+    const decoToggle = screen.getByRole("button", {
+      name: "Hide Decorative Images",
+    });
+    fireEvent.click(decoToggle);
+    expect(
+      (host.querySelector("#deco-empty-alt") as HTMLElement).style.visibility,
+    ).toBe("hidden");
+    expect(
+      (host.querySelector("#meaningful-alt") as HTMLElement).style.visibility,
+    ).toBe("");
+
+    // Save custom preset while Hide Decorative Images is active
+    fireEvent.click(screen.getByRole("button", { name: "Presets" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Preset name" }), {
+      target: { value: "Deco Only" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Save current preset" }),
+    );
+
+    // Reset All clears image hiding
+    fireEvent.click(screen.getByRole("button", { name: /Reset All/i }));
+    expect(
+      (host.querySelector("#deco-empty-alt") as HTMLElement).style.visibility,
+    ).toBe("");
+
+    // Reapplying the saved preset preserves decorative-only mode
+    fireEvent.click(
+      screen.getByRole("button", { name: "Apply preset Deco Only" }),
+    );
+    expect(
+      (host.querySelector("#deco-empty-alt") as HTMLElement).style.visibility,
+    ).toBe("hidden");
+    expect(
+      (host.querySelector("#meaningful-alt") as HTMLElement).style.visibility,
+    ).toBe("");
+  });
+
+  it("reprocesses descendants beyond 200 nodes on dynamic class mutations", async () => {
+    injectTestStyle(`
+      .large-wrap.show-bg .late-descendant-bg {
+        background-image: url("oversized-subtree.png");
+      }
+    `);
+
+    const { host } = renderFixture(<HideImagesController />);
+    const container = document.createElement("div");
+    container.className = "large-wrap";
+    for (let i = 0; i < 220; i++) {
+      const child = document.createElement("div");
+      if (i === 215) {
+        child.id = "target-215";
+        child.className = "late-descendant-bg";
+      }
+      container.appendChild(child);
+    }
+    host.appendChild(container);
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide Images" }));
+    const target215 = host.querySelector("#target-215") as HTMLElement;
+    expect(target215.style.backgroundImage).toBe("");
+
+    // Trigger class mutation on oversized >200-node container
+    container.classList.add("show-bg");
+
+    await waitFor(() => {
+      expect(target215.style.backgroundImage).toBe("none");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Reset All/i }));
+    expect(target215.style.backgroundImage).toBe("");
   });
 });
