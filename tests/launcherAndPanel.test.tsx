@@ -36,6 +36,13 @@ describe("A11Y-104 Accessible launcher and non-modal widget panel", () => {
     const descEl = document.getElementById(describedBy!);
     expect(descEl).not.toBeNull();
     expect(descEl?.textContent).toContain("Alt and arrow keys");
+    expect(descEl).not.toHaveAttribute("hidden");
+    expect(descEl?.className).toContain("arap-sr-only");
+
+    // Live position status region has polite live region semantics
+    const statusEl = screen.getByRole("status");
+    expect(statusEl).toHaveAttribute("aria-live", "polite");
+    expect(statusEl).toHaveAttribute("aria-atomic", "true");
 
     // Click to open
     fireEvent.click(trigger);

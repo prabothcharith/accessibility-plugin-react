@@ -114,11 +114,27 @@ export function ModalDialog({
         const dialog = dialogRef.current;
         if (!dialog) return;
 
+        const isFocusableVisible = (el: HTMLElement) => {
+          if (el.hidden || el.getAttribute("aria-hidden") === "true")
+            return false;
+          if (
+            typeof window !== "undefined" &&
+            typeof window.getComputedStyle === "function"
+          ) {
+            const style = window.getComputedStyle(el);
+            if (style.display === "none" || style.visibility === "hidden")
+              return false;
+          }
+          return (
+            el.offsetParent !== null ||
+            el.getClientRects().length > 0 ||
+            el === document.activeElement
+          );
+        };
+
         const focusable = Array.from(
           dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-        ).filter(
-          (el) => el.offsetParent !== null || el === document.activeElement,
-        );
+        ).filter(isFocusableVisible);
 
         if (focusable.length === 0) return;
 

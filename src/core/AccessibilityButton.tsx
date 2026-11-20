@@ -189,13 +189,21 @@ export function AccessibilityButton({
           )}
         </span>
         {(description || draggable) && (
-          <span id={`${ctx.panelId}-trigger-description`} hidden>
+          <span
+            id={`${ctx.panelId}-trigger-description`}
+            className="arap-sr-only"
+          >
             {description ? `${description} ` : ""}
             {draggable && strings.dragHelp}
           </span>
         )}
       </button>
-      <span className="arap-sr-only" role="status">
+      <span
+        className="arap-sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {ctx.widgetPlacement?.kind === "point"
           ? strings.formatPointPosition
             ? strings.formatPointPosition(
