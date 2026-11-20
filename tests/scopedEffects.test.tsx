@@ -119,6 +119,58 @@ describe("Issue #13: Scoped effects, strict CSP, and host compatibility", () => 
       expect(scopedP.style.fontSize).toBe("16px");
     });
 
+    it("scopes hideImages strictly to container, leaving document.body, document.documentElement, and external elements untouched", () => {
+      const scopedMain = document.getElementById(
+        "scoped-content",
+      ) as HTMLElement;
+      const externalHeader = document.getElementById(
+        "external-header",
+      ) as HTMLElement;
+
+      document.documentElement.style.backgroundImage = "url('root-bg.png')";
+      document.body.style.backgroundImage = "url('body-bg.png')";
+
+      const externalImg = document.createElement("img");
+      externalImg.alt = "External banner";
+      externalImg.src = "external.png";
+      externalHeader.appendChild(externalImg);
+
+      const externalBg = document.createElement("div");
+      externalBg.style.backgroundImage = "url('ext-bg.png')";
+      externalHeader.appendChild(externalBg);
+
+      const scopedImg = document.createElement("img");
+      scopedImg.alt = "Scoped image";
+      scopedImg.src = "scoped.png";
+      scopedMain.appendChild(scopedImg);
+
+      const scopedBg = document.createElement("div");
+      scopedBg.style.backgroundImage = "url('scoped-bg.png')";
+      scopedMain.appendChild(scopedBg);
+
+      const session = applyPageSession(
+        { hideImages: true },
+        { effectScope: "#scoped-content" },
+      );
+
+      expect(scopedImg.style.visibility).toBe("hidden");
+      expect(scopedBg.style.backgroundImage).toBe("none");
+
+      expect(externalImg.style.visibility).toBe("");
+      expect(externalBg.style.backgroundImage).toContain("ext-bg.png");
+      expect(document.body.style.backgroundImage).toContain("body-bg.png");
+      expect(document.documentElement.style.backgroundImage).toContain(
+        "root-bg.png",
+      );
+
+      session.undo();
+      expect(scopedImg.style.visibility).toBe("");
+      expect(scopedBg.style.backgroundImage).toContain("scoped-bg.png");
+
+      document.documentElement.style.backgroundImage = "";
+      document.body.style.backgroundImage = "";
+    });
+
     it("scopes CSS filter directly to container, protecting external fixed elements from stacking context bugs", () => {
       const scopedMain = document.getElementById(
         "scoped-content",
@@ -251,6 +303,24 @@ describe("Issue #13: Scoped effects, strict CSP, and host compatibility", () => 
 
       session.undo();
       expect(document.getElementById("arap-reduce-motion-style")).toBeNull();
+    });
+
+    it("propagates nonce attribute to injected hideImages style tag and cleans up on undo", () => {
+      const testNonce = "csp-nonce-img-456";
+      const session = applyPageSession(
+        { hideImages: true },
+        { nonce: testNonce },
+      );
+
+      const styleEl = document.getElementById(
+        "arap-hide-images-style",
+      ) as HTMLStyleElement | null;
+      expect(styleEl).not.toBeNull();
+      expect(styleEl?.nonce).toBe(testNonce);
+      expect(styleEl?.getAttribute("nonce")).toBe(testNonce);
+
+      session.undo();
+      expect(document.getElementById("arap-hide-images-style")).toBeNull();
     });
   });
 });

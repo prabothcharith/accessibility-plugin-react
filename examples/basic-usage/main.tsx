@@ -46,7 +46,13 @@ const DECORATIVE_BANNER_SVG =
 const INFORMATIVE_DIAGRAM_SVG =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="90" viewBox="0 0 320 90"><rect width="320" height="90" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><rect x="20" y="23" width="96" height="44" rx="8" fill="#1d4ed8"/><text x="68" y="50" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff">44px Min</text><text x="140" y="42" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Target Contrast 7.2:1</text><text x="140" y="60" font-family="sans-serif" font-size="12" fill="#475569">Informative graphic (preserved)</text></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="90" viewBox="0 0 320 90"><rect width="320" height="90" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/><rect x="20" y="23" width="96" height="44" rx="8" fill="#1d4ed8"/><text x="68" y="50" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="bold" fill="#ffffff">44px Min</text><text x="140" y="42" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Target Contrast 7.2:1</text><text x="140" y="60" font-family="sans-serif" font-size="12" fill="#475569">Protected diagram (preserved)</text></svg>',
+  );
+
+const EDITORIAL_PHOTO_SVG =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="90" viewBox="0 0 320 90"><defs><linearGradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#bae6fd"/><stop offset="100%" stop-color="#fef3c7"/></linearGradient></defs><rect width="320" height="90" rx="12" fill="url(#sky)"/><path d="M0 64 Q80 48 160 64 T320 60 L320 90 L0 90 Z" fill="#0284c7" opacity="0.75"/><circle cx="268" cy="24" r="12" fill="#f59e0b"/><text x="20" y="34" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">Editorial beach view</text></svg>',
   );
 
 function App() {
@@ -210,11 +216,12 @@ function App() {
                 }}
               />
             </div>
-            <h2>Decorative &amp; Informative Media</h2>
+            <h2>Decorative, Editorial &amp; CSS Background Media</h2>
             <p>
-              Hide Images conceals purely decorative visuals below while keeping
-              informative diagrams visible. Hide Videos hides video players
-              while preserving layout space.
+              Hide Images hides standard and decorative images plus CSS
+              background images while protecting analytical diagrams, charts,
+              CAPTCHAs, maps, QR codes, and interactive controls. Hide Videos
+              hides video players while preserving layout space.
             </p>
             <div
               style={{
@@ -237,8 +244,8 @@ function App() {
                 }}
               />
               <img
-                src={INFORMATIVE_DIAGRAM_SVG}
-                alt="Diagram showing 44px minimum target size and 7.2:1 contrast"
+                src={EDITORIAL_PHOTO_SVG}
+                alt="Editorial beach view"
                 width={320}
                 height={90}
                 style={{
@@ -247,6 +254,38 @@ function App() {
                   height: "auto",
                 }}
               />
+              <img
+                src={INFORMATIVE_DIAGRAM_SVG}
+                alt="Diagram showing 44px minimum target size and 7.2:1 contrast"
+                className="accessibility-chart"
+                role="graphics-document"
+                width={320}
+                height={90}
+                style={{
+                  borderRadius: "8px",
+                  maxWidth: "100%",
+                  height: "auto",
+                }}
+              />
+              <div
+                style={{
+                  width: "320px",
+                  maxWidth: "100%",
+                  height: "90px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--host-border)",
+                  backgroundImage: `url("${DECORATIVE_BANNER_SVG}")`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  display: "flex",
+                  alignItems: "flex-end",
+                  padding: "8px 12px",
+                  fontWeight: 600,
+                  color: "#1e3a8a",
+                }}
+              >
+                CSS background-image card
+              </div>
             </div>
             <div style={{ marginTop: "14px" }}>
               <video

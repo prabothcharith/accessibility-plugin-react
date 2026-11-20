@@ -185,9 +185,21 @@ test("media, reading aids, pointer movement and unmount cleanup", async ({
     "visibility",
     "hidden",
   );
-  await expect(page.getByAltText("Example landscape")).not.toHaveCSS(
+  await expect(page.getByAltText("Example landscape")).toHaveCSS(
     "visibility",
     "hidden",
+  );
+  await expect(page.locator("#sample-css-bg")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("#sample-chart-img")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("#sample-icon-link img")).toHaveCSS(
+    "visibility",
+    "visible",
   );
   await page.getByLabel("Close accessibility settings").click();
   await page.mouse.move(80, 180);
@@ -198,9 +210,17 @@ test("media, reading aids, pointer movement and unmount cleanup", async ({
   );
   await page.getByRole("button", { name: "Mount widget" }).click();
   await expect(page.locator(".arap-reading-mask")).toHaveCount(0);
+  await expect(page.locator("#sample-decorative-img")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
   await expect(page.getByAltText("Example landscape")).toHaveCSS(
     "visibility",
     "visible",
+  );
+  await expect(page.locator("#sample-css-bg")).not.toHaveCSS(
+    "background-image",
+    "none",
   );
 });
 
@@ -2312,4 +2332,222 @@ test("reading guide and mask nudge arrows render outside the plugin panel and wo
 
   const maskDown = page.getByRole("button", { name: "Move reading mask down" });
   await expect(maskDown).toBeVisible();
+});
+
+test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide Decorative Images preserves informative images", async ({
+  page,
+}) => {
+  const svgUrl =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%232563eb'/%3E%3C/svg%3E";
+
+  await page.addStyleTag({
+    content: `
+      :root { --test-hero-bg: url("${svgUrl}"); }
+      body { background-image: url("${svgUrl}"); }
+      .test-sheet-bg { width: 60px; height: 30px; background-image: url("${svgUrl}"); }
+      .test-var-bg { width: 60px; height: 30px; background-image: var(--test-hero-bg); }
+      .test-pseudo-after::after { content: url("${svgUrl}"); }
+      .test-dyn-bg { width: 60px; height: 30px; background-image: url("${svgUrl}"); }
+    `,
+  });
+
+  await page.evaluate((imgSrc) => {
+    const host = document.getElementById("host");
+    if (!host) return;
+
+    const missingAlt = document.createElement("img");
+    missingAlt.id = "test-missing-alt";
+    missingAlt.src = imgSrc;
+
+    const pic = document.createElement("picture");
+    pic.id = "test-picture";
+    const picImg = document.createElement("img");
+    picImg.id = "test-picture-img";
+    picImg.alt = "Picture alt";
+    picImg.src = imgSrc;
+    pic.appendChild(picImg);
+
+    const sheetBg = document.createElement("div");
+    sheetBg.id = "test-sheet-bg";
+    sheetBg.className = "test-sheet-bg";
+
+    const varBg = document.createElement("div");
+    varBg.id = "test-var-bg";
+    varBg.className = "test-var-bg";
+
+    const pseudoAfter = document.createElement("div");
+    pseudoAfter.id = "test-pseudo-after";
+    pseudoAfter.className = "test-pseudo-after";
+    pseudoAfter.textContent = "After";
+
+    const paragraphSection = document.createElement("section");
+    paragraphSection.id = "test-section-paragraph";
+    paragraphSection.setAttribute("aria-label", "Hero banner");
+    paragraphSection.className = "paragraph";
+    paragraphSection.style.backgroundImage = `url("${imgSrc}")`;
+    paragraphSection.textContent = "Section text";
+
+    const gradientBox = document.createElement("div");
+    gradientBox.id = "test-gradient-box";
+    gradientBox.style.backgroundImage =
+      "linear-gradient(to right, #2563eb, #9333ea)";
+    gradientBox.textContent = "Gradient";
+
+    const dynTarget = document.createElement("div");
+    dynTarget.id = "test-dyn-target";
+    dynTarget.textContent = "Dynamic target";
+
+    host.append(
+      missingAlt,
+      pic,
+      sheetBg,
+      varBg,
+      pseudoAfter,
+      paragraphSection,
+      gradientBox,
+      dynTarget,
+    );
+  }, svgUrl);
+
+  await page.getByLabel("Accessibility", { exact: true }).click();
+  await page.getByRole("button", { name: "Hide Images", exact: true }).click();
+
+  // HTML img / picture hidden
+  await expect(page.locator("#sample-decorative-img")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await expect(page.getByAltText("Example landscape")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await expect(page.locator("#test-missing-alt")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await expect(page.locator("#test-picture")).toHaveCSS("visibility", "hidden");
+  await expect(page.locator("#test-picture-img")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+
+  // Protected items remain visible
+  await expect(page.locator("#sample-chart-img")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("#sample-icon-link img")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+
+  // CSS backgrounds, CSS variable backgrounds, body, landmark section, and .paragraph hidden
+  await expect(page.locator("body")).toHaveCSS("background-image", "none");
+  await expect(page.locator("#sample-css-bg")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("#test-sheet-bg")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("#test-var-bg")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("#test-section-paragraph")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+
+  // Pure CSS gradient preserved
+  const gradBg = await page
+    .locator("#test-gradient-box")
+    .evaluate((el) => getComputedStyle(el).backgroundImage);
+  expect(gradBg).toContain("linear-gradient");
+
+  // ::before background-image and ::after content: url(...) hidden
+  const beforeBg = await page
+    .locator("#sample-pseudo-bg")
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+  expect(beforeBg).toBe("none");
+
+  const afterVis = await page
+    .locator("#test-pseudo-after")
+    .evaluate((el) => getComputedStyle(el, "::after").visibility);
+  expect(afterVis).toBe("hidden");
+
+  // Dynamic class + inline style mutation while active
+  await page.evaluate((imgSrc) => {
+    const dyn = document.getElementById("test-dyn-target");
+    if (dyn) dyn.classList.add("test-dyn-bg");
+
+    const dynInline = document.createElement("div");
+    dynInline.id = "test-dyn-inline";
+    dynInline.style.backgroundImage = `url("${imgSrc}")`;
+    document.getElementById("host")?.appendChild(dynInline);
+  }, svgUrl);
+
+  await expect(page.locator("#test-dyn-target")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("#test-dyn-inline")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+
+  // Toggle OFF restores HTML, CSS, body, and pseudo-element images
+  await page.getByRole("button", { name: "Hide Images", exact: true }).click();
+  await expect(page.getByAltText("Example landscape")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("body")).not.toHaveCSS("background-image", "none");
+  await expect(page.locator("#test-var-bg")).not.toHaveCSS(
+    "background-image",
+    "none",
+  );
+  const restoredBeforeBg = await page
+    .locator("#sample-pseudo-bg")
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+  expect(restoredBeforeBg).not.toBe("none");
+
+  // Hide Decorative Images preserves informative & missing-alt images while hiding decorative & CSS images
+  await page
+    .getByRole("button", { name: "Hide Decorative Images", exact: true })
+    .click();
+  await expect(page.locator("#sample-decorative-img")).toHaveCSS(
+    "visibility",
+    "hidden",
+  );
+  await expect(page.getByAltText("Example landscape")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("#test-missing-alt")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("#sample-css-bg")).toHaveCSS(
+    "background-image",
+    "none",
+  );
+  await expect(page.locator("body")).toHaveCSS("background-image", "none");
+  const decoBeforeBg = await page
+    .locator("#sample-pseudo-bg")
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+  expect(decoBeforeBg).toBe("none");
+
+  // Reset All restores everything
+  await page.getByRole("button", { name: "Reset All", exact: true }).click();
+  await expect(page.locator("#sample-decorative-img")).toHaveCSS(
+    "visibility",
+    "visible",
+  );
+  await expect(page.locator("body")).not.toHaveCSS("background-image", "none");
+  await expect(page.locator("#sample-css-bg")).not.toHaveCSS(
+    "background-image",
+    "none",
+  );
 });

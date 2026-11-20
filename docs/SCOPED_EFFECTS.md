@@ -110,7 +110,7 @@ In environments enforcing strict CSP with `style-src 'self' 'nonce-...'` (disall
 
 When provided:
 
-1. All dynamically injected `<style>` elements (such as `arap-focus-highlight-style` and `arap-reduce-motion-style`) have their `nonce` attribute and property assigned (`styleEl.nonce = nonce; styleEl.setAttribute("nonce", nonce)`).
+1. All dynamically injected `<style>` elements (such as `arap-focus-highlight-style`, `arap-reduce-motion-style`, and `arap-hide-images-style`) have their `nonce` attribute and property assigned (`styleEl.nonce = nonce; styleEl.setAttribute("nonce", nonce)`).
 2. The browser permits stylesheet execution under strict nonce-based policies.
 3. If `nonce` is omitted and CSP forbids inline `<style>`, consumers can import the precompiled stylesheet statically (`import "accessibility-plugin-react/style.css"`).
 

@@ -259,8 +259,13 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     const leadP = host.querySelector("#lead-paragraph") as HTMLElement;
     const link = host.querySelector("#nav-dash") as HTMLElement;
     const decoImg = host.querySelector("#deco-img-1") as HTMLElement;
+    const meaningfulPhoto = host.querySelector(
+      "#meaningful-photo",
+    ) as HTMLElement;
     const chartImg = host.querySelector("#chart-img") as HTMLElement;
     const captchaImg = host.querySelector("#captcha-img") as HTMLElement;
+    const qrImg = host.querySelector("#qr-img") as HTMLElement;
+    const mapTile = host.querySelector("#map-tile") as HTMLElement;
     const decoBanner = host.querySelector("#deco-banner") as HTMLElement;
     const buttonSubmit = host.querySelector("#btn-submit") as HTMLElement;
     const codeSnippet = host.querySelector("#code-snippet") as HTMLElement;
@@ -334,14 +339,17 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
       true,
     );
 
-    // 10. Activate Decorative Images Hiding
+    // 10. Activate Hide Images (hides decorative + standard photos + CSS backgrounds; protects chart/CAPTCHA/QR/map/button)
     fireEvent.click(screen.getByRole("button", { name: "Hide Images" }));
     expect(decoImg.style.visibility).toBe("hidden");
+    expect(meaningfulPhoto.style.visibility).toBe("hidden");
     expect(decoBanner.style.backgroundImage).toBe("none");
 
-    // Meaningful visuals remain visible
+    // Protected visuals remain visible
     expect(chartImg.style.visibility).toBe("");
     expect(captchaImg.style.visibility).toBe("");
+    expect(qrImg.style.visibility).toBe("");
+    expect(mapTile.style.visibility).toBe("");
     expect(buttonSubmit.style.backgroundImage).toContain("btn-bg.png");
 
     // 11. Full Reset
@@ -361,6 +369,7 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     expect(host.style.backgroundColor).toBe("");
     expect(link.style.textDecoration).toBe("");
     expect(decoImg.style.visibility).toBe("");
+    expect(meaningfulPhoto.style.visibility).toBe("");
     expect(decoBanner.style.backgroundImage).toContain("hero.jpg");
     expect(Boolean(document.getElementById("arap-focus-highlight-style"))).toBe(
       false,
@@ -472,7 +481,7 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     const firstMeaningfulImg = perfContainer.querySelector(
       "img:not([alt=''])",
     ) as HTMLElement;
-    expect(firstMeaningfulImg.style.visibility).toBe("");
+    expect(firstMeaningfulImg.style.visibility).toBe("hidden");
 
     // Measure Teardown/Reset Performance
     const t1 = performance.now();
@@ -483,6 +492,7 @@ describe("A11Y-208: Visual regression, cross-feature composition, and performanc
     expect(firstH2.style.fontSize).toBe("18px");
     expect(firstH2.style.fontFamily).toBe("");
     expect(firstDecoImg.style.visibility).toBe("");
+    expect(firstMeaningfulImg.style.visibility).toBe("");
 
     // Performance assertion: In JSDOM under full parallel CPU load, 1,000 nodes must process without hanging the event loop
     expect(tApply).toBeLessThan(15000);

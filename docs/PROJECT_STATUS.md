@@ -1,7 +1,7 @@
-# Project status — 2026-11-11
+# Project status — 2026-11-20
 
-**Version 2.29.2 prepared for release.** All
-core, feature, and accessibility milestone releases from 2.0.0 through 2.29.2
+**Version 2.31.0 prepared for release.** All
+core, feature, and accessibility milestone releases from 2.0.0 through 2.31.0
 are implemented, tested, and verified under `latest`. Milestone 5 launch readiness
 and package hardening is complete; the full supported-browser, device, and assistive-technology
 matrix is verified in [SUPPORTED_MATRIX.md](SUPPORTED_MATRIX.md) (Issue #66), performance,
@@ -129,3 +129,5 @@ Subsequent minor releases expanded the library's capabilities while preserving s
 14. **v2.28.1 (Milestone 5)**: Package hardening, 6-project browser/device/AT matrix validation (Issue #66), performance and leak profiling (Issue #67), documentation synchronization and CONTRIBUTING guide (Issue #68), security/dependency/CSP audit and NOTICE attribution (Issue #69), packed publish rehearsal and clean consumer smoke testing across React 18, React 19, and Next.js 16 (Issue #70), and release proposal (Issue #71). Completes Milestone 5.
 15. **v2.29.0**: Large-document scaling up to 8,000 nodes (`MAX_HOST_ELEMENTS = 8000`), FOUC-free incremental mutation batching, late web font metric refresh (`document.fonts`), root attribute observation (`class`, `data-theme`, `dir`, `lang`) without observer feedback loops (Issue #12, PR #177), scoped effect targeting (`effectScope`), fixed-descendant filter isolation protecting host navbars, open Shadow DOM traversal, and strict CSP nonce support (`nonce`) (Issue #13, PR #178).
 16. **v2.29.1 – v2.29.2**: Add comprehensive repository badges to `README.md` (CI status, npm version, downloads, bundle size, zero-dependencies, React, TypeScript, license, official docs, and XERJ Corpus Hub contributor repository verification), replacing upstream rate-limited bundle services with high-reliability edge-rendered `bundlejs`.
+17. **v2.30.0 – v2.30.1**: Local Manrope font bundling and font sync across portals/modals (`data-arap-font`), modal views and collapsible `FeatureGroup`, desktop panel resize, floating Read-Aloud & Reading Guide/Mask controls, client-side Google Translate adapter (`createGoogleTranslateAdapter`), and `<figure>` decorative marker handling.
+18. **v2.31.0**: Full HTML + CSS image hiding (`HideImagesController` default `mode="all"` plus strict `HideDecorativeImagesController` / `mode="decorative"`), supporting CSS `background-image`/`background`/variables/`image-set()`/`::before`/`::after`/`html`/`body`/`list-style-image`/`content: url()`, word-boundary protection tokens, incremental style/class/attribute mutation handling, and `#arap-hide-images-style` CSP `nonce` propagation.
