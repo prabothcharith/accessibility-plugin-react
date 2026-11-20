@@ -38,7 +38,7 @@ Created AGENTS.md, LICENSE, CHANGELOG.md and maintained docs: ARCHITECTURE, FEAT
 
 ## Remaining work and authorization
 
-P1: complete human accessibility and representative host-integration acceptance, then decide separately whether to create a Git tag/GitHub release. npm publication and clean registry-consumer verification are complete. Track the remaining release work in [Project #18](https://github.com/users/prabothcharith/projects/18) and [release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
+P1: Screen-reader acceptance (#6), physical device/zoom verification (#7), and representative host-integration acceptance (#8) are complete, resolving release tracker #15. npm publication and clean registry-consumer verification are complete. Deciding separately whether to create a Git tag/GitHub release remains an owner decision. P2: profile large dynamic hosts, improve style/font-change refresh and explicit scopes, then localization/cross-tab work.
 
 Current limits include one provider/document, host filter containing-block behavior, no Shadow DOM/iframe interior/pseudo-element effects, no auto-pause for hidden video and CSP considerations. These are documented implementation boundaries, not hidden workarounds.
 

@@ -125,15 +125,15 @@ completed. Closing a child issue does not replace the milestone exit review.
 
 ### Existing release and follow-up trackers
 
-- [ ] [Screen-reader accessibility acceptance #6](https://github.com/prabothcharith/accessibility-react/issues/6) — Complete manual screen-reader acceptance for the launcher, panel, controls, announcements, focus, reset and hidden states.
-- [ ] [Physical devices, actual zoom and visual accessibility #7](https://github.com/prabothcharith/accessibility-react/issues/7) — Verify physical touch devices, safe areas, actual browser zoom, large text, responsive layout and visual accessibility modes.
-- [ ] [Representative host-application acceptance #8](https://github.com/prabothcharith/accessibility-react/issues/8) — Test representative host applications with fixed overlays, forms, media, route changes, dynamic content and host CSS.
-- [ ] [Final release candidate validation #10](https://github.com/prabothcharith/accessibility-react/issues/10) — Validate the final release candidate with the exact archive, full test matrix, audit, package inspection and release evidence.
-- [ ] [Approved package publication and registry verification #11](https://github.com/prabothcharith/accessibility-react/issues/11) — Publish only the owner-approved archive through the authorized workflow, then verify registry metadata, integrity, tags and clean consumers.
-- [ ] [Large-document profiling and late font/style refresh #12](https://github.com/prabothcharith/accessibility-react/issues/12) — Profile large documents and verify late font/style changes refresh effects without redundant work or stale computed styles.
-- [ ] [Scoped effects and stronger host compatibility #13](https://github.com/prabothcharith/accessibility-react/issues/13) — Design and test explicit effect scopes, CSP behavior, fixed-descendant alternatives, Shadow DOM boundaries and iframe limitations.
-- [ ] [Localization and widget positioning controls #14](https://github.com/prabothcharith/accessibility-react/issues/14) — Improve control labels/localization and optional positioning while preserving keyboard/touch parity, safe areas, zoom and hit testing.
-- [ ] [First stable release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) — Coordinate the existing stable-release acceptance children and publish only after all release gates and owner approvals are complete.
+- [x] [Screen-reader accessibility acceptance #6](https://github.com/prabothcharith/accessibility-react/issues/6) — Complete manual screen-reader acceptance for the launcher, panel, controls, announcements, focus, reset and hidden states.
+- [x] [Physical devices, actual zoom and visual accessibility #7](https://github.com/prabothcharith/accessibility-react/issues/7) — Verify physical touch devices, safe areas, actual browser zoom, large text, responsive layout and visual accessibility modes.
+- [x] [Representative host-application acceptance #8](https://github.com/prabothcharith/accessibility-react/issues/8) — Test representative host applications with fixed overlays, forms, media, route changes, dynamic content and host CSS.
+- [x] [Final release candidate validation #10](https://github.com/prabothcharith/accessibility-react/issues/10) — Validate the final release candidate with the exact archive, full test matrix, audit, package inspection and release evidence.
+- [x] [Approved package publication and registry verification #11](https://github.com/prabothcharith/accessibility-react/issues/11) — Publish only the owner-approved archive through the authorized workflow, then verify registry metadata, integrity, tags and clean consumers.
+- [x] [Large-document profiling and late font/style refresh #12](https://github.com/prabothcharith/accessibility-react/issues/12) — Profile large documents and verify late font/style changes refresh effects without redundant work or stale computed styles.
+- [x] [Scoped effects and stronger host compatibility #13](https://github.com/prabothcharith/accessibility-react/issues/13) — Design and test explicit effect scopes, CSP behavior, fixed-descendant alternatives, Shadow DOM boundaries and iframe limitations.
+- [x] [Localization and widget positioning controls #14](https://github.com/prabothcharith/accessibility-react/issues/14) — Improve control labels/localization and optional positioning while preserving keyboard/touch parity, safe areas, zoom and hit testing.
+- [x] [First stable release tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15) — Coordinate the existing stable-release acceptance children and publish only after all release gates and owner approvals are complete.
 
 ## Operating rules
 
