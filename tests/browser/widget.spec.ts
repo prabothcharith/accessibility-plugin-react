@@ -2347,6 +2347,7 @@ test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide D
       .test-sheet-bg { width: 60px; height: 30px; background-image: url("${svgUrl}"); }
       .test-var-bg { width: 60px; height: 30px; background-image: var(--test-hero-bg); }
       .test-pseudo-after::after { content: url("${svgUrl}"); }
+      #test-high-spec-pseudo::before { content: ""; display: inline-block; width: 16px; height: 16px; background-image: url("${svgUrl}") !important; }
       .test-dyn-bg { width: 60px; height: 30px; background-image: url("${svgUrl}"); }
     `,
   });
@@ -2380,6 +2381,10 @@ test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide D
     pseudoAfter.className = "test-pseudo-after";
     pseudoAfter.textContent = "After";
 
+    const highSpecPseudo = document.createElement("div");
+    highSpecPseudo.id = "test-high-spec-pseudo";
+    highSpecPseudo.textContent = "High specificity pseudo";
+
     const paragraphSection = document.createElement("section");
     paragraphSection.id = "test-section-paragraph";
     paragraphSection.setAttribute("aria-label", "Hero banner");
@@ -2403,6 +2408,7 @@ test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide D
       sheetBg,
       varBg,
       pseudoAfter,
+      highSpecPseudo,
       paragraphSection,
       gradientBox,
       dynTarget,
@@ -2477,6 +2483,11 @@ test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide D
     .evaluate((el) => getComputedStyle(el, "::after").visibility);
   expect(afterVis).toBe("hidden");
 
+  const highSpecBeforeBg = await page
+    .locator("#test-high-spec-pseudo")
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+  expect(highSpecBeforeBg).toBe("none");
+
   // Dynamic class + inline style mutation while active
   await page.evaluate((imgSrc) => {
     const dyn = document.getElementById("test-dyn-target");
@@ -2512,6 +2523,10 @@ test("Hide Images hides HTML img/picture and CSS/pseudo/root images while Hide D
     .locator("#sample-pseudo-bg")
     .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
   expect(restoredBeforeBg).not.toBe("none");
+  const restoredHighSpecBg = await page
+    .locator("#test-high-spec-pseudo")
+    .evaluate((el) => getComputedStyle(el, "::before").backgroundImage);
+  expect(restoredHighSpecBg).not.toBe("none");
 
   // Hide Decorative Images preserves informative & missing-alt images while hiding decorative & CSS images
   await page
