@@ -322,7 +322,12 @@ export function AccessibilityPlugin({
       ? rawFont
       : "default";
 
-  useBuiltinEffects(active, handleDisable, { effectScope, nonce });
+  const effectOptions = useMemo(
+    () => ({ effectScope, nonce }),
+    [effectScope, nonce],
+  );
+
+  useBuiltinEffects(active, handleDisable, effectOptions);
   const value = useMemo(
     () => ({
       state: { isOpen, features },
