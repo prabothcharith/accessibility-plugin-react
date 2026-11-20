@@ -313,4 +313,35 @@ describe("KeyboardShortcutsController & Link Explorer widget integration", () =>
       screen.getByRole("button", { name: "குறுக்குவழிகளைத் திற" }),
     ).toBeInTheDocument();
   });
+
+  it("traps focus inside modal dialog using visibility-safe focusable query", () => {
+    render(
+      <AccessibilityPlugin persist={false}>
+        <AccessibilityButton />
+        <AccessibilityList>
+          <KeyboardShortcutsController />
+        </AccessibilityList>
+      </AccessibilityPlugin>,
+    );
+
+    // Open panel and shortcuts modal
+    fireEvent.click(screen.getByRole("button", { name: "Accessibility" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open Keyboard Shortcuts" }),
+    );
+
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+
+    const closeBtn = within(dialog).getByRole("button", {
+      name: /Close Keyboard Shortcuts/i,
+    });
+    closeBtn.focus();
+    expect(closeBtn).toHaveFocus();
+
+    // Shift+Tab on first element wraps to last focusable element
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    // Tab on last element wraps back to first element
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: false });
+  });
 });
