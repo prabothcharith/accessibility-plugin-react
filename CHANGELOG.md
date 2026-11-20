@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.31.0 — 2026-11-20
+
+- Overhaul HTML and CSS-based image hiding (`HideImagesController` default `mode="all"` and dedicated `HideDecorativeImagesController` `mode="decorative"`):
+  - Hide all non-protected host `<img>` (including non-empty `alt` and missing `alt`), `<picture>`, `<object type="image/*">`, `<embed type="image/*">`, and explicitly decorative `<svg>` elements in `HideImagesController` (`mode="all"`), while preserving strict decorative-only filtering on `HideDecorativeImagesController` and `<HideImagesController mode="decorative" />`.
+  - Export `HIDE_IMAGES_MODES`, `HideImagesMode`, and `HideImagesValue` from `accessibility-plugin-react` and update `builtins.hideImages` schema validation to accept `boolean | "all" | "decorative"`.
+  - Fix CSS image hiding across `background-image`, `background` shorthand, CSS variables (`var(...)`), `image-set()` / `-webkit-image-set()` / `cross-fade()`, `list-style-image`, element `content: url(...)`, `document.documentElement`/`document.body` host roots, and `::before`/`::after` pseudo-elements (via CSP-nonce-aware `#arap-hide-images-style`, `ShadowRoot` styles, and stylesheet rule scanning) while preserving pure CSS gradients.
+  - Eliminate false-positive CSS container exclusions on landmarks (`<section aria-label>`, `role="banner"`) and word substrings (`.paragraph`, `.typography`, `.photography`, `.roadmap`, `.sitemap`, `.charter`, `.aftermath`, `.faqRow`) via word-boundary token matching, while keeping widget UI, `[data-arap-ignore]`/`[data-arap-exempt]`, buttons/controls, icon-only links, CAPTCHAs, charts, maps, QR/barcodes, and math protected.
+  - Handle dynamic `style`, `class`, and media-attribute mutations incrementally via `applyMediaIncremental()` with `observer.takeRecords()` feedback-loop protection and memoized effect options in `AccessibilityPlugin`.
+
 ## 2.30.1 — 2026-11-18
 
 - Fix decorative image classification inside `<figure>` and add client-side Google Translate adapter (#201):
