@@ -36,7 +36,7 @@ No deadlines or percentage-complete estimates. Status is based on current eviden
 
 Release gates are not satisfied by checking in tests or CI configuration. Execute them on the final candidate. A local Chromium/WebKit pass is not a Firefox pass, and an axe pass is not screen-reader or WCAG certification.
 
-Release tasks are tracked in [Project #18](https://github.com/users/prabothcharith/projects/18) under [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). Documentation status correction (#9) is in PR #17; owner decisions (#4/#5), human acceptance (#6–#8), final candidate validation (#10) and approved publication (#11) remain open gates.
+Release tasks are tracked in [Project #18](https://github.com/users/prabothcharith/projects/18) under [tracker #15](https://github.com/prabothcharith/accessibility-react/issues/15). Owner decisions (#4/#5), human acceptance (#6–#8), documentation correction (#9), final candidate validation (#10), and approved publication (#11) are complete.
 
 The owner confirmed `accessibility-plugin-react` as the registry identity on 2026-10-13. The npm preparation branch prepares `2.0.0-beta.1`; the owner approved 2.0.0-beta.1 under beta and ISC, and npm maintainer authentication is verified. Stable human acceptance remains pending. See RELEASE.md.
 
