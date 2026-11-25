@@ -106,8 +106,8 @@
     "url": "https://github.com/prabothcharith/accessibility-plugin-react/issues"
   },
   "funding": {
-    "type": "individual",
-    "url": "https://www.praboth.com/accessibility-plugin-react"
+    "type": "buymeacoffee",
+    "url": "https://buymeacoffee.com/praboth"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
