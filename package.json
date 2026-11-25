@@ -24,6 +24,8 @@
     "dist",
     "LICENSE",
     "NOTICE",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
     "docs"
   ],
   "scripts": {
@@ -82,6 +84,12 @@
     "invert-colors"
   ],
   "author": "Praboth Charith",
+  "contributors": [
+    {
+      "name": "Praboth Charith",
+      "url": "https://github.com/prabothcharith"
+    }
+  ],
   "license": "ISC",
   "repository": {
     "type": "git",
@@ -96,6 +104,10 @@
   "homepage": "https://github.com/prabothcharith/accessibility-plugin-react#readme",
   "bugs": {
     "url": "https://github.com/prabothcharith/accessibility-plugin-react/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://www.praboth.com/accessibility-plugin-react"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",

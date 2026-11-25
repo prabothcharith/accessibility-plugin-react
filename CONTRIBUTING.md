@@ -7,12 +7,14 @@ Thank you for contributing to `accessibility-plugin-react`. We welcome pull requ
 ## 1. Core architecture & design principles
 
 Before proposing code changes, please review the documentation in `docs/`:
+
 - [Architecture & lifecycle decisions](docs/ARCHITECTURE.md)
 - [Design principles](docs/DESIGN.md)
 - [Feature behavior and bounds](docs/FEATURES.md)
 - [Development and testing guidelines](docs/DEVELOPMENT.md)
 
 ### Foundational Rules
+
 1. **Core Owns State & Effects**: The provider (`<AccessibilityPlugin>`) owns all state, persistence, and persistent effect lifetimes. Controllers only render controls and dispatch state updates. Never create controller-owned persistent effects that outlive the controller.
 2. **One Provider per Document**: One provider per document; definitions persist across control unmount.
 3. **Outside Host Application Layout**: The widget must remain outside host CSS filters, transforms, and overflow containers using the built-in portal boundary (`#arap-portal`).
@@ -27,10 +29,12 @@ Before proposing code changes, please review the documentation in `docs/`:
 ## 2. Development workflow
 
 ### Prerequisites
+
 - Node.js >= 22.13.0
 - npm >= 10.0.0
 
 ### Setup
+
 ```sh
 git clone https://github.com/prabothcharith/accessibility-plugin-react.git
 cd accessibility-plugin-react
@@ -38,18 +42,24 @@ npm ci
 ```
 
 ### Validation Suite
+
 Always verify your changes against the entire validation suite:
+
 ```sh
 npm run validate
 ```
+
 This runs:
+
 - `npm run typecheck`: TypeScript verification of `src/`, `tests/`, and build scripts.
 - `npm run lint`: ESLint rules with 0 max-warnings tolerance.
 - `npm test`: Vitest unit and integration test suite across all 48 test files.
 - `npm run build`: Production build with `tsup` producing ESM, CommonJS, TypeScript declarations, and scoped CSS.
 
 ### Consumer & Browser Testing
+
 To verify the exact packed npm tarball in clean consumer environments:
+
 ```sh
 npm run pack:check
 npm run test:consumers
@@ -65,3 +75,9 @@ npm run test:browser
 - **Documentation**: Update `docs/API.md`, `docs/FEATURES.md`, `README.md`, and `CHANGELOG.md` for any user-visible changes.
 - **Commit Messages**: Use Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `perf:`).
 - **Branch Strategy**: Branch from `development`, submit PRs to `development`. Production releases are synchronized from `development` to `main` by repository maintainers.
+
+---
+
+## 4. Code of Conduct
+
+All contributors and maintainers are expected to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please report unacceptable behavior to `probothcharith@gmail.com`.
